@@ -1,35 +1,35 @@
 ## 🚀 Cách chạy dự án
 ### ====== Mới clone về ======
-### 1. Cài đặt frontEnd (React)
+### 1. Cài đặt frontend (React)
 #### Lưu ý phải cài Node.js
 ```bash
-cd frontEnd
+cd frontend
 npm install
 npm start
 ```
-#### 2.cài đặt backEnd (spring boot)
+#### 2.cài đặt backend (spring boot)
 ```bash
-cd backEnd
+cd backend
 ./mvnw spring-boot:run
 ```
 hoặc
 ```bash
-cd backEnd
+cd backend
 mvnw spring-boot:run
 ```
 ### ====== Đã cài npm ======
-### 1. frontEnd (React)
+### 1. frontend (React)
 ```bash
-cd frontEnd
+cd frontend
 npm start
 ```
-#### 2. backEnd (spring boot)
+#### 2. backend (spring boot)
 ```bash
-cd backEnd
+cd backend
 ./mvnw spring-boot:run
 ```
 hoặc
 ```bash
-cd backEnd
+cd backend
 mvnw spring-boot:run
 ```
