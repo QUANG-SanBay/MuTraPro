@@ -27,16 +27,16 @@ app.use((req, res, next) => {
 
 // Proxy routes
 app.use(
-  "/auth",
+  "/payment",
   createProxyMiddleware({
-    target: "http://localhost:8080", // Auth Service
+    target: process.env.PAYMENT_SERVICE_URL || "http://payment-service:4002",
     changeOrigin: true,
-    pathRewrite: { "^/auth": "" },
+    pathRewrite: { "^/payment": "" },
   })
 );
 
 // Port từ biến môi trường
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
-  console.log(`🚀 API Gateway chạy tại http://localhost:${PORT}`);
+  console.log(`Gateway chạy tại http://localhost:${PORT}`);
 });

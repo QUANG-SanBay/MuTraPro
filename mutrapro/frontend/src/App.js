@@ -5,7 +5,7 @@ function App() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:8080/api/hello")
+    axios.get("http://localhost:8000/auth/api/hello")
       .then(res => setMessage(res.data))
       .catch(err => console.error(err));
   }, []);

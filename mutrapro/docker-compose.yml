@@ -1,11 +1,29 @@
+version: "3.9"
+
 services:
+  # -------------------- SQL SERVER -------------------- #
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      SA_PASSWORD: "Strong@Pass123"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "Strong@Pass123", "-Q", "SELECT 1"]
+      interval: 10s
+      retries: 10
+
   # -------------------- RABBITMQ -------------------- #
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
     ports:
-      - "5672:5672"     # RabbitMQ protocol
-      - "15672:15672"   # Management UI
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -15,19 +33,48 @@ services:
   # -------------------- PAYMENT SERVICE -------------------- #
   payment-service:
     build: ./payment-service
+    volumes:
+    - ./payment-service:/app
     container_name: payment-service
     restart: always
     env_file:
       - ./payment-service/.env
     environment:
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
       - PORT=4002
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - DB_HOST=sqlserver
+      - DB_PORT=1433
+      - DB_USER=sa
+      - DB_PASSWORD=Strong@Pass123
+      - DB_NAME=Mutrapro_Payment
     ports:
       - "4002:4002"
     networks:
       - microservices-net
+    depends_on:
+      - rabbitmq
+      - sqlserver
 
-# -------------------- NETWORK -------------------- #
+  # -------------------- GATEWAY SERVICE -------------------- #
+  gateway:
+    build: ./gate-way
+    volumes:
+    - ./gate-way:/app
+    container_name: gateway
+    restart: always
+    env_file:
+      - ./gate-way/.env
+    environment:
+      - PORT=8000
+      - PAYMENT_SERVICE_URL=http://payment-service:4002
+    ports:
+      - "8000:8000"
+    networks:
+      - microservices-net
+    depends_on:
+      - payment-service
+      - rabbitmq
+
 networks:
   microservices-net:
     driver: bridge

@@ -1,0 +1,24 @@
+# 1. Chọn Node.js LTS nhỏ gọn
+FROM node:20-alpine
+
+# 2. Thiết lập working directory
+WORKDIR /app
+
+# 3. Copy package.json và package-lock.json trước để tận dụng cache
+COPY package*.json ./
+
+# 4. Cài dependencies
+RUN npm install
+
+# 5. Copy toàn bộ source code
+COPY . .
+
+# 6. Expose port
+EXPOSE 8000
+
+# 7. Biến môi trường mặc định
+ENV PORT=8000
+
+# 8. Chạy ứng dụng
+# Nếu muốn chạy dev mode với nodemon, có thể override CMD khi run container
+CMD ["npm", "start"]
