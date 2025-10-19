@@ -1,0 +1,19 @@
+# ./payment-service/Dockerfile
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package.json + package-lock.json
+COPY package*.json ./
+
+# Cài dependencies
+RUN npm install
+
+# Copy toàn bộ code
+COPY . .
+
+# Expose port
+EXPOSE 4002
+
+# Khởi chạy app
+CMD ["node", "src/index.js"]
