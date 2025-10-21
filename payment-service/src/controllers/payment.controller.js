@@ -32,4 +32,26 @@ export const PaymentController = {
       });
     }
   },
+
+  async handleWebhook(req, res) {
+    try {
+      const { description, amount } = req.body;
+      if (!description || !amount) {
+        return res.status(400).json({ message: "Thiếu dữ liệu từ SePay" });
+      }
+
+      const result = await PaymentService.authenticPaymentSepay({
+        description,
+        amount,
+      });
+
+      return res.status(200).json({
+        message: "Webhook xử lý thành công",
+        result,
+      });
+    } catch (err) {
+      console.error("Lỗi xử lý webhook:", err.message);
+      return res.status(500).json({ message: "Lỗi xử lý webhook" });
+    }
+  },
 };
