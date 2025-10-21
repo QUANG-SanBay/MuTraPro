@@ -34,6 +34,20 @@ cd backend
 mvnw spring-boot:run
 ```
 
+#### 4.cài đặt payment service (node js)
+
+```bash
+cd payment-service
+npm install
+```
+
+tạo file .env
+trong ssms tạo database có tên Mutrapro_payment_Database
+
+```bash
+npm run dev
+```
+
 ### ====== Đã cài npm ======
 
 ### 1. frontend (React)
