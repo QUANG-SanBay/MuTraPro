@@ -49,41 +49,37 @@ export const PaymentService = {
     }
   },
 
-  async authenticPaymentSepay({ description, amount }) {
+  async authenticPaymentSepay({ id, description, amount }) {
   try {
-
-    const orderIdMatch = description.match(/SEVQR.*?(\d+)/);
+    const orderIdMatch = description.match(/don hang ([a-f0-9]{32})/i);
     const orderId = orderIdMatch ? orderIdMatch[1] : null;
 
     if (!orderId) {
       throw new Error("Không tìm thấy orderId trong nội dung giao dịch");
     }
 
-
     const payment = await Payment.findOne({ where: { orderId } });
     if (!payment) {
       throw new Error("Không tìm thấy Payment tương ứng");
     }
 
-
     if (Number(amount) !== Number(payment.amount)) {
       throw new Error("Số tiền không khớp");
     }
 
-
     await payment.update({ status: "SUCCESSFUL" });
-
     await Transaction.update(
-      { status: "SUCCESSFUL" },
+      { status: "SUCCESSFUL", gatewayTransactionId: id ,timestamp: new Date() },
       { where: { paymentId: payment.paymentId } }
     );
 
     console.log(`✅ Xác thực thành công cho đơn hàng ${orderId}`);
-
     return { orderId, status: "SUCCESSFUL" };
+
   } catch (error) {
     console.error("authenticPaymentSepay error:", error.message);
     throw error;
   }
 },
+
 };

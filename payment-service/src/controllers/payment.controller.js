@@ -35,8 +35,8 @@ export const PaymentController = {
 
   async handleWebhook(req, res) {
     try {
-      const { description, amount } = req.body;
-      if (!description || !amount) {
+      const { id , description, transferAmount } = req.body;
+      if (!id || !description || !transferAmount) {
         return res.status(400).json({ message: "Thiếu dữ liệu từ SePay" });
       }
 
