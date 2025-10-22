@@ -55,8 +55,8 @@ services:
   # -------------------- ORDER SERVICE --------------------
   order-service:
       build: ./order-service
-      volumes:
-        - ./order-service:/app
+      # volumes:
+      #   - ./order-service:/app
       container_name: order-service
       restart: always
       # nếu có file .env bạn có thể thêm: env_file: - ./order-service/.env
@@ -78,8 +78,8 @@ services:
 # -------------------- NOTIFICATION SERVICE --------------------
   notification-service:
     build: ./notification-service
-    volumes:
-      - ./notification-service:/app
+    # volumes:
+    #   - ./notification-service:/app
     container_name: notification-service
     restart: always
     env_file:
@@ -103,8 +103,8 @@ services:
   # -------------------- MEDIA SERVICE --------------------
   media-service:
     build: ./media-service
-    volumes:
-      - ./media-service:/app
+    # volumes:
+    #   - ./media-service:/app
     container_name: media-service
     restart: always
     env_file:
@@ -127,8 +127,8 @@ services:
 # -------------------- MANAGEMENT STUDIO SERVICE --------------------
   management-studio-service:
     build: ./management-studio-service
-    volumes:
-      - ./management-studio-service:/app
+    # volumes:
+    #   - ./management-studio-service:/app
     container_name: management-studio-service
     restart: always
     env_file:

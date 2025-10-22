@@ -6,7 +6,7 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 COPY . /app
 
-# Cài đặt dependency cơ bản + Microsoft ODBC driver
+# Cài đặt dependency cơ bản + Microsoft ODBC driver 17
 RUN apt-get update && apt-get install -y \
     curl \
     gnupg \
@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
     && install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/ \
     && sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/debian/12/prod bookworm main" > /etc/apt/sources.list.d/mssql-release.list' \
     && apt-get update \
-    && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
+    && ACCEPT_EULA=Y apt-get install -y msodbcsql17 \
     && rm -rf /var/lib/apt/lists/* microsoft.gpg
 
 RUN pip install --no-cache-dir -r requirements.txt
