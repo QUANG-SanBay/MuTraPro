@@ -1,6 +1,6 @@
 ### MuTraPro - Microservices
 
-Dự án gồm nhiều service (Node.js, Spring Boot, Django) sử dụng chung SQL Server và RabbitMQ, khởi chạy qua Docker Compose.
+Dự án gồm nhiều service (Node.js, Spring Boot, Django) kết nối chung SQL Server và RabbitMQ, khởi chạy qua Docker Compose.
 
 ---
 
@@ -15,24 +15,23 @@ Dự án gồm nhiều service (Node.js, Spring Boot, Django) sử dụng chung 
 ### Cấu trúc thư mục
 ```
 MuTraPro/
-  docker-compose.yml
-  gate-way/
-  payment-service/            (Node.js)
-  order-service/              (Spring Boot)
-  media-service/              (Spring Boot)
-  management-studio-service/  (Spring Boot)
-  notification-service/       (Spring Boot)
-  user-service/               (Django)
-  frontend/                   (React)
+docker-compose.yml
+gate-way/
+payment-service/ (Node.js)
+order-service/ (Spring Boot)
+media-service/ (Spring Boot)
+management-studio-service (Spring Boot)
+notification-service/ (Spring Boot)
+user-service/ (Django)
+frontend/ (React)
 ```
-
 ---
 
 ### Biến môi trường
 
-Một số service có `.env` riêng (nếu chưa có, tạo theo mẫu). Phần lớn env đã đặt sẵn trong `docker-compose.yml`.
+Một số service có `.env` riêng (nếu chưa có, tạo theo mẫu dưới). Mặc định `docker-compose.yml` đã set sẵn hầu hết biến quan trọng.
 
-- SQL Server:
+- SQL Server (trong docker-compose):
   - `SA_PASSWORD=Strong@Pass123`
   - `ACCEPT_EULA=Y`
 
@@ -40,7 +39,7 @@ Một số service có `.env` riêng (nếu chưa có, tạo theo mẫu). Phần
   - `RABBITMQ_DEFAULT_USER=guest`
   - `RABBITMQ_DEFAULT_PASS=guest`
 
-- user-service (Django) – file `.env` (tuỳ chọn):
+- Django user-service (nếu cần `.env`):
 ```
 DJANGO_SETTINGS_MODULE=userService.settings
 DB_ENGINE=mssql
@@ -51,7 +50,7 @@ DB_PASSWORD=Strong@Pass123
 DB_NAME=Mutrapro_User
 ```
 
-- Gateway – file `.env` (ví dụ):
+- Gateway
 ```
 PORT=8000
 PAYMENT_SERVICE_URL=http://payment-service:4002
@@ -59,23 +58,27 @@ PAYMENT_SERVICE_URL=http://payment-service:4002
 
 ---
 
-### Lưu ý quan trọng
+### Lưu ý QUAN TRỌNG trước khi chạy
 
-- KHÔNG bind-mount source vào các service Spring Boot (order/media/notification/management-studio). Nếu mount `./service:/app`, file JAR trong image sẽ bị che → lỗi “Unable to access jarfile app.jar”.
-- user-service (Django) dùng ODBC 17:
-  - Dockerfile cài `msodbcsql17` (ODBC Driver 17)
-  - `user-service/userService/userService/settings.py` phải dùng `"ODBC Driver 17 for SQL Server"` trong `OPTIONS.driver`.
+- Không bind mount source code vào các service Spring Boot (order/media/notification/management-studio). Nếu bạn mount `./service:/app`, file `app.jar` trong image sẽ bị che mất → lỗi “Unable to access jarfile app.jar”.
+- `user-service` (Django) dùng SQL Server qua ODBC:
+  - Dockerfile đã cài `msodbcsql17`
+  - Trong `user-service/userService/userService/settings.py` cần `driver: "ODBC Driver 17 for SQL Server"`.
 
 ---
 
 ### Chạy nhanh (Quick Start)
-
-1) Đảm bảo không có volumes bind cho các service Spring Boot trong `docker-compose.yml`.
+lưu ý FE và payment service 
+```bash
+npm install
+```
+1) Tắt/bỏ các volumes bind cho service Spring Boot trong `docker-compose.yml` (nếu đang có):
+- order-service, media-service, notification-service, management-studio-service không được mount `./xxx:/app`.
 
 2) Khởi động nền tảng
 ```bash
 docker-compose up -d sqlserver rabbitmq
-# Đợi SQL Server sẵn sàng (30–60s):
+# Đợi SQL Server sẵn sàng (30-60s):
 docker logs -f sqlserver
 ```
 
@@ -100,54 +103,22 @@ docker-compose up
 # docker-compose up -d
 ```
 
-6) Truy cập nhanh
-- Gateway: http://localhost:8000
-- user-service (Django): http://localhost:8005
-- RabbitMQ Management: http://localhost:15672 (guest/guest)
+6) Kiểm tra
+- API Gateway: http://localhost:8000
+- Django user-service: http://localhost:8005
+- RabbitMQ UI: http://localhost:15672 (guest/guest)
 - SQL Server: localhost:1433 (sa/Strong@Pass123)
-
----
-
-### Gợi ý cấu hình chờ (tùy chọn)
-
-- Đợi SQL Server sẵn sàng trước khi start các service phụ thuộc:
-```yaml
-depends_on:
-  sqlserver:
-    condition: service_healthy
-  rabbitmq:
-    condition: service_started
-```
-
-- Healthcheck SQL Server (đi kèm trong compose):
-```yaml
-healthcheck:
-  test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "Strong@Pass123", "-Q", "SELECT 1"]
-  interval: 10s
-  retries: 10
-  timeout: 5s
-  start_period: 30s
-```
-
-- user-service có thể dùng script chờ rồi mới migrate (tuỳ chọn):
-```bash
-# wait-for-sqlserver.sh
-until /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "Strong@Pass123" -Q "SELECT 1" > /dev/null 2>&1; do
-  sleep 2
-done
-python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000
-```
 
 ---
 
 ### Câu lệnh hữu ích
 
-- Dừng/xoá tất cả
+- Dừng/xóa tất cả
 ```bash
 docker-compose down
 ```
 
-- Xoá image/dangling data (cẩn thận)
+- Xóa image/dangling data (cẩn thận)
 ```bash
 docker system prune -f
 ```
@@ -159,38 +130,14 @@ docker logs -f user-service
 
 ---
 
-### Khắc phục sự cố (Troubleshooting)
-
-- “Unable to access jarfile app.jar” (Spring Boot)
-  - Đang mount `./<service>:/app` → che mất file JAR. Gỡ volumes bind, build và chạy lại.
-
-- Django: “Can't open lib 'ODBC Driver 17 for SQL Server'”
-  - Cài ODBC 18 nhưng settings dùng driver 17 (hoặc ngược lại). Đồng bộ: Dockerfile cài `msodbcsql17` và `OPTIONS.driver = "ODBC Driver 17 for SQL Server"`.
-
-- Django: “Login timeout expired”
-  - SQL Server chưa sẵn sàng hoặc database chưa tồn tại. Đợi healthcheck OK và tạo DB như Quick Start.
-
-- RabbitMQ “system_memory_high_watermark”
-  - Cảnh báo bộ nhớ. Có thể thêm env `RABBITMQ_VM_MEMORY_HIGH_WATERMARK=0.6` hoặc tăng RAM cho Docker.
 
 ---
 
-### Ghi chú phát triển
+### Lưu ý QUAN TRỌNG trước khi chạy
 
-- Node services (gateway, payment-service) có thể bind-mount để hot-reload:
-```yaml
-volumes:
-  - ./payment-service:/app
-  - ./gate-way:/app
-```
-
-- Spring Boot:
-  - Chế độ sản xuất: chạy JAR, không bind-mount.
-  - Chế độ dev: có thể dùng `mvn spring-boot:run` và bind-mount source (cần điều chỉnh Dockerfile/compose).
-
-- Django:
-  - Có thể bind-mount `./user-service:/app` khi dev, nhưng phải giữ đúng ODBC driver và chờ SQL Server trước khi migrate.
+- Không bind mount source code vào các service Spring Boot (order/media/notification/management-studio). Nếu bạn mount `./service:/app`, file `app.jar` trong image sẽ bị che mất → lỗi “Unable to access jarfile app.jar”.
+- `user-service` (Django) dùng SQL Server qua ODBC:
+  - Dockerfile đã cài `msodbcsql17`
+  - Trong `user-service/userService/userService/settings.py` cần `driver: "ODBC Driver 17 for SQL Server"`.
 
 ---
-
-Nội dung dự án phục vụ mục đích học tập và demo nội bộ.
