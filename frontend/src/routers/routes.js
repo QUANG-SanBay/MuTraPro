@@ -1,8 +1,7 @@
-import { Login, Register } from "~/pages/auth"
+import { Auth } from "~/pages/auth"
 
 const publicRouter = [
-    {path: '/login', element: <Login/>},
-    {path: '/register', element: <Register/>},
+    {path: '/auth', element: <Auth/>}
 ]
 const customerRouter = [
 
