@@ -1,9 +1,17 @@
+import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styles from './Auth.module.scss'
 import { faMusic } from '@fortawesome/free-solid-svg-icons';
+
+import styles from './Auth.module.scss'
 import AuthAction from './action/AuthAction';
+import RegisterForm from './registerForm/Register';
+import LoginForm from './loginForm/LoginForm';
 
 function Login(){
+    const [isLogin, setIsLogin] = useState(true);
+    const handleActive = (mode)=>{
+        setIsLogin(mode === 'loginBtn');
+    }
     return(
         <div className={styles.container}>
             <div className={styles.authBox}>
@@ -18,9 +26,13 @@ function Login(){
                         <p className={styles.authDescription}>Quản lý phục vụ âm nhạc chuyên nghiệp</p>
                     </div>
                 </div>
-                <AuthAction className={styles.authAction}>
-                    
-                </AuthAction>
+                <AuthAction active={isLogin} onClick={handleActive}></AuthAction>
+                {isLogin ? 
+                <LoginForm></LoginForm> : 
+                <RegisterForm></RegisterForm>}
+                
+                
+                
             </div>
         </div>
     )

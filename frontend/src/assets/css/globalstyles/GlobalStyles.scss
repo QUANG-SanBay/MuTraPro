@@ -1,10 +1,17 @@
 :root{
     --primary-c: #030213;
+    --primary-c-09: rgba(3, 2, 19,0.9);
+    --primary-c-08: rgba(3, 2, 19,0.8);
+    --primary-c-07: rgba(3, 2, 19,0.7);
+    --primary-c-06: rgba(3, 2, 19,0.6);
     --bgr-c: #F7F6F5;
     --text-c:#342d47;
     --text-c-white:#f1f1f1;
     --section-bgr:#FCFCFC;
+    --btn-bgr-white: #FCFCFC;
     --border-c: #545454;
+    --border-c-05: rgba(84, 84, 84, 0.5);
+    --input-bgr: #f3f3f5;
 }
 /* === INTER FONT FAMILY === */
 @font-face {
