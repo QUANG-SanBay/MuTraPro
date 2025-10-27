@@ -1,0 +1,22 @@
+.form{
+    display: flex;
+    flex-wrap: wrap;
+    flex: 1;    
+}
+.submit{
+    width: 100%;
+    height: 42px;
+    margin: 16px;
+    border-radius: 8px;
+    color: var(--text-c-white);
+    background-color: var(--primary-c);
+    font-size: 1.6rem;
+    transition: all 0.2s ease-in-out;
+    &:hover{
+        cursor: pointer;
+        background-color: var(--primary-c-08);
+    }
+    &:active{
+        background-color: var(--primary-c-07);
+    }
+}
