@@ -155,8 +155,8 @@ services:
         - ./user-service:/app
       container_name: user-service
       restart: always
-      env_file:
-        - ./user-service/.env
+      # env_file:
+      #   - ./user-service/.env
       environment:
         - DJANGO_SETTINGS_MODULE=userService.settings
         - DB_ENGINE=mssql
