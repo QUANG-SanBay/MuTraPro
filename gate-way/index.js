@@ -12,13 +12,23 @@ const app = express();
 app.use(express.json({ limit: "2mb" }));
 app.use(cookieParser());
 
-// CORS setup (cho phép tất cả nguồn trong giai đoạn dev; có thể khóa lại theo DOMAIN thật)
+// CORS setup: không dùng "*" khi credentials=true để tránh lỗi trình duyệt
+const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:3000")
+  .split(",")
+  .map((s) => s.trim());
+
 app.use(
   cors({
-    origin: "*",
+    origin: function (origin, callback) {
+      // Cho phép request không có Origin (VD: curl, server-to-server)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error(`CORS blocked for origin ${origin}`));
+    },
     credentials: true,
   })
 );
+// Không cần đăng ký riêng OPTIONS với pattern '*', cors middleware phía trên đã xử lý preflight
 
 // Rate limit để tránh bị spam vào 1 endpoint duy nhất
 const limiter = rateLimit({

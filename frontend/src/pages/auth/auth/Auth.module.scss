@@ -21,24 +21,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    .authTitle{
-        font-size: 28px;
-        font-weight: 700;
+    height: 64px;
+    width: 64px;
+    margin: 16px auto;
     font-size: 3.8rem;
-    .authDescription{
-        color: #666;
-        margin-top: 4px;
+    background-color: var(--primary-c);
+    color: var(--text-c-white);
+    border-radius: 50%;
 }
-    .userSvcOk{
-        margin-top: 8px;
-        color: #0a7f2e;
-        font-size: 14px;
-    }
-    .userSvcErr{
-        margin-top: 8px;
-        color: #b00020;
-        font-size: 14px;
-    }
 .authIntro{
     text-align: center;
     color: var(--text-c);
