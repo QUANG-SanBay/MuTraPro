@@ -1,7 +1,11 @@
+import Banner from "./banner/Banner";
+import Services from "./services/Services";
+
 function CustomerHome() {
     return ( 
         <div>
-            <h1>Welcome to the Customer Home Page</h1>
+            <Banner />
+            <Services />
         </div>      
      );
 }
