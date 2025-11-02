@@ -1,0 +1,267 @@
+// ==================== VARIABLES ====================
+$bg-white: #ffffff;
+$text-primary: #1f2937;
+$text-secondary: #6b7280;
+$accent-color: #000000;
+$connector-color: #e5e7eb;
+$shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+
+// ==================== BREAKPOINTS ====================
+$mobile: 640px;
+$tablet: 768px;
+$desktop: 1024px;
+
+// ==================== PROCESS SECTION ====================
+.process {
+    padding: 5rem 0;
+    background-color: $bg-white;
+    position: relative;
+
+    @media (max-width: $tablet) {
+        padding: 3rem 0;
+    }
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
+
+    @media (max-width: $mobile) {
+        padding: 0 1rem;
+    }
+}
+
+// ==================== HEADER ====================
+.header {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto 4rem;
+    animation: fadeInUp 0.6s ease-out backwards;
+
+    @media (max-width: $tablet) {
+        margin-bottom: 3rem;
+    }
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: transparent;
+    color: $text-secondary;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    border: 1px solid $connector-color;
+    border-radius: 2rem;
+    margin-bottom: 1rem;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: $text-primary;
+    margin: 0;
+
+    @media (max-width: $tablet) {
+        font-size: 2rem;
+    }
+
+    @media (max-width: $mobile) {
+        font-size: 1.75rem;
+    }
+}
+
+// ==================== STEPS CONTAINER ====================
+.steps {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    position: relative;
+
+    @media (max-width: $desktop) {
+        flex-direction: column;
+        gap: 2rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+}
+
+// ==================== INDIVIDUAL STEP ====================
+.step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    animation: fadeInUp 0.6s ease-out backwards;
+    animation-delay: var(--step-delay, 0s);
+
+    @media (max-width: $desktop) {
+        flex-direction: row;
+        text-align: left;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+}
+
+// ==================== STEP NUMBER ====================
+.stepNumber {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $accent-color;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    box-shadow: $shadow-sm;
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+
+    @media (max-width: $desktop) {
+        margin-bottom: 0;
+        width: 56px;
+        height: 56px;
+        font-size: 1.375rem;
+    }
+
+    @media (max-width: $mobile) {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+    }
+}
+
+.step:hover .stepNumber {
+    transform: scale(1.1);
+}
+
+// ==================== STEP CONTENT ====================
+.stepContent {
+    flex: 1;
+}
+
+.stepTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.3;
+
+    @media (max-width: $mobile) {
+        font-size: 1.125rem;
+    }
+}
+
+.stepDescription {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: $text-secondary;
+    margin: 0;
+
+    @media (max-width: $mobile) {
+        font-size: 0.9375rem;
+    }
+}
+
+// ==================== CONNECTOR LINE ====================
+.connector {
+    position: absolute;
+    top: 30px;
+    left: calc(50% + 30px);
+    width: calc(100% - 60px);
+    height: 2px;
+    background-color: $connector-color;
+    z-index: 1;
+
+    // Animated dash effect
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 100%;
+        background-color: $accent-color;
+        animation: drawLine 1s ease-out forwards;
+        animation-delay: calc(var(--step-delay, 0s) + 0.3s);
+    }
+
+    @media (max-width: $desktop) {
+        // Vertical connector on mobile/tablet
+        display: none; // Ẩn connector trên mobile để đơn giản hơn
+    }
+}
+
+// ==================== ANIMATIONS ====================
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes drawLine {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+// ==================== ACCESSIBILITY ====================
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+// ==================== RESPONSIVE ENHANCEMENTS ====================
+@media (min-width: $desktop) {
+    .steps {
+        padding: 0 2rem;
+    }
+
+    .step {
+        max-width: 200px;
+    }
+
+    // Adjust connector for better spacing
+    .connector {
+        left: calc(50% + 35px);
+        width: calc(100% - 70px);
+    }
+}
+
+@media (max-width: $tablet) {
+    .step {
+        padding: 1rem;
+        background-color: #f9fafb;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background-color: #f3f4f6;
+            transform: translateX(4px);
+        }
+    }
+}
