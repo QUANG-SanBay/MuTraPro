@@ -1,10 +1,12 @@
+import Header from "~/components/header/Header";
+import Footer from "~/components/footer/Footer";
 
-function DefaultLayout() {
+function DefaultLayout({type, children}) {
     return ( 
         <div>
-            <Header />
+            <Header type={type}/>
             <main>
-                <Outlet />
+                {children}
             </main>
             <Footer />
         </div>

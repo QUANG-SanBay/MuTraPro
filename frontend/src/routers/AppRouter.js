@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import {publicRouter, customerRouter} from './routes';
+import DefaultLayout from "~/components/layouts/defaultLayout/DefaultLayout";
 
 function AppRouter(){
     return(
@@ -9,9 +10,20 @@ function AppRouter(){
                 <Route key={index} path={item.path} element={item.element}></Route>
             ))}
             {/* customer router */}
-            {customerRouter.map((item, index)=>(
-                <Route key={index} path={item.path} element={item.element}></Route>
-            ))}
+            {customerRouter.map((item, index)=>{
+                if(item.layout === 'default'){
+                    return (
+                        <Route key={index} path={item.path} element={
+                            <DefaultLayout type="customer">
+                                {item.element}
+                            </DefaultLayout>
+                        }></Route>
+                    )
+                }
+                return (
+                    <Route key={index} path={item.path} element={item.element}></Route>
+                )
+            })}
         </Routes>
     )
 }

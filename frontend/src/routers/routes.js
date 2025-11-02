@@ -5,7 +5,7 @@ const publicRouter = [
     {path: '/auth', element: <Auth/>}
 ]
 const customerRouter = [
-    {path: '/customer', element: <CustomerHome/>}
+    {path: '/customer', element: <CustomerHome/>, layout: 'default'}
 ]
 const serviceCoordinatorRouter = [
 

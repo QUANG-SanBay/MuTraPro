@@ -1,0 +1,23 @@
+.logo{
+    font-size: 2.4rem;
+    display: flex;
+    align-items: center;
+    user-select: none;
+}
+.icon{
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    height: 100%;
+    background-color: var(--primary-c);
+    color: var(--text-c-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+}
+.text{
+    margin-left: 8px;
+    font-weight: 600;
+    color: var(--text-c);
+    text-wrap: nowrap;
+}
