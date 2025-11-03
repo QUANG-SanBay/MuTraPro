@@ -1,0 +1,44 @@
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+}
+.authBox{
+    display: flex;
+    flex-direction: column;
+    width: 420px;
+    background-color: var(--section-bgr);
+    border-radius: 24px;
+    box-shadow: 0 0 1.5px rgb(0, 0, 0, 0.6);
+    overflow: hidden;
+}
+.authHeader{
+    width: 100%;
+}
+.authIcon{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 64px;
+    width: 64px;
+    margin: 16px auto;
+    font-size: 3.8rem;
+    background-color: var(--primary-c);
+    color: var(--text-c-white);
+    border-radius: 50%;
+}
+.authIntro{
+    text-align: center;
+    color: var(--text-c);
+    margin-bottom: 28px;
+}
+.authTitle{
+    font-weight: 400;
+    font-size: 2.8rem;
+}
+.authDescription{
+    font-weight: 300;
+    font-size: 1.6rem;
+}

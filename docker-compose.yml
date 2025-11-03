@@ -24,7 +24,7 @@ services:
     environment:
       PORT: 4002
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
-      DB_HOST: host.docker.internal   
+      DB_HOST: sqlserver  
       DB_PORT: 1433
       DB_USER: sa
       DB_PASSWORD: Strong@Pass123
@@ -35,8 +35,127 @@ services:
       - microservices-net
     depends_on:
       - rabbitmq
+      - sqlserver
     command: npm run dev
-
+  # -------------------- ORDER SERVICE --------------------
+  order-service:
+      build: ./order-service
+      # volumes:
+      #   - ./order-service:/app
+      container_name: order-service
+      restart: always
+      # nếu có file .env bạn có thể thêm: env_file: - ./order-service/.env
+      environment:
+        - PORT=4001
+        - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+        - DB_HOST=sqlserver
+        - DB_PORT=1433
+        - DB_USER=sa
+        - DB_PASSWORD=Strong@Pass123
+        - DB_NAME=Mutrapro_Order
+      ports:
+        - "4001:4001"
+      networks:
+        - microservices-net
+      depends_on:
+        - rabbitmq
+        - sqlserver
+# -------------------- NOTIFICATION SERVICE --------------------
+  notification-service:
+    build: ./notification-service
+    # volumes:
+    #   - ./notification-service:/app
+    container_name: notification-service
+    restart: always
+    env_file:
+      - ./notification-service/.env
+    environment:
+      - PORT=4003
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - DB_HOST=sqlserver
+      - DB_PORT=1433
+      - DB_USER=sa
+      - DB_PASSWORD=Strong@Pass123
+      - DB_NAME=Mutrapro_Notification
+    ports:
+      - "4003:4003"
+    networks:
+      - microservices-net
+    depends_on:
+      - rabbitmq
+      - sqlserver
+  # -------------------- MEDIA SERVICE --------------------
+  media-service:
+    build: ./media-service
+    # volumes:
+    #   - ./media-service:/app
+    container_name: media-service
+    restart: always
+    env_file:
+      - ./media-service/.env
+    environment:
+      - PORT=4004
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - DB_HOST=sqlserver
+      - DB_PORT=1433
+      - DB_USER=sa
+      - DB_PASSWORD=Strong@Pass123
+      - DB_NAME=Mutrapro_Media
+    ports:
+      - "4004:4004"
+    networks:
+      - microservices-net
+    depends_on:
+      - rabbitmq
+      - sqlserver
+# -------------------- MANAGEMENT STUDIO SERVICE --------------------
+  management-studio-service:
+    build: ./management-studio-service
+    # volumes:
+    #   - ./management-studio-service:/app
+    container_name: management-studio-service
+    restart: always
+    env_file:
+      - ./management-studio-service/.env
+    environment:
+      - PORT=4005
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - DB_HOST=sqlserver
+      - DB_PORT=1433
+      - DB_USER=sa
+      - DB_PASSWORD=Strong@Pass123
+      - DB_NAME=Mutrapro_ManagementStudio
+    ports:
+      - "4005:4005"
+    networks:
+      - microservices-net
+    depends_on:
+      - rabbitmq
+      - sqlserver
+# -------------------- USER (DJANGO) SERVICE --------------------
+  user-service:
+      build: ./user-service
+      volumes:
+        - ./user-service:/app
+      container_name: user-service
+      restart: always
+      env_file:
+        - ./user-service/.env
+      environment:
+        - DJANGO_SETTINGS_MODULE=userService.settings
+        - DB_ENGINE=mssql
+        - DB_HOST=sqlserver
+        - DB_PORT=1433
+        - DB_USER=sa
+        - DB_PASSWORD=Strong@Pass123
+        - DB_NAME=Mutrapro_User
+      ports:
+        - "8005:8000"
+      networks:
+        - microservices-net
+      depends_on:
+        - rabbitmq
+        - sqlserver
   # -------------------- GATEWAY SERVICE -------------------- #
   gateway:
     build: ./gate-way
