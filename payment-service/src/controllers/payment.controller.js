@@ -60,7 +60,7 @@ export const PaymentController = {
   try {
     const { orderId, totalAmount, card } = req.body
 
-    // Kiểm tra dữ liệu đầu vào
+
     if (!orderId || !totalAmount || !card) {
       return res.status(400).json({
         success: false,
@@ -84,7 +84,7 @@ export const PaymentController = {
       })
     }
   } catch (err) {
-    console.error('❌ Lỗi trong PayPal Controller:', err)
+    console.error('Lỗi trong PayPal Controller:', err)
     return res.status(500).json({
       success: false,
       message: 'Lỗi server khi xử lý thanh toán PayPal',

@@ -29,7 +29,7 @@ export const Payment = sequelize.define(
       defaultValue: "PENDING",
     },
     method: {
-      type: DataTypes.ENUM("QR" , "BANK", "STRIPE","CARD"),
+      type: DataTypes.ENUM("QR" ,"BANK","STRIPE","CARD"),
       allowNull: false,
     },
     creationDate: {

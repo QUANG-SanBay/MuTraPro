@@ -3,28 +3,26 @@ import { v4 as uuidv4 } from 'uuid'
 import { Payment } from '../models/payment.model.js'
 import { Transaction } from '../models/transaction.model.js'
 
-// === 1. Cấu hình môi trường Sandbox ===
+
 const environment = new paypal.core.SandboxEnvironment(
   process.env.PAYPAL_CLIENT_ID,
   process.env.PAYPAL_CLIENT_SECRET
 )
 const client = new paypal.core.PayPalHttpClient(environment)
 
-// === 2. Tạo thanh toán bằng thẻ (CARD) ===
 export async function createCardPaymentService({ orderId, totalAmount, card }) {
   try {
-    // 🔹 Bước 1: Tính toán và chuẩn bị dữ liệu
     const usdAmount = (totalAmount / 24000).toFixed(2)
     const paymentId = uuidv4()
     const transactionId = uuidv4()
     const description = `PAYPAL Thanh toán đơn hàng ${orderId}`
 
-    // 🔹 Tạo bản ghi trong DB (PENDING)
+
     const payment = await Payment.create({
       paymentId,
       orderId,
       amount: totalAmount,
-      method: 'STRIPE', // ✅ đổi 'STRIPE' → 'PAYPAL' để không vi phạm CHECK constraint
+      method: 'PAYPAL', 
       status: 'PENDING',
       currency: 'VND',
     })
@@ -35,11 +33,11 @@ export async function createCardPaymentService({ orderId, totalAmount, card }) {
       paymentId,
       amount: totalAmount,
       description,
-      qr_url: '', // ✅ tránh lỗi notNull
+      qr_url: '',
       status: 'PENDING',
     })
 
-    // === Bước 2: Tạo Order ===
+
     const createOrderRequest = new paypal.orders.OrdersCreateRequest()
     createOrderRequest.requestBody({
       intent: 'CAPTURE',
@@ -57,7 +55,7 @@ export async function createCardPaymentService({ orderId, totalAmount, card }) {
 
     const order = await client.execute(createOrderRequest)
 
-    // === Bước 3: Capture thanh toán bằng CARD ===
+
     const captureRequest = new paypal.orders.OrdersCaptureRequest(order.result.id)
     captureRequest.requestBody({
       payment_source: {
@@ -79,7 +77,7 @@ export async function createCardPaymentService({ orderId, totalAmount, card }) {
 
     const capture = await client.execute(captureRequest)
 
-    // === Bước 4: Cập nhật trạng thái DB ===
+
     const paypalStatus = capture.result.status || 'FAILED'
 
     await payment.update({
@@ -92,7 +90,7 @@ export async function createCardPaymentService({ orderId, totalAmount, card }) {
       timestamp: new Date(),
     })
 
-    // === Bước 5: Trả về kết quả ===
+
     return {
       success: paypalStatus === 'COMPLETED',
       message:
@@ -104,7 +102,7 @@ export async function createCardPaymentService({ orderId, totalAmount, card }) {
       paypalResponse: capture.result,
     }
   } catch (error) {
-    console.error('❌ Lỗi PayPal service:', error)
+    console.error('Lỗi PayPal service:', error)
 
     return {
       success: false,

@@ -73,7 +73,7 @@ export const PaymentService = {
       { where: { paymentId: payment.paymentId } }
     );
 
-    console.log(`✅ Xác thực thành công cho đơn hàng ${orderId}`);
+    console.log(`Xác thực thành công cho đơn hàng ${orderId}`);
     return { orderId, status: "SUCCESSFUL" };
 
   } catch (error) {
