@@ -7,5 +7,6 @@ const router = express.Router();
 
 router.post("/checkout", PaymentController.checkout);
 router.post("/webhook" , verifySepayWebhook, PaymentController.handleWebhook);
+router.post('/card-payment', PaymentController.createCardPayment)
 
 export default router;

@@ -1,4 +1,5 @@
 import { PaymentService } from "../services/payment.service.js";
+import { createCardPaymentService } from '../services/paypal.service.js'
 
 export const PaymentController = {
 
@@ -54,4 +55,41 @@ export const PaymentController = {
       return res.status(500).json({ message: "Lỗi xử lý webhook" });
     }
   },
+
+  async createCardPayment (req, res)  {
+  try {
+    const { orderId, totalAmount, card } = req.body
+
+    // Kiểm tra dữ liệu đầu vào
+    if (!orderId || !totalAmount || !card) {
+      return res.status(400).json({
+        success: false,
+        message: 'Thiếu dữ liệu: cần có orderId, totalAmount và card',
+      })
+    }
+
+    const result = await createCardPaymentService({ orderId, totalAmount, card })
+
+    if (result.success) {
+      return res.status(200).json({
+        success: true,
+        message: 'Thanh toán PayPal thành công',
+        data: result,
+      })
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'Thanh toán thất bại',
+        error: result.message,
+      })
+    }
+  } catch (err) {
+    console.error('❌ Lỗi trong PayPal Controller:', err)
+    return res.status(500).json({
+      success: false,
+      message: 'Lỗi server khi xử lý thanh toán PayPal',
+      error: err.message,
+    })
+  }
+}
 };
