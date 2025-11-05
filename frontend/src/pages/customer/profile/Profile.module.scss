@@ -1,0 +1,344 @@
+// ==================== VARIABLES ====================
+$bg-light: #f3f4f6;
+$card-bg: #ffffff;
+$text-primary: #1f2937;
+$text-secondary: #6b7280;
+$border-color: #e5e7eb;
+$input-bg: #f9fafb;
+$primary-color: #000000;
+$secondary-color: #ffffff;
+$shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+// ==================== BREAKPOINTS ====================
+$mobile: 640px;
+$tablet: 768px;
+
+// ==================== PROFILE PAGE ====================
+.profilePage {
+    min-height: calc(100vh - 72px); // Trừ header height
+    background-color: $bg-light;
+    padding: 3rem 0;
+
+    @media (max-width: $tablet) {
+        padding: 2rem 0;
+    }
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 2rem;
+
+    @media (max-width: $mobile) {
+        padding: 0 1rem;
+    }
+}
+
+// ==================== CARD ====================
+.card {
+    background-color: $card-bg;
+    border-radius: 1rem;
+    box-shadow: $shadow-md;
+    padding: 2.5rem;
+    animation: fadeIn 0.5s ease-out;
+
+    @media (max-width: $tablet) {
+        padding: 2rem;
+    }
+
+    @media (max-width: $mobile) {
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+    }
+}
+
+// ==================== HEADER ====================
+.header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid $border-color;
+
+    @media (max-width: $mobile) {
+        margin-bottom: 2rem;
+    }
+}
+
+.title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin: 0 0 0.5rem 0;
+
+    @media (max-width: $mobile) {
+        font-size: 1.5rem;
+    }
+}
+
+.subtitle {
+    font-size: 1rem;
+    color: $text-secondary;
+    margin: 0;
+
+    @media (max-width: $mobile) {
+        font-size: 0.9375rem;
+    }
+}
+
+// ==================== FORM ====================
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+// ==================== AVATAR SECTION ====================
+.avatarSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem 0;
+}
+
+.avatarWrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: $input-bg;
+    box-shadow: $shadow-sm;
+}
+
+.avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatarPlaceholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $text-secondary;
+}
+
+.avatarUpload {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: transparent;
+    border: 1px solid $border-color;
+    border-radius: 0.5rem;
+    color: $text-primary;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+        background-color: $input-bg;
+        border-color: $text-secondary;
+    }
+
+    span {
+        pointer-events: none;
+    }
+}
+
+.fileInput {
+    display: none;
+}
+
+// ==================== FORM GROUP ====================
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.label {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: $text-primary;
+}
+
+.input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    color: $text-primary;
+    background-color: $input-bg;
+    border: 1px solid $border-color;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+
+    &:focus {
+        outline: none;
+        border-color: $primary-color;
+        background-color: $card-bg;
+        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    }
+
+    &:disabled {
+        background-color: $input-bg;
+        color: $text-secondary;
+        cursor: not-allowed;
+    }
+
+    &::placeholder {
+        color: $text-secondary;
+    }
+}
+
+// ==================== RADIO GROUP ====================
+.radioGroup {
+    display: flex;
+    gap: 1.5rem;
+    padding: 0.5rem 0;
+
+    @media (max-width: $mobile) {
+        gap: 1rem;
+    }
+}
+
+.radioLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    color: $text-primary;
+    user-select: none;
+
+    &:has(input:disabled) {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    span {
+        transition: color 0.2s;
+    }
+
+    &:hover:not(:has(input:disabled)) span {
+        color: $primary-color;
+    }
+}
+
+.radio {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: $primary-color;
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+}
+
+// ==================== ACTIONS ====================
+.actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid $border-color;
+
+    @media (max-width: $mobile) {
+        flex-direction: column-reverse;
+    }
+}
+
+.btnPrimary,
+.btnSecondary,
+.btnEdit {
+    flex: 1;
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+
+    &:focus-visible {
+        outline: 2px solid $primary-color;
+        outline-offset: 2px;
+    }
+
+    @media (max-width: $mobile) {
+        padding: 0.75rem 1.25rem;
+    }
+}
+
+.btnPrimary {
+    background-color: $primary-color;
+    color: $secondary-color;
+
+    &:hover {
+        background-color: #1f2937;
+        transform: translateY(-1px);
+        box-shadow: $shadow-sm;
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+.btnSecondary {
+    background-color: transparent;
+    color: $text-primary;
+    border: 1px solid $border-color;
+
+    &:hover {
+        background-color: $input-bg;
+        border-color: $text-secondary;
+    }
+}
+
+.btnEdit {
+    background-color: transparent;
+    color: $text-primary;
+    border: 1px solid $border-color;
+    flex: none;
+    width: auto;
+    margin-left: auto;
+
+    &:hover {
+        background-color: $input-bg;
+        border-color: $text-secondary;
+    }
+
+    @media (max-width: $mobile) {
+        width: 100%;
+        margin-left: 0;
+    }
+}
+
+// ==================== ANIMATIONS ====================
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// ==================== ACCESSIBILITY ====================
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

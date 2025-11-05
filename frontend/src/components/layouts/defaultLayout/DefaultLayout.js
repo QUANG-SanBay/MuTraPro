@@ -5,7 +5,7 @@ function DefaultLayout({type, children}) {
     return ( 
         <div>
             <Header type={type}/>
-            <main>
+            <main style={{marginBottom:'20px', marginTop: '20px'}}>
                 {children}
             </main>
             <Footer />
