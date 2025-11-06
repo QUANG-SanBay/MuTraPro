@@ -140,4 +140,3 @@ docker logs -f user-service
   - Dockerfile đã cài `msodbcsql17`
   - Trong `user-service/userService/userService/settings.py` cần `driver: "ODBC Driver 17 for SQL Server"`.
 
----
