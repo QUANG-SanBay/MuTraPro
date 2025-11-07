@@ -13,7 +13,8 @@ function FormGroup({
   required = false,
   error,
   className,
-  autoComplete
+  autoComplete,
+  disabled = false
 }) {
   const autoId = useId();
   const inputId = id || `${name || 'input'}-${autoId}`;
@@ -34,6 +35,7 @@ function FormGroup({
         placeholder={placeholder}
         required={required}
         autoComplete={autoComplete}
+        disabled={disabled}
         className={clsx(styles.input, { [styles.invalid]: !!error })}
       />
       {error && <div className={styles.error}>{error}</div>}
