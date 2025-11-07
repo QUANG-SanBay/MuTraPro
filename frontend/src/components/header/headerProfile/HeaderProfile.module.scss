@@ -36,6 +36,12 @@
     }
 }
 
+.avatarText {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #374151;
+}
+
 .chevron {
     transition: transform 0.3s ease;
 }
@@ -56,6 +62,31 @@
     padding: 0.5rem;
     z-index: 1000;
     animation: fadeInDown 0.2s ease-out;
+}
+
+.userInfo {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 0.5rem;
+}
+
+.userName {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.25rem;
+}
+
+.userEmail {
+    font-size: 1.2rem;
+    color: #6b7280;
+    word-break: break-all;
+}
+
+.divider {
+    height: 1px;
+    background-color: #e5e7eb;
+    margin: 0.5rem 0;
 }
 
 .dropdownItem {

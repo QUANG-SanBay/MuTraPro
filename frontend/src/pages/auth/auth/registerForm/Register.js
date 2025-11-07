@@ -4,7 +4,7 @@ import FormGroup from "~/components/formGroup/FormGroup";
 import { registerUser } from "~/api/userService";
 import styles from './Register.module.scss'
 
-function RegisterForm() {
+function RegisterForm({setIsLogin}) {
     const navigate = useNavigate();
     const [form, setForm] = useState({
         fullName: '',
@@ -78,7 +78,7 @@ function RegisterForm() {
             
             // Redirect to login after 2 seconds
             setTimeout(() => {
-                navigate('/login');
+                setIsLogin(true);
             }, 2000);
             
         } catch (error) {

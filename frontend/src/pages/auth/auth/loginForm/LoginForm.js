@@ -3,6 +3,7 @@ import styles from './LoginForm.module.scss'
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '~/api/userService';
+import { saveAuthData } from '~/utils/auth';
 
 function LoginForm() {
     const navigate = useNavigate();
@@ -59,12 +60,8 @@ function LoginForm() {
                 password: form.password
             });
             
-            // Store JWT tokens in localStorage
-            localStorage.setItem('accessToken', response.access);
-            localStorage.setItem('refreshToken', response.refresh);
-            
-            // Store user info
-            localStorage.setItem('user', JSON.stringify(response.user));
+            // Store JWT tokens and user info in localStorage
+            saveAuthData(response.access, response.refresh, response.user);
             
             // Show success message
             setSuccessMessage(response.message || 'Đăng nhập thành công!');
