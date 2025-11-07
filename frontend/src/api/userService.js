@@ -114,3 +114,60 @@ export async function changePassword({ old_password, new_password, confirm_passw
     }
   });
 }
+
+/**
+ * Check current user's role and permissions - Requires authentication
+ * @returns {Promise<Object>} Response with user role and permissions
+ */
+export async function checkRoleAccess() {
+  return callGateway({
+    service: 'user-service',
+    path: '/users/check-role',
+    method: 'GET'
+  });
+}
+
+// ==================== ADMIN ENDPOINTS ====================
+
+/**
+ * Get all users - Requires Admin role
+ * @returns {Promise<Object>} Response with list of all users
+ */
+export async function adminGetAllUsers() {
+  return callGateway({
+    service: 'user-service',
+    path: '/users/admin/users',
+    method: 'GET'
+  });
+}
+
+/**
+ * Get user by ID - Requires Admin or Studio Administrator role
+ * @param {number} userId - User ID
+ * @returns {Promise<Object>} Response with user details
+ */
+export async function adminGetUserById(userId) {
+  return callGateway({
+    service: 'user-service',
+    path: `/users/admin/users/${userId}`,
+    method: 'GET'
+  });
+}
+
+/**
+ * Update user active status - Requires Admin role
+ * @param {number} userId - User ID
+ * @param {boolean} isActive - Active status
+ * @returns {Promise<Object>} Response with updated user
+ */
+export async function adminUpdateUserStatus(userId, isActive) {
+  return callGateway({
+    service: 'user-service',
+    path: `/users/admin/users/${userId}/status`,
+    method: 'PUT',
+    body: {
+      is_active: isActive
+    }
+  });
+}
+

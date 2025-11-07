@@ -93,3 +93,48 @@ export const getAuthHeader = () => {
     const token = getAccessToken();
     return token ? { Authorization: `Bearer ${token}` } : {};
 };
+
+/**
+ * Get user's role
+ * @returns {string|null} User role or null if not found
+ */
+export const getUserRole = () => {
+    const user = getUser();
+    return user?.role || null;
+};
+
+/**
+ * Get home route based on user role
+ * @returns {string} Home route path for user's role
+ */
+export const getRoleBasedHomeRoute = () => {
+    const role = getUserRole();
+    
+    const roleRoutes = {
+        'admin': '/admin',
+        'customer': '/customer',
+        'service_coordinator': '/service-coordinator',
+        'transcription_specialist': '/specialist/transcription',
+        'arrangement_specialist': '/specialist/arrangement',
+        'recording_artist': '/specialist/recording',
+        'studio_administrator': '/studio-admin'
+    };
+    
+    return roleRoutes[role] || '/customer';
+};
+
+/**
+ * Check if user can access admin features
+ * @returns {boolean} True if user is admin
+ */
+export const canAccessAdmin = () => {
+    return hasRole('admin');
+};
+
+/**
+ * Check if user can access management features
+ * @returns {boolean} True if user is admin or studio administrator
+ */
+export const canAccessManagement = () => {
+    return hasAnyRole(['admin', 'studio_administrator']);
+};

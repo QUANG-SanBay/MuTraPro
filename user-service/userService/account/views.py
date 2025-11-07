@@ -7,6 +7,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterSerializer, UserSerializer, LoginSerializer, UpdateProfileSerializer, ChangePasswordSerializer
+from .permissions import IsAdmin, IsCustomer, role_required
 
 
 def hello(request):
@@ -264,7 +265,176 @@ def change_password(request):
 			"message": "Đổi mật khẩu thành công"
 		}, status=status.HTTP_200_OK)
 	
+		return Response({
+			"message": "Đổi mật khẩu thất bại",
+			"errors": serializer.errors
+		}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# ==================== ADMIN ENDPOINTS (RBAC Example) ====================
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsAdmin])
+def admin_get_all_users(request):
+	"""
+	Admin endpoint - Get all users
+	GET /users/admin/users
+	
+	Requires: Admin role
+	
+	Response:
+	{
+		"message": "Lấy danh sách người dùng thành công",
+		"total": int,
+		"users": [
+			{
+				"id": int,
+				"username": "string",
+				"email": "string",
+				"full_name": "string",
+				"role": "string",
+				"is_active": bool,
+				"created_at": "datetime"
+			},
+			...
+		]
+	}
+	"""
+	from .models import User
+	
+	users = User.objects.all().order_by('-created_at')
+	users_data = UserSerializer(users, many=True).data
+	
 	return Response({
-		"message": "Đổi mật khẩu thất bại",
-		"errors": serializer.errors
-	}, status=status.HTTP_400_BAD_REQUEST)
+		"message": "Lấy danh sách người dùng thành công",
+		"total": users.count(),
+		"users": users_data
+	}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, role_required('admin', 'studio_administrator')])
+def admin_get_user_by_id(request, user_id):
+	"""
+	Admin/Studio Admin endpoint - Get user by ID
+	GET /users/admin/users/{user_id}
+	
+	Requires: Admin or Studio Administrator role
+	
+	Response:
+	{
+		"message": "Lấy thông tin người dùng thành công",
+		"user": {
+			"id": int,
+			"username": "string",
+			"email": "string",
+			"full_name": "string",
+			"phone_number": "string",
+			"gender": "string",
+			"role": "string",
+			"is_active": bool,
+			"created_at": "datetime",
+			"updated_at": "datetime"
+		}
+	}
+	"""
+	from .models import User
+	
+	try:
+		user = User.objects.get(id=user_id)
+		user_data = UserSerializer(user).data
+		
+		return Response({
+			"message": "Lấy thông tin người dùng thành công",
+			"user": user_data
+		}, status=status.HTTP_200_OK)
+	except User.DoesNotExist:
+		return Response({
+			"message": "Người dùng không tồn tại"
+		}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated, IsAdmin])
+def admin_update_user_status(request, user_id):
+	"""
+	Admin endpoint - Update user active status
+	PUT /users/admin/users/{user_id}/status
+	
+	Requires: Admin role
+	
+	Request body:
+	{
+		"is_active": bool
+	}
+	
+	Response:
+	{
+		"message": "Cập nhật trạng thái người dùng thành công",
+		"user": {...}
+	}
+	"""
+	from .models import User
+	
+	try:
+		user = User.objects.get(id=user_id)
+		is_active = request.data.get('is_active')
+		
+		if is_active is None:
+			return Response({
+				"message": "Thiếu trường is_active"
+			}, status=status.HTTP_400_BAD_REQUEST)
+		
+		user.is_active = is_active
+		user.save()
+		
+		user_data = UserSerializer(user).data
+		
+		return Response({
+			"message": "Cập nhật trạng thái người dùng thành công",
+			"user": user_data
+		}, status=status.HTTP_200_OK)
+	except User.DoesNotExist:
+		return Response({
+			"message": "Người dùng không tồn tại"
+		}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def check_role_access(request):
+	"""
+	Test endpoint - Check current user's role and permissions
+	GET /users/check-role
+	
+	Requires: Any authenticated user
+	
+	Response:
+	{
+		"message": "Thông tin vai trò người dùng",
+		"user_id": int,
+		"username": "string",
+		"role": "string",
+		"permissions": {
+			"can_access_admin": bool,
+			"can_access_customer": bool,
+			"can_access_specialist": bool
+		}
+	}
+	"""
+	user = request.user
+	
+	return Response({
+		"message": "Thông tin vai trò người dùng",
+		"user_id": user.id,
+		"username": user.username,
+		"email": user.email,
+		"role": user.role,
+		"permissions": {
+			"can_access_admin": user.role == 'admin',
+			"can_access_customer": user.role == 'customer',
+			"can_access_service_coordinator": user.role == 'service_coordinator',
+			"can_access_specialist": user.role in ['transcription_specialist', 'arrangement_specialist', 'recording_artist'],
+			"can_access_studio_admin": user.role == 'studio_administrator'
+		}
+	}, status=status.HTTP_200_OK)
