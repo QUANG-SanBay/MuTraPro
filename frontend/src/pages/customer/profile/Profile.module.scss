@@ -356,6 +356,30 @@ $tablet: 768px;
     }
 }
 
+// ==================== SUCCESS MESSAGE ====================
+.successMessage {
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    background-color: #dcfce7;
+    border: 1px solid #86efac;
+    border-radius: 0.5rem;
+    color: #166534;
+    font-size: 1.4rem;
+    text-align: center;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 // ==================== ANIMATIONS ====================
 @keyframes fadeIn {
     from {

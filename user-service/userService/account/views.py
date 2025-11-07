@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import RegisterSerializer, UserSerializer, LoginSerializer
+from .serializers import RegisterSerializer, UserSerializer, LoginSerializer, UpdateProfileSerializer
 
 
 def hello(request):
@@ -125,19 +125,20 @@ def login(request):
 	}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
+@api_view(['GET', 'PUT', 'PATCH'])
 @permission_classes([IsAuthenticated])
-def get_profile(request):
+def profile(request):
 	"""
-	Get user profile endpoint - Requires JWT authentication
-	GET /users/me
+	User profile endpoint - Requires JWT authentication
+	GET /users/me - Get user profile
+	PUT/PATCH /users/me - Update user profile
 	
 	Headers:
 	{
 		"Authorization": "Bearer <access_token>"
 	}
 	
-	Response (Success):
+	GET Response (Success):
 	{
 		"message": "Lấy thông tin thành công",
 		"user": {
@@ -152,14 +153,54 @@ def get_profile(request):
 			"created_at": "datetime"
 		}
 	}
+	
+	PUT/PATCH Request body:
+	{
+		"full_name": "string (optional)",
+		"phone_number": "string (optional)",
+		"gender": "male|female|other (optional)"
+	}
+	
+	PUT/PATCH Response (Success):
+	{
+		"message": "Cập nhật thông tin thành công",
+		"user": {
+			"id": int,
+			"username": "string",
+			"email": "string",
+			"full_name": "string",
+			"phone_number": "string",
+			"gender": "male|female|other",
+			"role": "customer|admin|...",
+			"is_active": bool,
+			"created_at": "datetime"
+		}
+	}
 	"""
-	# request.user is automatically set by JWT authentication
 	user = request.user
 	
-	# Serialize user data (password is excluded by UserSerializer)
-	user_data = UserSerializer(user).data
+	if request.method == 'GET':
+		# Get profile
+		user_data = UserSerializer(user).data
+		return Response({
+			"message": "Lấy thông tin thành công",
+			"user": user_data
+		}, status=status.HTTP_200_OK)
 	
-	return Response({
-		"message": "Lấy thông tin thành công",
-		"user": user_data
-	}, status=status.HTTP_200_OK)
+	elif request.method in ['PUT', 'PATCH']:
+		# Update profile
+		serializer = UpdateProfileSerializer(user, data=request.data, partial=True)
+		
+		if serializer.is_valid():
+			updated_user = serializer.save()
+			user_data = UserSerializer(updated_user).data
+			
+			return Response({
+				"message": "Cập nhật thông tin thành công",
+				"user": user_data
+			}, status=status.HTTP_200_OK)
+		
+		return Response({
+			"message": "Cập nhật thông tin thất bại",
+			"errors": serializer.errors
+		}, status=status.HTTP_400_BAD_REQUEST)

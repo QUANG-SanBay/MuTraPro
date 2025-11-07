@@ -144,3 +144,32 @@ class LoginSerializer(serializers.Serializer):
         attrs['user'] = user
         return attrs
 
+
+class UpdateProfileSerializer(serializers.ModelSerializer):
+    """Serializer for updating user profile"""
+    
+    class Meta:
+        model = User
+        fields = ('full_name', 'phone_number', 'gender')
+        extra_kwargs = {
+            'full_name': {'required': False},
+            'phone_number': {'required': False},
+            'gender': {'required': False}
+        }
+    
+    def validate_phone_number(self, value):
+        """Validate phone number format"""
+        if value and not value.isdigit():
+            raise serializers.ValidationError("Số điện thoại chỉ được chứa chữ số.")
+        if value and (len(value) < 10 or len(value) > 11):
+            raise serializers.ValidationError("Số điện thoại phải có 10-11 chữ số.")
+        return value
+    
+    def update(self, instance, validated_data):
+        """Update user profile fields"""
+        instance.full_name = validated_data.get('full_name', instance.full_name)
+        instance.phone_number = validated_data.get('phone_number', instance.phone_number)
+        instance.gender = validated_data.get('gender', instance.gender)
+        instance.save()
+        return instance
+

@@ -6,7 +6,7 @@ import {
     ProfileFormFields,
     ProfileActions
 } from './components';
-import { getProfile } from '~/api/userService';
+import { getProfile, updateProfile } from '~/api/userService';
 import { useNavigate } from 'react-router-dom';
 
 function Profile() {
@@ -18,8 +18,11 @@ function Profile() {
         phone: '',
         address: ''
     });
+    const [originalData, setOriginalData] = useState(null); // Store original data for cancel
     const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState(null);
+    const [successMessage, setSuccessMessage] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const [avatarPreview, setAvatarPreview] = useState(null);
 
@@ -37,6 +40,15 @@ function Profile() {
                     email: response.user.email || '',
                     phone: response.user.phone_number || '',
                     address: '' // Address might need to be fetched from profile table
+                });
+                
+                // Store original data for cancel
+                setOriginalData({
+                    fullName: response.user.full_name || '',
+                    gender: response.user.gender || '',
+                    email: response.user.email || '',
+                    phone: response.user.phone_number || '',
+                    address: ''
                 });
                 
                 setError(null);
@@ -75,12 +87,60 @@ function Profile() {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // TODO: Call API to update profile
-        console.log('Updated profile:', formData);
-        alert('Cập nhật thông tin thành công!');
-        setIsEditing(false);
+        setIsSaving(true);
+        setError(null);
+        setSuccessMessage('');
+
+        try {
+            const response = await updateProfile({
+                full_name: formData.fullName,
+                phone_number: formData.phone,
+                gender: formData.gender
+            });
+
+            // Update form data with response
+            const updatedData = {
+                fullName: response.user.full_name || '',
+                gender: response.user.gender || '',
+                email: response.user.email || '',
+                phone: response.user.phone_number || '',
+                address: formData.address
+            };
+
+            setFormData(updatedData);
+            setOriginalData(updatedData);
+            setSuccessMessage('Cập nhật thông tin thành công!');
+            setIsEditing(false);
+
+            // Clear success message after 3 seconds
+            setTimeout(() => setSuccessMessage(''), 3000);
+        } catch (err) {
+            console.error('Error updating profile:', err);
+            
+            if (err.status === 400 && err.data) {
+                // Handle validation errors from backend
+                const errorMessages = [];
+                if (err.data.phone_number) {
+                    errorMessages.push(`Số điện thoại: ${err.data.phone_number[0]}`);
+                }
+                if (err.data.full_name) {
+                    errorMessages.push(`Họ và tên: ${err.data.full_name[0]}`);
+                }
+                if (err.data.gender) {
+                    errorMessages.push(`Giới tính: ${err.data.gender[0]}`);
+                }
+                setError(errorMessages.length > 0 ? errorMessages.join('. ') : 'Dữ liệu không hợp lệ.');
+            } else if (err.status === 401) {
+                setError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                setTimeout(() => navigate('/auth'), 2000);
+            } else {
+                setError('Cập nhật thất bại. Vui lòng thử lại.');
+            }
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const handleEdit = (e) => {
@@ -90,7 +150,12 @@ function Profile() {
 
     const handleCancel = () => {
         setIsEditing(false);
-        // TODO: Reset form data to original values
+        setError(null);
+        setSuccessMessage('');
+        // Reset form data to original values
+        if (originalData) {
+            setFormData(originalData);
+        }
     };
 
     const handleChangePassword = () => {
@@ -116,27 +181,36 @@ function Profile() {
                             </button>
                         </div>
                     ) : (
-                        <form className={styles.form}>
-                            <ProfileAvatar
-                                avatarPreview={avatarPreview}
-                                isEditing={isEditing}
-                                onAvatarChange={handleAvatarChange}
-                            />
+                        <>
+                            {successMessage && (
+                                <div className={styles.successMessage}>
+                                    {successMessage}
+                                </div>
+                            )}
+                            
+                            <form className={styles.form}>
+                                <ProfileAvatar
+                                    avatarPreview={avatarPreview}
+                                    isEditing={isEditing}
+                                    onAvatarChange={handleAvatarChange}
+                                />
 
-                            <ProfileFormFields
-                                formData={formData}
-                                isEditing={isEditing}
-                                onChange={handleChange}
-                            />
+                                <ProfileFormFields
+                                    formData={formData}
+                                    isEditing={isEditing}
+                                    onChange={handleChange}
+                                />
 
-                            <ProfileActions
-                                isEditing={isEditing}
-                                onSubmit={handleSubmit}
-                                onEdit={handleEdit}
-                                onCancel={handleCancel}
-                                onChangePassword={handleChangePassword}
-                            />
-                        </form>
+                                <ProfileActions
+                                    isEditing={isEditing}
+                                    isSaving={isSaving}
+                                    onSubmit={handleSubmit}
+                                    onEdit={handleEdit}
+                                    onCancel={handleCancel}
+                                    onChangePassword={handleChangePassword}
+                                />
+                            </form>
+                        </>
                     )}
                 </div>
             </div>
