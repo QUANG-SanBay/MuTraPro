@@ -1,10 +1,20 @@
 // Lightweight client for the unified gateway endpoint
+import { getAccessToken } from '~/utils/auth';
+
 const GATEWAY_URL = process.env.REACT_APP_GATEWAY_URL || "http://localhost:8000/api";
 
 export async function callGateway({ service, path, method = "GET", query, body, headers } = {}) {
+  // Automatically add JWT token to headers if available
+  const token = getAccessToken();
+  const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+  
   const res = await fetch(GATEWAY_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...(headers || {}) },
+    headers: { 
+      "Content-Type": "application/json", 
+      ...authHeaders,
+      ...(headers || {}) 
+    },
     body: JSON.stringify({ service, path, method, query, body }),
     credentials: "include", // forward cookies if needed
   });

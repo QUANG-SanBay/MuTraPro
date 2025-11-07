@@ -5,14 +5,19 @@ function HeaderNav({ mobileMenuOpen, onNavClick }) {
     const location = useLocation();
 
     const isActiveRoute = (path) => {
-        return location.pathname === path || location.pathname.startsWith(path + '/');
+        // Exact match for home page
+        if (path === '/customer') {
+            return location.pathname === '/customer' || location.pathname === '/customer/';
+        }
+        // For other routes, check if pathname starts with the path
+        return location.pathname.startsWith(path);
     };
 
     const navLinks = [
         { to: '/customer', label: 'Trang chủ' },
-        { to: '/services', label: 'Dịch vụ' },
-        { to: '/orders', label: 'Đơn hàng' },
-        { to: '/payments', label: 'Thanh toán' },
+        { to: '/customer/services', label: 'Dịch vụ' },
+        { to: '/customer/orders', label: 'Đơn hàng' },
+        { to: '/customer/payments', label: 'Thanh toán' },
     ];
 
     return (

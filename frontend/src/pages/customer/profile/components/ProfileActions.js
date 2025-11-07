@@ -1,17 +1,23 @@
 import styles from '../Profile.module.scss';
 
-function ProfileActions({ isEditing, onSubmit, onEdit, onCancel, onChangePassword }) {
+function ProfileActions({ isEditing, isSaving, onSubmit, onEdit, onCancel, onChangePassword }) {
     return (
         <div className={styles.actions}>
             {isEditing ? (
                 <>
-                    <button type="submit" className={styles.btnPrimary} onClick={onSubmit}>
-                        Lưu thay đổi
+                    <button 
+                        type="submit" 
+                        className={styles.btnPrimary} 
+                        onClick={onSubmit}
+                        disabled={isSaving}
+                    >
+                        {isSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
                     </button>
                     <button
                         type="button"
                         onClick={onCancel}
                         className={styles.btnSecondary}
+                        disabled={isSaving}
                     >
                         Hủy
                     </button>
