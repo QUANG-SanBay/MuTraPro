@@ -15,9 +15,9 @@ function HeaderNav({ mobileMenuOpen, onNavClick }) {
 
     const navLinks = [
         { to: '/customer', label: 'Trang chủ' },
-        { to: '/services', label: 'Dịch vụ' },
-        { to: '/orders', label: 'Đơn hàng' },
-        { to: '/payments', label: 'Thanh toán' },
+        { to: '/customer/services', label: 'Dịch vụ' },
+        { to: '/customer/orders', label: 'Đơn hàng' },
+        { to: '/customer/payments', label: 'Thanh toán' },
     ];
 
     return (

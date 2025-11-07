@@ -35,11 +35,11 @@ $mobile: 768px;
     font-weight: 500;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
-    transition: all 0.3s ease;
+    transition: all 0.3s ease-in-out;
     position: relative;
 
     &:hover {
-        color: #000000;
+        color: #191b1e;
         background-color: #f3f4f6;
     }
 
@@ -54,10 +54,8 @@ $mobile: 768px;
 }
 
 .navLinkActive {
-    color: #000000 !important;
+    color: #191b1e !important;
     background-color: #f3f4f6 !important;
-    font-weight: 600 !important;
-
     &::after {
         content: '';
         position: absolute;
