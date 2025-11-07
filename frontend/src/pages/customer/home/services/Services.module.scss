@@ -66,7 +66,7 @@ $desktop: 1024px;
     padding: 0.5rem 1rem;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    font-size: 0.875rem;
+    font-size: 1.8rem;
     font-weight: 600;
     letter-spacing: 0.5px;
     border-radius: 2rem;
@@ -91,7 +91,7 @@ $desktop: 1024px;
 }
 
 .subtitle {
-    font-size: 1.125rem;
+    font-size: 1.2rem;
     line-height: 1.7;
     color: $text-secondary;
     margin: 0;
@@ -211,7 +211,7 @@ $desktop: 1024px;
 
 // ==================== CARD CONTENT ====================
 .cardTitle {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: 700;
     color: $text-primary;
     margin: 0 0 0.75rem 0;
@@ -225,7 +225,7 @@ $desktop: 1024px;
 }
 
 .cardDescription {
-    font-size: 1rem;
+    font-size: 1.2rem;
     line-height: 1.6;
     color: $text-secondary;
     margin: 0 0 1.5rem 0;
@@ -233,7 +233,7 @@ $desktop: 1024px;
     z-index: 1;
 
     @media (max-width: $mobile) {
-        font-size: 0.9375rem;
+        font-size: 1rem;
     }
 }
 
@@ -242,7 +242,7 @@ $desktop: 1024px;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-weight: 600;
     color: $text-primary;
     text-decoration: none;

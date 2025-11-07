@@ -65,23 +65,23 @@ $tablet: 768px;
 }
 
 .title {
-    font-size: 1.875rem;
+    font-size: 3rem; // 30px (was 1.875rem = 30px in 16px base)
     font-weight: 700;
     color: $text-primary;
     margin: 0 0 0.5rem 0;
 
     @media (max-width: $mobile) {
-        font-size: 1.5rem;
+        font-size: 2.4rem; // 24px (was 1.5rem = 24px in 16px base)
     }
 }
 
 .subtitle {
-    font-size: 1rem;
+    font-size: 1.6rem; // 16px (was 1rem = 16px in 16px base)
     color: $text-secondary;
     margin: 0;
 
     @media (max-width: $mobile) {
-        font-size: 0.9375rem;
+        font-size: 1.5rem; // 15px (was 0.9375rem = 15px in 16px base)
     }
 }
 
@@ -134,7 +134,7 @@ $tablet: 768px;
     border: 1px solid $border-color;
     border-radius: 0.5rem;
     color: $text-primary;
-    font-size: 0.875rem;
+    font-size: 1.4rem; // 14px (was 0.875rem = 14px in 16px base)
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
@@ -161,7 +161,7 @@ $tablet: 768px;
 }
 
 .label {
-    font-size: 0.9375rem;
+    font-size: 1.5rem; // 15px (was 0.9375rem = 15px in 16px base)
     font-weight: 600;
     color: $text-primary;
 }
@@ -169,7 +169,7 @@ $tablet: 768px;
 .input {
     width: 100%;
     padding: 0.75rem 1rem;
-    font-size: 1rem;
+    font-size: 1.6rem; // 16px (was 1rem = 16px in 16px base)
     color: $text-primary;
     background-color: $input-bg;
     border: 1px solid $border-color;
@@ -210,7 +210,7 @@ $tablet: 768px;
     align-items: center;
     gap: 0.5rem;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.6rem; // 16px (was 1rem = 16px in 16px base)
     color: $text-primary;
     user-select: none;
 
@@ -257,7 +257,7 @@ $tablet: 768px;
 .btnEdit {
     flex: 1;
     padding: 0.875rem 1.5rem;
-    font-size: 1rem;
+    font-size: 1.6rem; // 16px (was 1rem = 16px in 16px base)
     font-weight: 600;
     border-radius: 0.5rem;
     border: none;
@@ -327,7 +327,7 @@ $tablet: 768px;
     padding: 4rem 2rem;
     
     p {
-        font-size: 1.6rem;
+        font-size: 2.6rem; // 26px (was 1.6rem in 16px base)
         color: $text-secondary;
         margin-bottom: 1.5rem;
     }
@@ -340,7 +340,7 @@ $tablet: 768px;
         color: $secondary-color;
         border: none;
         border-radius: 0.5rem;
-        font-size: 1.5rem;
+        font-size: 2.4rem; // 24px (was 1.5rem in 16px base)
         font-weight: 500;
         cursor: pointer;
         transition: all 0.2s ease;
@@ -364,7 +364,7 @@ $tablet: 768px;
     border: 1px solid #86efac;
     border-radius: 0.5rem;
     color: #166534;
-    font-size: 1.4rem;
+    font-size: 2.2rem; // 22px (was 1.4rem in 16px base)
     text-align: center;
     animation: slideDown 0.3s ease-out;
 }
