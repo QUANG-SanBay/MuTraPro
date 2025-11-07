@@ -38,3 +38,22 @@ export async function testUserService() {
     method: 'GET'
   });
 }
+
+/**
+ * Login user
+ * @param {Object} credentials - User login credentials
+ * @param {string} credentials.email - Email address
+ * @param {string} credentials.password - Password
+ * @returns {Promise<Object>} Response with user data and JWT tokens
+ */
+export async function loginUser({ email, password }) {
+  return callGateway({
+    service: 'user-service',
+    path: '/users/login',
+    method: 'POST',
+    body: {
+      email,
+      password
+    }
+  });
+}

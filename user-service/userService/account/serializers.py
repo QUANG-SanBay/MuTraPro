@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
 from .models import User, CustomerProfile
 import random
@@ -102,3 +103,44 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'email', 'full_name', 'phone_number', 
                   'gender', 'role', 'is_active', 'created_at')
         read_only_fields = ('id', 'role', 'is_active', 'created_at')
+
+
+class LoginSerializer(serializers.Serializer):
+    """Serializer for user login"""
+    
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={'input_type': 'password'}
+    )
+    
+    def validate(self, attrs):
+        """Validate credentials and return user if valid"""
+        email = attrs.get('email')
+        password = attrs.get('password')
+        
+        # Find user by email
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError({
+                "email": "Email hoặc mật khẩu không chính xác."
+            })
+        
+        # Check if user is active
+        if not user.is_active:
+            raise serializers.ValidationError({
+                "email": "Tài khoản của bạn đã bị vô hiệu hóa."
+            })
+        
+        # Verify password using Django's check_password
+        if not user.check_password(password):
+            raise serializers.ValidationError({
+                "password": "Email hoặc mật khẩu không chính xác."
+            })
+        
+        # Attach user to validated data for view to access
+        attrs['user'] = user
+        return attrs
+

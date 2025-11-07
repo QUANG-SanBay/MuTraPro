@@ -5,7 +5,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from .serializers import RegisterSerializer, UserSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from .serializers import RegisterSerializer, UserSerializer, LoginSerializer
 
 
 def hello(request):
@@ -63,5 +64,62 @@ def register(request):
 	
 	return Response({
 		"message": "Đăng ký thất bại",
+		"errors": serializer.errors
+	}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login(request):
+	"""
+	User login endpoint
+	POST /users/login
+	
+	Request body:
+	{
+		"email": "string",
+		"password": "string"
+	}
+	
+	Response (Success):
+	{
+		"message": "Đăng nhập thành công",
+		"user": {
+			"id": int,
+			"username": "string",
+			"email": "string",
+			"full_name": "string",
+			"role": "customer"
+		},
+		"access": "jwt_access_token",
+		"refresh": "jwt_refresh_token"
+	}
+	"""
+	serializer = LoginSerializer(data=request.data)
+	
+	if serializer.is_valid():
+		# Get validated user from serializer
+		user = serializer.validated_data['user']
+		
+		# Generate JWT tokens
+		refresh = RefreshToken.for_user(user)
+		
+		# Add custom claims to token
+		refresh['email'] = user.email
+		refresh['role'] = user.role
+		
+		# Return user data and tokens
+		user_data = UserSerializer(user).data
+		
+		return Response({
+			"message": "Đăng nhập thành công",
+			"user": user_data,
+			"access": str(refresh.access_token),
+			"refresh": str(refresh)
+		}, status=status.HTTP_200_OK)
+	
+	return Response({
+		"message": "Đăng nhập thất bại",
 		"errors": serializer.errors
 	}, status=status.HTTP_400_BAD_REQUEST)
