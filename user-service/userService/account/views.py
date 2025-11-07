@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterSerializer, UserSerializer, LoginSerializer
@@ -123,3 +123,43 @@ def login(request):
 		"message": "Đăng nhập thất bại",
 		"errors": serializer.errors
 	}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_profile(request):
+	"""
+	Get user profile endpoint - Requires JWT authentication
+	GET /users/me
+	
+	Headers:
+	{
+		"Authorization": "Bearer <access_token>"
+	}
+	
+	Response (Success):
+	{
+		"message": "Lấy thông tin thành công",
+		"user": {
+			"id": int,
+			"username": "string",
+			"email": "string",
+			"full_name": "string",
+			"phone_number": "string",
+			"gender": "male|female|other",
+			"role": "customer|admin|...",
+			"is_active": bool,
+			"created_at": "datetime"
+		}
+	}
+	"""
+	# request.user is automatically set by JWT authentication
+	user = request.user
+	
+	# Serialize user data (password is excluded by UserSerializer)
+	user_data = UserSerializer(user).data
+	
+	return Response({
+		"message": "Lấy thông tin thành công",
+		"user": user_data
+	}, status=status.HTTP_200_OK)

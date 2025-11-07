@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './Profile.module.scss';
 import {
     ProfileHeader,
@@ -6,18 +6,55 @@ import {
     ProfileFormFields,
     ProfileActions
 } from './components';
+import { getProfile } from '~/api/userService';
+import { useNavigate } from 'react-router-dom';
 
 function Profile() {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        fullName: 'Nguyễn Văn A',
-        gender: 'male',
-        email: 'nguyenvana@example.com',
-        phone: '0123456789',
-        address: '123 Đường ABC, Quận 1, TP.HCM'
+        fullName: '',
+        gender: '',
+        email: '',
+        phone: '',
+        address: ''
     });
-
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [avatarPreview, setAvatarPreview] = useState(null);
+
+    // Fetch user profile on component mount
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                setIsLoading(true);
+                const response = await getProfile();
+                
+                // Map API response to form data
+                setFormData({
+                    fullName: response.user.full_name || '',
+                    gender: response.user.gender || 'male',
+                    email: response.user.email || '',
+                    phone: response.user.phone_number || '',
+                    address: '' // Address might need to be fetched from profile table
+                });
+                
+                setError(null);
+            } catch (err) {
+                console.error('Error fetching profile:', err);
+                setError('Không thể tải thông tin người dùng. Vui lòng thử lại.');
+                
+                // If unauthorized, redirect to login
+                if (err.status === 401) {
+                    navigate('/auth');
+                }
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchProfile();
+    }, [navigate]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -67,27 +104,40 @@ function Profile() {
                 <div className={styles.card}>
                     <ProfileHeader />
 
-                    <form  className={styles.form}>
-                        <ProfileAvatar
-                            avatarPreview={avatarPreview}
-                            isEditing={isEditing}
-                            onAvatarChange={handleAvatarChange}
-                        />
+                    {isLoading ? (
+                        <div className={styles.loading}>
+                            <p>Đang tải thông tin...</p>
+                        </div>
+                    ) : error ? (
+                        <div className={styles.error}>
+                            <p>{error}</p>
+                            <button onClick={() => window.location.reload()}>
+                                Thử lại
+                            </button>
+                        </div>
+                    ) : (
+                        <form className={styles.form}>
+                            <ProfileAvatar
+                                avatarPreview={avatarPreview}
+                                isEditing={isEditing}
+                                onAvatarChange={handleAvatarChange}
+                            />
 
-                        <ProfileFormFields
-                            formData={formData}
-                            isEditing={isEditing}
-                            onChange={handleChange}
-                        />
+                            <ProfileFormFields
+                                formData={formData}
+                                isEditing={isEditing}
+                                onChange={handleChange}
+                            />
 
-                        <ProfileActions
-                            isEditing={isEditing}
-                            onSubmit={handleSubmit}
-                            onEdit={handleEdit}
-                            onCancel={handleCancel}
-                            onChangePassword={handleChangePassword}
-                        />
-                    </form>
+                            <ProfileActions
+                                isEditing={isEditing}
+                                onSubmit={handleSubmit}
+                                onEdit={handleEdit}
+                                onCancel={handleCancel}
+                                onChangePassword={handleChangePassword}
+                            />
+                        </form>
+                    )}
                 </div>
             </div>
         </div>

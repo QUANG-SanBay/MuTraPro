@@ -320,6 +320,42 @@ $tablet: 768px;
     }
 }
 
+// ==================== LOADING & ERROR STATES ====================
+.loading,
+.error {
+    text-align: center;
+    padding: 4rem 2rem;
+    
+    p {
+        font-size: 1.6rem;
+        color: $text-secondary;
+        margin-bottom: 1.5rem;
+    }
+}
+
+.error {
+    button {
+        padding: 1rem 2rem;
+        background-color: $primary-color;
+        color: $secondary-color;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1.5rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        
+        &:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        &:active {
+            transform: translateY(0);
+        }
+    }
+}
+
 // ==================== ANIMATIONS ====================
 @keyframes fadeIn {
     from {

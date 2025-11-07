@@ -79,7 +79,6 @@ function HeaderProfile({ isOpen, onToggle }) {
                             <div className={styles.userEmail}>{user.email}</div>
                         </div>
                     )}
-                    <div className={styles.divider}></div>
                     <Link to="/customer/profile" className={styles.dropdownItem} onClick={onToggle}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                             <path

@@ -57,3 +57,16 @@ export async function loginUser({ email, password }) {
     }
   });
 }
+
+/**
+ * Get current user profile - Requires authentication
+ * JWT token is automatically added by callGateway
+ * @returns {Promise<Object>} Response with user profile data
+ */
+export async function getProfile() {
+  return callGateway({
+    service: 'user-service',
+    path: '/users/me',
+    method: 'GET'
+  });
+}
