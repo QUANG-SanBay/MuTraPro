@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import RegisterSerializer, UserSerializer, LoginSerializer, UpdateProfileSerializer
+from .serializers import RegisterSerializer, UserSerializer, LoginSerializer, UpdateProfileSerializer, ChangePasswordSerializer
 
 
 def hello(request):
@@ -204,3 +204,67 @@ def profile(request):
 			"message": "Cập nhật thông tin thất bại",
 			"errors": serializer.errors
 		}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+	"""
+	Change user password endpoint - Requires JWT authentication
+	PUT /users/change-password
+	
+	Headers:
+	{
+		"Authorization": "Bearer <access_token>"
+	}
+	
+	Request body:
+	{
+		"old_password": "string",
+		"new_password": "string",
+		"confirm_password": "string"
+	}
+	
+	Response (Success):
+	{
+		"message": "Đổi mật khẩu thành công"
+	}
+	
+	Response (Error):
+	{
+		"message": "Đổi mật khẩu thất bại",
+		"errors": {
+			"old_password": ["Mật khẩu cũ không chính xác"],
+			"new_password": ["Mật khẩu mới phải khác mật khẩu cũ"],
+			"confirm_password": ["Mật khẩu xác nhận không khớp"]
+		}
+	}
+	"""
+	user = request.user
+	serializer = ChangePasswordSerializer(data=request.data)
+	
+	if serializer.is_valid():
+		old_password = serializer.validated_data['old_password']
+		new_password = serializer.validated_data['new_password']
+		
+		# Verify old password
+		if not user.check_password(old_password):
+			return Response({
+				"message": "Đổi mật khẩu thất bại",
+				"errors": {
+					"old_password": ["Mật khẩu cũ không chính xác"]
+				}
+			}, status=status.HTTP_400_BAD_REQUEST)
+		
+		# Set new password (Django will hash it automatically)
+		user.set_password(new_password)
+		user.save()
+		
+		return Response({
+			"message": "Đổi mật khẩu thành công"
+		}, status=status.HTTP_200_OK)
+	
+	return Response({
+		"message": "Đổi mật khẩu thất bại",
+		"errors": serializer.errors
+	}, status=status.HTTP_400_BAD_REQUEST)

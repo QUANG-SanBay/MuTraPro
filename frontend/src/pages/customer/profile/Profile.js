@@ -6,8 +6,9 @@ import {
     ProfileFormFields,
     ProfileActions
 } from './components';
-import { getProfile, updateProfile } from '~/api/userService';
+import { getProfile, updateProfile, changePassword } from '~/api/userService';
 import { useNavigate } from 'react-router-dom';
+import ChangePasswordModal from '~/components/ChangePasswordModal/ChangePasswordModal';
 
 function Profile() {
     const navigate = useNavigate();
@@ -25,6 +26,11 @@ function Profile() {
     const [successMessage, setSuccessMessage] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const [avatarPreview, setAvatarPreview] = useState(null);
+    
+    // Change password modal state
+    const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
+    const [passwordError, setPasswordError] = useState(null);
 
     // Fetch user profile on component mount
     useEffect(() => {
@@ -159,8 +165,58 @@ function Profile() {
     };
 
     const handleChangePassword = () => {
-        // TODO: Open change password modal
-        alert('Chức năng đổi mật khẩu đang được phát triển');
+        setIsChangePasswordModalOpen(true);
+        setPasswordError(null);
+    };
+
+    const handlePasswordSubmit = async (passwordData) => {
+        setIsChangingPassword(true);
+        setPasswordError(null);
+
+        try {
+            await changePassword({
+                old_password: passwordData.oldPassword,
+                new_password: passwordData.newPassword,
+                confirm_password: passwordData.confirmPassword
+            });
+
+            // Success - close modal and show success message
+            setIsChangePasswordModalOpen(false);
+            setSuccessMessage('Đổi mật khẩu thành công!');
+            
+            // Clear success message after 3 seconds
+            setTimeout(() => setSuccessMessage(''), 3000);
+        } catch (err) {
+            console.error('Error changing password:', err);
+            
+            if (err.status === 400 && err.data?.errors) {
+                // Handle validation errors from backend
+                const errors = err.data.errors;
+                const errorMessages = [];
+                
+                if (errors.old_password) {
+                    errorMessages.push(errors.old_password[0]);
+                }
+                if (errors.new_password) {
+                    errorMessages.push(errors.new_password[0]);
+                }
+                if (errors.confirm_password) {
+                    errorMessages.push(errors.confirm_password[0]);
+                }
+                
+                setPasswordError(errorMessages.length > 0 ? errorMessages.join('. ') : 'Dữ liệu không hợp lệ.');
+            } else if (err.status === 401) {
+                setPasswordError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                setTimeout(() => {
+                    setIsChangePasswordModalOpen(false);
+                    navigate('/auth');
+                }, 2000);
+            } else {
+                setPasswordError('Đổi mật khẩu thất bại. Vui lòng thử lại.');
+            }
+        } finally {
+            setIsChangingPassword(false);
+        }
     };
 
     return (
@@ -214,6 +270,18 @@ function Profile() {
                     )}
                 </div>
             </div>
+            
+            {/* Change Password Modal */}
+            <ChangePasswordModal
+                isOpen={isChangePasswordModalOpen}
+                onClose={() => {
+                    setIsChangePasswordModalOpen(false);
+                    setPasswordError(null);
+                }}
+                onSubmit={handlePasswordSubmit}
+                isLoading={isChangingPassword}
+                error={passwordError}
+            />
         </div>
     );
 }

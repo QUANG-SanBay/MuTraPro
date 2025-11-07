@@ -92,3 +92,25 @@ export async function updateProfile({ full_name, phone_number, gender }) {
     }
   });
 }
+
+/**
+ * Change user password - Requires authentication
+ * JWT token is automatically added by callGateway
+ * @param {Object} passwordData - Password change data
+ * @param {string} passwordData.old_password - Current password
+ * @param {string} passwordData.new_password - New password
+ * @param {string} passwordData.confirm_password - Confirm new password
+ * @returns {Promise<Object>} Response with success message
+ */
+export async function changePassword({ old_password, new_password, confirm_password }) {
+  return callGateway({
+    service: 'user-service',
+    path: '/users/change-password',
+    method: 'PUT',
+    body: {
+      old_password,
+      new_password,
+      confirm_password
+    }
+  });
+}

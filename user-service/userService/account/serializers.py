@@ -173,3 +173,57 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
+class ChangePasswordSerializer(serializers.Serializer):
+    """Serializer for changing user password"""
+    
+    old_password = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={'input_type': 'password'}
+    )
+    new_password = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={'input_type': 'password'}
+    )
+    confirm_password = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={'input_type': 'password'}
+    )
+    
+    def validate_old_password(self, value):
+        """Validate that old password is provided"""
+        if not value:
+            raise serializers.ValidationError("Mật khẩu cũ là bắt buộc")
+        return value
+    
+    def validate(self, attrs):
+        """Validate password match and strength"""
+        old_password = attrs.get('old_password')
+        new_password = attrs.get('new_password')
+        confirm_password = attrs.get('confirm_password')
+        
+        # Check if new passwords match
+        if new_password != confirm_password:
+            raise serializers.ValidationError({
+                "confirm_password": "Mật khẩu xác nhận không khớp"
+            })
+        
+        # Check if new password is different from old password
+        if old_password == new_password:
+            raise serializers.ValidationError({
+                "new_password": "Mật khẩu mới phải khác mật khẩu cũ"
+            })
+        
+        # Validate new password strength using Django's validators
+        try:
+            validate_password(new_password)
+        except ValidationError as e:
+            raise serializers.ValidationError({
+                "new_password": list(e.messages)
+            })
+        
+        return attrs
+
