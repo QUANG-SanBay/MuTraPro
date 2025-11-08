@@ -28,6 +28,30 @@ services:
     networks:
       - microservices-net
 
+  # -------------------- NIFI -------------------- #
+  nifi:
+  build:
+    context: ./infrastructure/nifi
+    dockerfile: Dockerfile
+  container_name: mutrapro-nifi
+  environment:
+    - NIFI_WEB_HTTP_PORT=8080
+  ports:
+    - "8080:8080"
+  depends_on:
+    rabbitmq:
+      condition: service_healthy
+    sqlserver:
+      condition: service_healthy
+  networks:
+    - mutrapro-net
+  healthcheck:
+    test: ["CMD", "wget", "-qO-", "http://localhost:8080/nifi"]
+    interval: 20s
+    timeout: 8s
+    retries: 10
+
+
   # -------------------- PAYMENT SERVICE -------------------- #
   payment-service:
     build: ./payment-service
