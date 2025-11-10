@@ -1,64 +1,117 @@
 package com.mutrapro.media_service.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 @Entity
+@Table(name = "MediaFile") // hoặc "media_file" nếu bảng bạn đặt vậy
 public class MediaFile {
 
     @Id
     @GeneratedValue
-    private UUID fileId;
+    @Column(name = "IDfile")
+    private UUID idfile;
 
+    @Column(name = "IDUser", nullable = false)
     private Long ownerUserId;
+
+    @Column(name = "NameFile", nullable = false)
+    private String nameFile;
+
+    @Column(name = "IDEntity", nullable = false)
     private Long entityId;
+
+    @Column(name = "TypeEntity", nullable = false)
     private String entityType;
-    private String fileName;
-    private String storageUrl;
-    private String mimeType;
-    private Long sizeInBytes;
-    private LocalDateTime uploadTimestamp;
 
-    @Enumerated(EnumType.STRING)
-    private AccessLevel accessLevel;
+    @Column(name = "UrlStorage", nullable = false)
+    private String urlStorage;
 
-    public MediaFile() {
-        this.uploadTimestamp = LocalDateTime.now();
+    @Column(name = "Typemime")
+    private String typemime;
+
+    @Column(name = "sizeInBytes")
+    private String sizeInBytes;
+
+    @Column(name = "uploadTimestamp")
+    private LocalDateTime uploadTimestamp = LocalDateTime.now();
+
+    // Getters và Setters
+    public UUID getIdfile() {
+        return idfile;
     }
 
-    public String generatePresignedUrl() {
-        return storageUrl + "?token=" + UUID.randomUUID();
+    public void setIdfile(UUID idfile) {
+        this.idfile = idfile;
     }
 
-    // Getters & Setters
-    public UUID getFileId() { return fileId; }
-    public void setFileId(UUID fileId) { this.fileId = fileId; }
+    public Long getOwnerUserId() {
+        return ownerUserId;
+    }
 
-    public Long getOwnerUserId() { return ownerUserId; }
-    public void setOwnerUserId(Long ownerUserId) { this.ownerUserId = ownerUserId; }
+    public void setOwnerUserId(Long ownerUserId) {
+        this.ownerUserId = ownerUserId;
+    }
 
-    public Long getEntityId() { return entityId; }
-    public void setEntityId(Long entityId) { this.entityId = entityId; }
+    public String getNameFile() {
+        return nameFile;
+    }
 
-    public String getEntityType() { return entityType; }
-    public void setEntityType(String entityType) { this.entityType = entityType; }
+    public void setNameFile(String nameFile) {
+        this.nameFile = nameFile;
+    }
 
-    public String getFileName() { return fileName; }
-    public void setFileName(String fileName) { this.fileName = fileName; }
+    public Long getEntityId() {
+        return entityId;
+    }
 
-    public String getStorageUrl() { return storageUrl; }
-    public void setStorageUrl(String storageUrl) { this.storageUrl = storageUrl; }
+    public void setEntityId(Long entityId) {
+        this.entityId = entityId;
+    }
 
-    public String getMimeType() { return mimeType; }
-    public void setMimeType(String mimeType) { this.mimeType = mimeType; }
+    public String getEntityType() {
+        return entityType;
+    }
 
-    public Long getSizeInBytes() { return sizeInBytes; }
-    public void setSizeInBytes(Long sizeInBytes) { this.sizeInBytes = sizeInBytes; }
+    public void setEntityType(String entityType) {
+        this.entityType = entityType;
+    }
 
-    public LocalDateTime getUploadTimestamp() { return uploadTimestamp; }
-    public void setUploadTimestamp(LocalDateTime uploadTimestamp) { this.uploadTimestamp = uploadTimestamp; }
+    public String getUrlStorage() {
+        return urlStorage;
+    }
 
-    public AccessLevel getAccessLevel() { return accessLevel; }
-    public void setAccessLevel(AccessLevel accessLevel) { this.accessLevel = accessLevel; }
+    public void setUrlStorage(String urlStorage) {
+        this.urlStorage = urlStorage;
+    }
+
+    public String getTypemime() {
+        return typemime;
+    }
+
+    public void setTypemime(String typemime) {
+        this.typemime = typemime;
+    }
+
+    public String getSizeInBytes() {
+        return sizeInBytes;
+    }
+
+    public void setSizeInBytes(String sizeInBytes) {
+        this.sizeInBytes = sizeInBytes;
+    }
+
+    public LocalDateTime getUploadTimestamp() {
+        return uploadTimestamp;
+    }
+
+    public void setUploadTimestamp(LocalDateTime uploadTimestamp) {
+        this.uploadTimestamp = uploadTimestamp;
+    }
 }
