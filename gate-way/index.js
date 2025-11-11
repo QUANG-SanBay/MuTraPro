@@ -8,6 +8,10 @@ const axios = require("axios");
 // Load biến môi trường
 dotenv.config();
 
+const logger = require("./src/middlewares/logger");
+const corsConfig = require("./src/middlewares/cors-config");
+const { notFound, errorHandler } = require("./src/middlewares/error-handler");
+
 const app = express();
 app.use(express.json({ limit: "2mb" }));
 app.use(cookieParser());
