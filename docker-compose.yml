@@ -1,6 +1,5 @@
 
 services:
-  # -------------------- SQL SERVER -------------------- #
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sqlserver
@@ -12,8 +11,7 @@ services:
     networks:
       - microservices-net
     volumes:
-       - sqlserver-data:/var/opt/mssql
-       - ./backup:/var/opt/mssql/backup
+      - ./init-sql:/docker-entrypoint-initdb.d
  
   # -------------------- RABBITMQ -------------------- #
   rabbitmq:

@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "MediaFile") // hoặc "media_file" nếu bảng bạn đặt vậy
+@Table(name = "MediaFile")
 public class MediaFile {
 
     @Id
@@ -37,81 +37,48 @@ public class MediaFile {
     private String typemime;
 
     @Column(name = "sizeInBytes")
-    private String sizeInBytes;
+    private Long sizeInBytes;
 
     @Column(name = "uploadTimestamp")
     private LocalDateTime uploadTimestamp = LocalDateTime.now();
 
-    // Getters và Setters
-    public UUID getIdfile() {
-        return idfile;
-    }
+    @Column(name = "status")
+    private String status = "Chờ xử lý";
 
-    public void setIdfile(UUID idfile) {
-        this.idfile = idfile;
-    }
+    @Column(name = "progress")
+    private Integer progress = 0;
 
-    public Long getOwnerUserId() {
-        return ownerUserId;
-    }
+    // Getters & Setters
+    public UUID getIdfile() { return idfile; }
+    public void setIdfile(UUID idfile) { this.idfile = idfile; }
 
-    public void setOwnerUserId(Long ownerUserId) {
-        this.ownerUserId = ownerUserId;
-    }
+    public Long getOwnerUserId() { return ownerUserId; }
+    public void setOwnerUserId(Long ownerUserId) { this.ownerUserId = ownerUserId; }
 
-    public String getNameFile() {
-        return nameFile;
-    }
+    public String getNameFile() { return nameFile; }
+    public void setNameFile(String nameFile) { this.nameFile = nameFile; }
 
-    public void setNameFile(String nameFile) {
-        this.nameFile = nameFile;
-    }
+    public Long getEntityId() { return entityId; }
+    public void setEntityId(Long entityId) { this.entityId = entityId; }
 
-    public Long getEntityId() {
-        return entityId;
-    }
+    public String getEntityType() { return entityType; }
+    public void setEntityType(String entityType) { this.entityType = entityType; }
 
-    public void setEntityId(Long entityId) {
-        this.entityId = entityId;
-    }
+    public String getUrlStorage() { return urlStorage; }
+    public void setUrlStorage(String urlStorage) { this.urlStorage = urlStorage; }
 
-    public String getEntityType() {
-        return entityType;
-    }
+    public String getTypemime() { return typemime; }
+    public void setTypemime(String typemime) { this.typemime = typemime; }
 
-    public void setEntityType(String entityType) {
-        this.entityType = entityType;
-    }
+    public Long getSizeInBytes() { return sizeInBytes; }
+    public void setSizeInBytes(Long sizeInBytes) { this.sizeInBytes = sizeInBytes; }
 
-    public String getUrlStorage() {
-        return urlStorage;
-    }
+    public LocalDateTime getUploadTimestamp() { return uploadTimestamp; }
+    public void setUploadTimestamp(LocalDateTime uploadTimestamp) { this.uploadTimestamp = uploadTimestamp; }
 
-    public void setUrlStorage(String urlStorage) {
-        this.urlStorage = urlStorage;
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
-    public String getTypemime() {
-        return typemime;
-    }
-
-    public void setTypemime(String typemime) {
-        this.typemime = typemime;
-    }
-
-    public String getSizeInBytes() {
-        return sizeInBytes;
-    }
-
-    public void setSizeInBytes(String sizeInBytes) {
-        this.sizeInBytes = sizeInBytes;
-    }
-
-    public LocalDateTime getUploadTimestamp() {
-        return uploadTimestamp;
-    }
-
-    public void setUploadTimestamp(LocalDateTime uploadTimestamp) {
-        this.uploadTimestamp = uploadTimestamp;
-    }
+    public Integer getProgress() { return progress; }
+    public void setProgress(Integer progress) { this.progress = progress; }
 }

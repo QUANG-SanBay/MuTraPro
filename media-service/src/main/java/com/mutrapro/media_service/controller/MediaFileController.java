@@ -28,6 +28,7 @@ public class MediaFileController {
         this.mediaFileService = mediaFileService;
     }
 
+    // ========== 1️⃣ Upload file thật ==========
     @PostMapping("/upload")
     public ResponseEntity<MediaFile> uploadFile(
             @RequestParam("file") MultipartFile file,
@@ -40,25 +41,30 @@ public class MediaFileController {
         return ResponseEntity.ok(saved);
     }
 
+    // ========== 2️⃣ Lấy file theo ID ==========
     @GetMapping("/{fileId}")
     public ResponseEntity<MediaFile> getFileById(@PathVariable UUID fileId) {
         Optional<MediaFile> file = mediaFileService.getFileById(fileId);
         return file.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // ========== 3️⃣ Lấy danh sách theo Owner ==========
     @GetMapping("/owner/{ownerUserId}")
     public List<MediaFile> getFilesByOwner(@PathVariable Long ownerUserId) {
         return mediaFileService.getFilesByOwner(ownerUserId);
     }
 
+    // ========== 4️⃣ Lấy danh sách theo Entity ==========
     @GetMapping("/entity")
     public List<MediaFile> getFilesByEntity(@RequestParam Long entityId, @RequestParam String entityType) {
         return mediaFileService.getFilesByEntity(entityId, entityType);
     }
 
+    // ========== 5️⃣ Xoá file ==========
     @DeleteMapping("/{fileId}")
     public ResponseEntity<Void> deleteFile(@PathVariable UUID fileId) {
         mediaFileService.deleteFile(fileId);
         return ResponseEntity.noContent().build();
     }
+
 }

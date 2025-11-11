@@ -20,17 +20,18 @@ public class MediaFileService {
         this.mediaFileRepository = mediaFileRepository;
     }
 
-    public MediaFile uploadFile(MultipartFile file, Long ownerUserId, Long entityId, String entityType, String storageUrl) throws IOException {
-        MediaFile mediaFile = new MediaFile();
-        mediaFile.setOwnerUserId(ownerUserId);
-        mediaFile.setEntityId(entityId);
-        mediaFile.setEntityType(entityType);
-        mediaFile.setNameFile(file.getOriginalFilename());
-        mediaFile.setUrlStorage(storageUrl);
-        mediaFile.setTypemime(file.getContentType());
-        mediaFile.setSizeInBytes(String.valueOf(file.getSize()));
-
-        return mediaFileRepository.save(mediaFile);
+    public MediaFile uploadFile(MultipartFile file, Long ownerUserId, Long entityId, String entityType, String urlStorage) throws IOException {
+        MediaFile mf = new MediaFile();
+        mf.setOwnerUserId(ownerUserId);
+        mf.setEntityId(entityId);
+        mf.setEntityType(entityType);
+        mf.setNameFile(file.getOriginalFilename());
+        mf.setUrlStorage(urlStorage);
+        mf.setTypemime(file.getContentType());
+        mf.setSizeInBytes(file.getSize());
+        mf.setStatus("Chờ xử lý");
+        mf.setProgress(0);
+        return mediaFileRepository.save(mf);
     }
 
     public Optional<MediaFile> getFileById(UUID fileId) {
