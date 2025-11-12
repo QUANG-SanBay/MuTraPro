@@ -52,7 +52,7 @@ function Header({ userType = 'customer' }) {
     };
 
     // Determine which components to show based on userType
-    const showNavbar = userType === 'customer' || userType === 'service_coordinator' || userType === 'specialist' || userType === 'studio_administrator';
+    const showNavbar = true; // Show navbar for all user types
     const showNotification = userType === 'customer' || userType === 'service_coordinator' || userType === 'specialist' || userType === 'studio_administrator';
     const showMobileToggle = showNavbar; // Only show mobile toggle if navbar exists
 
