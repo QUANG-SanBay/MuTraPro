@@ -146,7 +146,14 @@ docker system prune -f
 ```bash
 docker logs -f user-service
 ```
-
+- restart service
+```bash
+docker-compose up -d --build user-service
+```
+tạo tk admin trong user service
+```bash
+docker exec -it user-service python manage.py createsuperuser
+```
 ---
 
 ---

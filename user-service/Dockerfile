@@ -24,5 +24,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8000
 
+# Copy entrypoint script and fix line endings
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN sed -i 's/\r$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh
+
 WORKDIR /app/userService
-CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
