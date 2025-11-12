@@ -3,10 +3,27 @@ import { getAccessToken } from '~/utils/auth';
 
 const GATEWAY_URL = process.env.REACT_APP_GATEWAY_URL || "http://localhost:8000/api";
 
-export async function callGateway({ service, path, method = "GET", query, body, headers } = {}) {
-  // Automatically add JWT token to headers if available
-  const token = getAccessToken();
-  const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+// Public endpoints that don't require authentication
+const PUBLIC_ENDPOINTS = [
+  '/users/register',
+  '/users/login',
+  '/users/hello'
+];
+
+export async function callGateway({ service, path, method = "GET", query, body, headers, requireAuth = true } = {}) {
+  // Check if this is a public endpoint
+  const isPublicEndpoint = PUBLIC_ENDPOINTS.some(endpoint => path.startsWith(endpoint));
+  
+  // Only add JWT token if:
+  // 1. requireAuth is explicitly true (default), OR
+  // 2. It's not a public endpoint
+  const authHeaders = {};
+  if (requireAuth && !isPublicEndpoint) {
+    const token = getAccessToken();
+    if (token) {
+      authHeaders.Authorization = `Bearer ${token}`;
+    }
+  }
   
   const res = await fetch(GATEWAY_URL, {
     method: "POST",
