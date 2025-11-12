@@ -13,6 +13,7 @@ services:
     healthcheck:
       test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "Strong@Pass123", "-Q", "SELECT 1"]
       interval: 10s
+      timeout: 5s
       retries: 10
 
   # -------------------- RABBITMQ -------------------- #
@@ -25,8 +26,19 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+      # nạp sẵn exchange/queue/binding
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: >-
+        -rabbitmq_management load_definitions "/etc/rabbitmq/definitions.json"
+    volumes:
+      - ./infrastructure/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+      - ./infrastructure/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
     networks:
       - microservices-net
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   # -------------------- PAYMENT SERVICE -------------------- #
   payment-service:
@@ -35,8 +47,6 @@ services:
     - ./payment-service:/app
     container_name: payment-service
     restart: always
-    env_file:
-      - ./payment-service/.env
     environment:
       - PORT=4002
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
@@ -78,12 +88,7 @@ services:
 # -------------------- NOTIFICATION SERVICE --------------------
   notification-service:
     build: ./notification-service
-    # volumes:
-    #   - ./notification-service:/app
     container_name: notification-service
-    restart: always
-    env_file:
-      - ./notification-service/.env
     environment:
       - PORT=4003
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
@@ -94,19 +99,19 @@ services:
       - DB_NAME=Mutrapro_Notification
     ports:
       - "4003:4003"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      sqlserver:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4003/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
     networks:
       - microservices-net
-    depends_on:
-      - rabbitmq
-      condition: service_healthy
-      - sqlserver
-      condition: service_healthy
-      # (3) HEALTHCHECK NHẸ
-      healthcheck:
-        test: ["CMD", "wget", "-qO-", "http://localhost:4003/actuator/health"]
-        interval: 15s
-        timeout: 5s
-        retries: 10
+
   # -------------------- MEDIA SERVICE --------------------
   media-service:
     build: ./media-service
@@ -114,8 +119,6 @@ services:
     #   - ./media-service:/app
     container_name: media-service
     restart: always
-    env_file:
-      - ./media-service/.env
     environment:
       - PORT=4004
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
@@ -138,8 +141,6 @@ services:
     #   - ./management-studio-service:/app
     container_name: management-studio-service
     restart: always
-    env_file:
-      - ./management-studio-service/.env
     environment:
       - PORT=4005
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
@@ -162,8 +163,6 @@ services:
         - ./user-service:/app
       container_name: user-service
       restart: always
-      env_file:
-        - ./user-service/.env
       environment:
         - DJANGO_SETTINGS_MODULE=userService.settings
         - DB_ENGINE=mssql
@@ -186,11 +185,14 @@ services:
     - ./gate-way:/app
     container_name: gateway
     restart: always
-    env_file:
-      - ./gate-way/.env
     environment:
       - PORT=8000
       - PAYMENT_SERVICE_URL=http://payment-service:4002
+      - NOTIFICATION_SERVICE_URL=http://notification-service:4003
+      - ORDER_SERVICE_URL=http://order-service:4001
+      - MEDIA_SERVICE_URL=http://media-service:4004
+      - MANAGEMENT_STUDIO_SERVICE_URL=http://management-studio-service:4005
+      - USER_SERVICE_URL=http://user-service:8005
     ports:
       - "8000:8000"
     networks:

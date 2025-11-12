@@ -1,32 +1,19 @@
-# -------------------- BUILD STAGE -------------------- #
-FROM eclipse-temurin:21-jdk AS build
+# ---------- BUILD STAGE ----------
+FROM maven:3.9.9-eclipse-temurin-21 AS build
 WORKDIR /app
-COPY . .
+# copy file trước để tận dụng cache dependency
+COPY pom.xml .
+RUN mvn -B -e -DskipTests dependency:go-offline
 
-# Cho phép chạy mvnw (tránh lỗi permission)
-RUN chmod +x ./mvnw
+# copy source và build
+COPY src ./src
+RUN mvn -B -e -DskipTests clean package
 
-# Debug: List files before build
-RUN ls -la
-
-# Build project và tạo file jar với verbose output
-RUN ./mvnw clean package -DskipTests -X
-
-# Debug: List target directory after build
-RUN ls -la target/
-
-# Đặt tên JAR cố định cho stage runtime (khỏi quan tâm tên phiên bản)
-RUN cp target/*.jar app.jar
-
-# -------------------- RUNTIME STAGE -------------------- #
+# ---------- RUNTIME STAGE ----------
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-
-# Copy file jar được build ra từ stage build
+# copy file jar đã build
 COPY --from=build /app/target/*.jar app.jar
 
-# Debug: List files in runtime
-RUN ls -la
-
 EXPOSE 4003
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]
