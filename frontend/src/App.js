@@ -1,7 +1,8 @@
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
+import AppRouter from "./routers/AppRouter";
+import GlobalStyles from "./assets/css/globalstyles/GlobalStyles";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import OrderPage from "./pages/OrderPage";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -14,20 +15,14 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <div style={{ padding: "20px" }}>
-        <h1>MuTraPro Frontend</h1>
-        <p>Backend says: {message}</p>
-        <nav>
-          <Link to="/">Home</Link> | <Link to="/order">Order</Link>
-        </nav>
-
-        <Routes>
-          <Route path="/" element={<h3>Welcome to MuTraPro!</h3>} />
-          <Route path="/order" element={<OrderPage />} />
-        </Routes>
-      </div>
-    </Router>
+    <GlobalStyles>
+      <BrowserRouter>
+        <div style={{ padding: "10px" }}>
+          <p>Backend says: {message}</p>
+        </div>
+        <AppRouter />
+      </BrowserRouter>
+    </GlobalStyles>
   );
 }
 

@@ -1,0 +1,322 @@
+// ==================== VARIABLES ====================
+$bg-light: #f9fafb;
+$text-primary: #1f2937;
+$text-secondary: #6b7280;
+$border-color: #e5e7eb;
+$card-bg: #ffffff;
+$shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+// ==================== BREAKPOINTS ====================
+$mobile: 640px;
+$tablet: 768px;
+$desktop: 1024px;
+
+// ==================== SERVICES SECTION ====================
+.services {
+    padding: 5rem 0;
+    background-color: $bg-light;
+    position: relative;
+
+    // Decorative background pattern
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 300px;
+        background: linear-gradient(180deg, rgba(102, 126, 234, 0.03) 0%, transparent 100%);
+        pointer-events: none;
+    }
+
+    @media (max-width: $tablet) {
+        padding: 3rem 0;
+    }
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+
+    @media (max-width: $mobile) {
+        padding: 0 1rem;
+    }
+}
+
+// ==================== HEADER ====================
+.header {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto 4rem;
+    animation: fadeInUp 0.6s ease-out backwards;
+
+    @media (max-width: $tablet) {
+        margin-bottom: 3rem;
+    }
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border-radius: 2rem;
+    margin-bottom: 1rem;
+    animation: fadeInDown 0.6s ease-out backwards;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: $text-primary;
+    margin: 0 0 1rem 0;
+
+    @media (max-width: $tablet) {
+        font-size: 2rem;
+    }
+
+    @media (max-width: $mobile) {
+        font-size: 1.75rem;
+    }
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    line-height: 1.7;
+    color: $text-secondary;
+    margin: 0;
+
+    @media (max-width: $mobile) {
+        font-size: 1rem;
+    }
+}
+
+// ==================== GRID ====================
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+
+    @media (min-width: $tablet) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
+    @media (min-width: $desktop) {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2.5rem;
+    }
+}
+
+// ==================== CARD ====================
+.card {
+    background-color: $card-bg;
+    border: 1px solid $border-color;
+    border-radius: 1rem;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: $shadow-sm;
+    animation: fadeInUp 0.6s ease-out backwards;
+    animation-delay: var(--animation-delay, 0s);
+
+    // Gradient overlay on hover
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            135deg,
+            var(--card-color, #667eea) 0%,
+            transparent 60%
+        );
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: 0;
+    }
+
+    &:hover {
+        transform: translateY(-8px);
+        box-shadow: $shadow-xl;
+        border-color: var(--card-color, #667eea);
+
+        &::before {
+            opacity: 0.05;
+        }
+
+        .icon {
+            transform: scale(1.1) rotate(5deg);
+            background: var(--card-color, #667eea);
+            color: white;
+        }
+
+        .cardLink {
+            color: var(--card-color, #667eea);
+            transform: translateX(4px);
+
+            svg {
+                transform: translateX(4px);
+            }
+        }
+    }
+
+    // Stagger animation on mobile
+    @media (max-width: $tablet) {
+        &:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+        &:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        &:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+    }
+}
+
+// ==================== ICON ====================
+.iconWrapper {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 1.5rem;
+}
+
+.icon {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(102, 126, 234, 0.1);
+    border-radius: 1rem;
+    color: var(--card-color, #667eea);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+    svg {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+// ==================== CARD CONTENT ====================
+.cardTitle {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin: 0 0 0.75rem 0;
+    position: relative;
+    z-index: 1;
+    line-height: 1.3;
+
+    @media (max-width: $mobile) {
+        font-size: 1.25rem;
+    }
+}
+
+.cardDescription {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: $text-secondary;
+    margin: 0 0 1.5rem 0;
+    position: relative;
+    z-index: 1;
+
+    @media (max-width: $mobile) {
+        font-size: 1rem;
+    }
+}
+
+// ==================== CARD LINK ====================
+.cardLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: $text-primary;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+
+    svg {
+        transition: transform 0.3s ease;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--card-color, #667eea);
+        outline-offset: 4px;
+        border-radius: 4px;
+    }
+}
+
+// ==================== ANIMATIONS ====================
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+// ==================== ACCESSIBILITY ====================
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+// ==================== RESPONSIVE ADJUSTMENTS ====================
+@media (max-width: $mobile) {
+    .card {
+        padding: 1.5rem;
+    }
+
+    .icon {
+        width: 56px;
+        height: 56px;
+
+        svg {
+            width: 28px;
+            height: 28px;
+        }
+    }
+}
