@@ -1,6 +1,7 @@
 import { useState } from "react";
-import RecordingOrderForm from "../components/RecordingOrderForm";
-import UploadOrderForm from "../components/UploadOrderForm";
+import RecordingOrderForm from '../../../components/orders/RecordingOrderForm';
+import UploadOrderForm from '../../../components/orders/UploadOrderForm';
+
 
 export default function OrderPage() {
   const [activeTab, setActiveTab] = useState("upload");
