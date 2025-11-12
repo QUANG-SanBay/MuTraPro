@@ -84,6 +84,7 @@ function Header({ userType = 'customer' }) {
 
                     {/* Always show profile dropdown */}
                     <HeaderProfile
+                        userType={userType}
                         isOpen={profileDropdownOpen}
                         onToggle={toggleProfileDropdown}
                     />
