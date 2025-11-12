@@ -1,0 +1,29 @@
+$border-radius: 24px;
+.authAction{
+    display: flex;
+    align-items: center;
+    height: 42px;
+    margin: 0 16px;
+    background-color: var(--input-bgr);
+    border-radius: $border-radius;
+}
+.actionBtn{
+    width: 50%;
+    font-size: 1.6rem;
+    font-weight: 600;
+    height: 32px;
+    border: 1px solid transparent;
+    margin: 4px;
+    border-radius: $border-radius;
+    background-color: transparent;
+    transition: all 0.2s ease-in-out;
+    &.active{
+        background-color: var(--btn-bgr-white);
+        box-shadow: 0 0 2px var(--border-c);
+    }
+    &:hover{
+        background-color: var(--btn-bgr-white);
+        border: 1px solid var(--border-c-05);
+        cursor: pointer;
+    }
+}

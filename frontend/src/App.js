@@ -1,28 +1,16 @@
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import axios from "axios";
 
-// IMPORT CÁC COMPONENTS ĐÃ CÓ
-import MediaTracking from "./pages/MediaTracking";
-
-// IMPORT COMPONENT MỚI THÊM VÀO
-import TaskDetail from "./pages/TaskDetail";
-
-function Home() {
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:8000/auth/api/hello")
-      .then((res) => setMessage(res.data))
-      .catch((err) => console.error(err));
-  }, []);
-
+import { BrowserRouter } from "react-router-dom";
+import AppRouter from "./routers/AppRouter";
+import GlobalStyles from "./assets/css/globalstyles/GlobalStyles";
+function App() {
+  
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>MuTraPro Frontend</h1>
-      <p>Backend says: {message}</p>
-      </div>
+    <GlobalStyles>
+      <BrowserRouter>
+        <AppRouter/>
+      </BrowserRouter>
+    </GlobalStyles>
+
   );
 }
 
