@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./MediaTracking.css";
+import "./OrderTracking.css";
 // Cần thêm Font Awesome vào dự án nếu chưa có
 // Ví dụ: import '@fortawesome/fontawesome-free/css/all.min.css';
 
@@ -76,7 +76,7 @@ const OrderDetailModal = ({ order, statusInfo, onClose }) => {
 };
 // -------------------------------------------------------------
 
-const MediaTracking = () => {
+const OrderTracking = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     // State cho Modal
@@ -272,4 +272,4 @@ const MediaTracking = () => {
     );
 };
 
-export default MediaTracking;
+export default OrderTracking;

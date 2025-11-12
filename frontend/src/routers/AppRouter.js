@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import {publicRouter, customerRouter} from './routes';
+import {publicRouter, customerRouter, specialistRouter} from './routes';
 import DefaultLayout from "~/components/layouts/defaultLayout/DefaultLayout";
 import ProtectedRoute from "~/components/ProtectedRoute/ProtectedRoute";
 import Unauthorized from "~/pages/Unauthorized/Unauthorized";
@@ -37,6 +37,19 @@ function AppRouter(){
                 return (
                     <Route key={index} path={item.path} element={protectedElement}></Route>
                 )
+            })}
+            {/* specialist router - Protected with specialist role */}
+            {specialistRouter.map((item, index)=>{
+                return (
+                    <Route key={index} path={item.path} element={
+                        <ProtectedRoute allowedRoles={['customer', 'specialist']}>
+                            <DefaultLayout type="specialist">
+                                {item.element}
+                            </DefaultLayout>
+                        </ProtectedRoute>
+                    }></Route>
+                )
+
             })}
         </Routes>
     )
