@@ -17,22 +17,28 @@ public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
 
+    // ===== Lấy tất cả orders =====
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
 
+    // ===== Tạo order mới =====
     public Order createOrder(Order order) {
-        order.setThoiGianTao(new Date());
-        order.setLanCuoiCapNhat(new Date());
-        order.setTrangThai(OrderStatus.PENDING);
+        if (order.getTrangThai() == null) order.setTrangThai(OrderStatus.NEW);
+        if (order.getThoiGianTao() == null) order.setThoiGianTao(new Date());
+        if (order.getLanCuoiCapNhat() == null) order.setLanCuoiCapNhat(new Date());
+        if (order.getTongTien() <= 0) order.tinhTongTien();
+        if (order.getCustomerId() == null) order.setCustomerId(0);
 
-        if (order.getTongTien() <= 0) {
-            order.tinhTongTien();
+        // cascade save ServiceRequestFile
+        if (order.getServiceRequestFile() != null) {
+            order.getServiceRequestFile().setOrder(order);
         }
 
         return orderRepository.save(order);
     }
 
+    // ===== Cập nhật trạng thái order =====
     public Optional<Order> updateOrderStatus(Integer id, OrderStatus status) {
         return orderRepository.findById(id)
                 .map(order -> {
@@ -41,6 +47,7 @@ public class OrderService {
                 });
     }
 
+    // ===== Lấy order theo id =====
     public Optional<Order> getOrderById(Integer id) {
         return orderRepository.findById(id);
     }

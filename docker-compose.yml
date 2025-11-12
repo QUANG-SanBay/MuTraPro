@@ -13,8 +13,7 @@ services:
     networks:
       - microservices-net
     volumes:
-       - ./sql_data:/var/opt/mssql
-       - ./backup:/var/opt/mssql/backup
+      - sqlserver-data:/var/opt/mssql
 
   # -------------------- RABBITMQ -------------------- #
   rabbitmq:
@@ -32,10 +31,10 @@ services:
   # -------------------- PAYMENT SERVICE -------------------- #
   payment-service:
     build: ./payment-service
-    volumes:
-      - ./payment-service:/app
     container_name: payment-service
     restart: always
+    volumes:
+      - ./payment-service:/app
     env_file:
       - ./payment-service/.env
     environment:
@@ -72,8 +71,8 @@ services:
     networks:
       - microservices-net
     depends_on:
-      - rabbitmq
       - sqlserver
+      - rabbitmq
 
   # -------------------- NOTIFICATION SERVICE -------------------- #
   notification-service:
@@ -147,10 +146,10 @@ services:
   # -------------------- USER (DJANGO) SERVICE -------------------- #
   user-service:
     build: ./user-service
-    volumes:
-      - ./user-service:/app
     container_name: user-service
     restart: always
+    volumes:
+      - ./user-service:/app
     env_file:
       - ./user-service/.env
     environment:
@@ -172,10 +171,10 @@ services:
   # -------------------- GATEWAY SERVICE -------------------- #
   gateway:
     build: ./gate-way
-    volumes:
-      - ./gate-way:/app
     container_name: gateway
     restart: always
+    volumes:
+      - ./gate-way:/app
     env_file:
       - ./gate-way/.env
     environment:
@@ -189,6 +188,11 @@ services:
       - payment-service
       - rabbitmq
 
+# -------------------- NETWORKS -------------------- #
 networks:
   microservices-net:
     driver: bridge
+
+# -------------------- VOLUMES -------------------- #
+volumes:
+  sqlserver-data:

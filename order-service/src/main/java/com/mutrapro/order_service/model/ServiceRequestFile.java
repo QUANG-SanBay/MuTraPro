@@ -1,7 +1,5 @@
 package com.mutrapro.order_service.model;
 
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
@@ -9,7 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -17,20 +15,20 @@ import jakarta.persistence.Table;
 public class ServiceRequestFile {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     private String fileName;
     private String filePath;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "order_id")
     @JsonBackReference
     private Order order;
 
-    // Getters & Setters
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
+    // ===== Getters & Setters =====
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
     public String getFileName() { return fileName; }
     public void setFileName(String fileName) { this.fileName = fileName; }
