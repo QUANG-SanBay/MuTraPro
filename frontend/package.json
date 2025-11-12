@@ -20,7 +20,8 @@
     "react-router-dom": "^7.9.4",
     "react-scripts": "5.0.1",
     "sass": "^1.93.2",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "zustand": "^5.0.8"
   },
   "scripts": {
     "start": "react-app-rewired start",
