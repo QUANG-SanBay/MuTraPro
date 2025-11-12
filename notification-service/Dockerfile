@@ -15,6 +15,9 @@ RUN ./mvnw clean package -DskipTests -X
 # Debug: List target directory after build
 RUN ls -la target/
 
+# Đặt tên JAR cố định cho stage runtime (khỏi quan tâm tên phiên bản)
+RUN cp target/*.jar app.jar
+
 # -------------------- RUNTIME STAGE -------------------- #
 FROM eclipse-temurin:21-jre
 WORKDIR /app
