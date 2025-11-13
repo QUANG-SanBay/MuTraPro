@@ -18,7 +18,7 @@ public class NotificationListener {
 
     @RabbitListener(queues = QUEUE_NAME)
     public void receive(NotificationPayload payload) {
-        System.out.println("📩 Received from RabbitMQ: " + payload);
+        System.out.println(" Received from RabbitMQ: " + payload);
         notificationService.createNotification(payload);
 
         // Gửi realtime tới FE nếu dùng WebSocket
