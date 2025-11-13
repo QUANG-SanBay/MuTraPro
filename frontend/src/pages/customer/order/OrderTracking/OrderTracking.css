@@ -157,23 +157,27 @@
     /* Đảm bảo số % hiển thị bên ngoài thanh bar (trong hình) */
     padding-left: 5px; 
 }
-
-/* Trường hợp Hoàn thành (100%) - Màu xanh lá */
-.order-item.hoàn-thành .progress-bar-container {
-    background-color: #e8f5e9; /* Màu nền nhạt */
+/* Màu cho trạng thái Đang xử lý (Processing - Xanh Dương) */
+.order-item.đang-xử-lý .progress-bar {
+    background-color: #2196f3; /* Xanh Dương */
 }
 
+/* Màu cho trạng thái Chờ phê duyệt (Pending - Vàng) */
+.order-item.chờ-phê-duyệt .progress-bar {
+    background-color: #ffc107; /* Vàng */
+}
+
+/* Màu cho trạng thái Chờ xử lý (New - Hồng/Đỏ) */
+.order-item.chờ-xử-lý .progress-bar {
+    background-color: #e91e63; /* Hồng */
+}
+
+/* Trường hợp Hoàn thành (100%) - Màu xanh lá (Giữ nguyên) */
 .order-item.hoàn-thành .progress-bar {
     background-color: #4caf50;
     border-radius: 4px;
 }
 
-.order-item.hoàn-thành .progress-percent {
-    color: #4caf50;
-    font-weight: 600;
-    /* Đẩy thêm chút nữa để 100% nằm gọn bên trên */
-    transform: translate(0, -150%); 
-}
 
 /* ------------------------------------------------------------- */
 /* MODAL STYLES */
