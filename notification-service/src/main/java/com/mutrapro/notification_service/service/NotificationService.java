@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.mutrapro.notificationservice.config.RabbitMQConfig.*;
+import static com.mutrapro.notificationservice.config.RabbitMQConfig.EXCHANGE_NAME;
+import static com.mutrapro.notificationservice.config.RabbitMQConfig.ROUTING_KEY;
 
 @Service
 @RequiredArgsConstructor
