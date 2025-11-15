@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
-import {publicRouter, customerRouter} from './routes';
+import {publicRouter, customerRouter, specialistRouter, adminRouter} from './routes';
 import DefaultLayout from "~/components/layouts/defaultLayout/DefaultLayout";
+import AdminLayout from "~/components/layouts/adminLayout/AdminLayout";
 import ProtectedRoute from "~/components/ProtectedRoute/ProtectedRoute";
 import Unauthorized from "~/pages/Unauthorized/Unauthorized";
 
@@ -36,6 +37,31 @@ function AppRouter(){
                 }
                 return (
                     <Route key={index} path={item.path} element={protectedElement}></Route>
+                )
+            })}
+            {/* specialist router - Protected with specialist role */}
+            {specialistRouter.map((item, index)=>{
+                return (
+                    <Route key={index} path={item.path} element={
+                        <ProtectedRoute allowedRoles={['customer', 'specialist']}>
+                            <DefaultLayout type="specialist">
+                                {item.element}
+                            </DefaultLayout>
+                        </ProtectedRoute>
+                    }></Route>
+                )
+
+            })}
+            {/* admin router - Protected with admin role */}
+            {adminRouter.map((item, index)=>{
+                return (
+                    <Route key={index} path={item.path} element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                            <AdminLayout>
+                                {item.element}
+                            </AdminLayout>
+                        </ProtectedRoute>
+                    }></Route>
                 )
             })}
         </Routes>

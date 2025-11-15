@@ -1,5 +1,5 @@
+
 services:
-  # -------------------- SQL SERVER -------------------- #
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sqlserver
@@ -10,11 +10,9 @@ services:
       - "1433:1433"
     networks:
       - microservices-net
-    healthcheck:
-      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "Strong@Pass123", "-Q", "SELECT 1"]
-      interval: 10s
-      retries: 10
-
+    volumes:
+      - ./init-sql:/docker-entrypoint-initdb.d
+ 
   # -------------------- RABBITMQ -------------------- #
   rabbitmq:
     image: rabbitmq:3-management
@@ -32,7 +30,7 @@ services:
   payment-service:
     build: ./payment-service
     volumes:
-    - ./payment-service:/app
+      - ./payment-service:/app
     container_name: payment-service
     restart: always
     env_file:
@@ -52,34 +50,31 @@ services:
     depends_on:
       - rabbitmq
       - sqlserver
-  # -------------------- ORDER SERVICE --------------------
+
+  # -------------------- ORDER SERVICE -------------------- #
   order-service:
-      build: ./order-service
-      # volumes:
-      #   - ./order-service:/app
-      container_name: order-service
-      restart: always
-      # nếu có file .env bạn có thể thêm: env_file: - ./order-service/.env
-      environment:
-        - PORT=4001
-        - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
-        - DB_HOST=sqlserver
-        - DB_PORT=1433
-        - DB_USER=sa
-        - DB_PASSWORD=Strong@Pass123
-        - DB_NAME=Mutrapro_Order
-      ports:
-        - "4001:4001"
-      networks:
-        - microservices-net
-      depends_on:
-        - rabbitmq
-        - sqlserver
-# -------------------- NOTIFICATION SERVICE --------------------
+    build: ./order-service
+    container_name: order-service
+    restart: always
+    environment:
+      - PORT=4001
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - DB_HOST=sqlserver
+      - DB_PORT=1433
+      - DB_USER=sa
+      - DB_PASSWORD=Strong@Pass123
+      - DB_NAME=Mutrapro_Order
+    ports:
+      - "4001:4001"
+    networks:
+      - microservices-net
+    depends_on:
+      - rabbitmq
+      - sqlserver
+
+  # -------------------- NOTIFICATION SERVICE -------------------- #
   notification-service:
     build: ./notification-service
-    # volumes:
-    #   - ./notification-service:/app
     container_name: notification-service
     restart: always
     env_file:
@@ -100,11 +95,9 @@ services:
       - rabbitmq
       - sqlserver
 
-  # -------------------- MEDIA SERVICE --------------------
+  # -------------------- MEDIA SERVICE -------------------- #
   media-service:
     build: ./media-service
-    # volumes:
-    #   - ./media-service:/app
     container_name: media-service
     restart: always
     env_file:
@@ -124,11 +117,9 @@ services:
     depends_on:
       - rabbitmq
       - sqlserver
-# -------------------- MANAGEMENT STUDIO SERVICE --------------------
+# -------------------- MANAGEMENT STUDIO SERVICE -------------------- #
   management-studio-service:
     build: ./management-studio-service
-    # volumes:
-    #   - ./management-studio-service:/app
     container_name: management-studio-service
     restart: always
     env_file:
@@ -148,35 +139,37 @@ services:
     depends_on:
       - rabbitmq
       - sqlserver
-# -------------------- USER (DJANGO) SERVICE --------------------
+
+  # -------------------- USER (DJANGO) SERVICE -------------------- #
   user-service:
-      build: ./user-service
-      volumes:
-        - ./user-service:/app
-      container_name: user-service
-      restart: always
-      env_file:
-        - ./user-service/.env
-      environment:
-        - DJANGO_SETTINGS_MODULE=userService.settings
-        - DB_ENGINE=mssql
-        - DB_HOST=sqlserver
-        - DB_PORT=1433
-        - DB_USER=sa
-        - DB_PASSWORD=Strong@Pass123
-        - DB_NAME=Mutrapro_User
-      ports:
-        - "8005:8000"
-      networks:
-        - microservices-net
-      depends_on:
-        - rabbitmq
-        - sqlserver
+    build: ./user-service
+    volumes:
+      - ./user-service:/app
+    container_name: user-service
+    restart: always
+    env_file:
+      - ./user-service/.env
+    environment:
+      - DJANGO_SETTINGS_MODULE=userService.settings
+      - DB_ENGINE=mssql
+      - DB_HOST=sqlserver
+      - DB_PORT=1433
+      - DB_USER=sa
+      - DB_PASSWORD=Strong@Pass123
+      - DB_NAME=Mutrapro_User
+    ports:
+      - "8005:8000"
+    networks:
+      - microservices-net
+    depends_on:
+      - rabbitmq
+      - sqlserver
+
   # -------------------- GATEWAY SERVICE -------------------- #
   gateway:
     build: ./gate-way
     volumes:
-    - ./gate-way:/app
+      - ./gate-way:/app
     container_name: gateway
     restart: always
     env_file:
@@ -195,3 +188,6 @@ services:
 networks:
   microservices-net:
     driver: bridge
+
+volumes:
+    sqlserver-data:

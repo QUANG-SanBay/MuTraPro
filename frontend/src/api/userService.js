@@ -18,6 +18,7 @@ export async function registerUser({ email, fullName, password, rePassword }) {
     service: 'user-service',
     path: '/users/register',
     method: 'POST',
+    requireAuth: false, // Public endpoint
     body: {
       email,
       full_name: fullName,
@@ -35,7 +36,8 @@ export async function testUserService() {
   return callGateway({
     service: 'user-service',
     path: '/users/hello',
-    method: 'GET'
+    method: 'GET',
+    requireAuth: false // Public endpoint
   });
 }
 
@@ -51,6 +53,7 @@ export async function loginUser({ email, password }) {
     service: 'user-service',
     path: '/users/login',
     method: 'POST',
+    requireAuth: false, // Public endpoint
     body: {
       email,
       password

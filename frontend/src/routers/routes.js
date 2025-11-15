@@ -1,9 +1,12 @@
 import { Auth } from "~/pages/auth"
 import { CustomerHome, CustomerProfile } from "~/pages/customer"
 import Services from "~/pages/customer/serivices/Services"
-import Order from "~/pages/customer/order/Order"
+import { Order, OrderTracking } from "~/pages/customer/order"
 import Payment from "~/pages/customer/payment/Paymen"
+import { TaskDetail } from "~/pages/specialist"
+import { AdminProfile } from "~/pages/admin"
 
+import AdminHome from "~/pages/admin/home/AdminHome"
 const publicRouter = [
     {path: '/auth', element: <Auth/>}
 ]
@@ -13,12 +16,13 @@ const customerRouter = [
     {path: '/customer/profile', element: <CustomerProfile/>, layout: 'default'},
     {path: '/customer/services', element: <Services/>, layout: 'default'},
     {path: '/customer/orders', element: <Order/>, layout: 'default'},
+    {path: '/customer/orders/tracking', element: <OrderTracking/>, layout: 'default'},
     {path: '/customer/payments', element: <Payment/>, layout: 'default'}
 ]
 
 const adminRouter = [
-    // Admin routes will be added here
-    // Example: {path: '/admin/users', element: <AdminUsers/>, layout: 'admin'}
+    {path: '/admin', element: <AdminHome/>, layout: 'admin'},
+    {path: '/admin/profile', element: <AdminProfile/>, layout: 'admin'}
 ]
 
 const serviceCoordinatorRouter = [
@@ -27,6 +31,7 @@ const serviceCoordinatorRouter = [
 
 const specialistRouter = [
     // Specialist routes will be added here
+    {path: '/specialist/tasks', element: <TaskDetail/>, layout: 'default'}
 ]
 
 const studioAdminRouter = [
