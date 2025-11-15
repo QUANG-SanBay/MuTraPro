@@ -4,7 +4,7 @@ import Services from "~/pages/customer/serivices/Services"
 import { Order, OrderTracking } from "~/pages/customer/order"
 import Payment from "~/pages/customer/payment/Paymen"
 import { TaskDetail } from "~/pages/specialist"
-import { AdminProfile } from "~/pages/admin"
+import { AdminProfile, RolePermissionManagement } from "~/pages/admin"
 
 import AdminHome from "~/pages/admin/home/AdminHome"
 import UserManagement from "~/pages/admin/users/UserManagement"
@@ -24,6 +24,7 @@ const customerRouter = [
 const adminRouter = [
     {path: '/admin', element: <AdminHome/>, layout: 'admin'},
     {path: '/admin/users', element: <UserManagement/>, layout: 'admin'},
+    {path: '/admin/permissions', element: <RolePermissionManagement/>, layout: 'admin'},
     {path: '/admin/profile', element: <AdminProfile/>, layout: 'admin'}
 ]
 

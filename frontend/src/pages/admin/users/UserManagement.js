@@ -75,7 +75,16 @@ const UserManagement = () => {
                 setError(response?.message || 'Không thể tải danh sách người dùng');
             }
         } catch (err) {
-            setError('Có lỗi xảy ra khi tải danh sách người dùng');
+            // Handle authentication errors
+            if (err.status === 401 || err.code === 'NO_TOKEN') {
+                setError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                // Redirect to login after 2 seconds
+                setTimeout(() => {
+                    window.location.href = '/auth';
+                }, 2000);
+            } else {
+                setError(err.message || 'Có lỗi xảy ra khi tải danh sách người dùng');
+            }
             console.error('Error fetching users:', err);
         } finally {
             setLoading(false);

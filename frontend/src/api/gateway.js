@@ -20,9 +20,17 @@ export async function callGateway({ service, path, method = "GET", query, body, 
   const authHeaders = {};
   if (requireAuth && !isPublicEndpoint) {
     const token = getAccessToken();
-    if (token) {
-      authHeaders.Authorization = `Bearer ${token}`;
+    
+    // If token is required but not found, throw error early
+    if (!token) {
+      const err = new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+      err.status = 401;
+      err.code = 'NO_TOKEN';
+      throw err;
     }
+    
+    authHeaders.Authorization = `Bearer ${token}`;
+    console.log('[Gateway] Adding Authorization header with token:', token.substring(0, 20) + '...');
   }
   
   const res = await fetch(GATEWAY_URL, {
