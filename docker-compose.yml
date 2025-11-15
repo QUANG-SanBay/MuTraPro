@@ -84,6 +84,7 @@ services:
   notification-service:
     build: ./notification-service
     container_name: notification-service
+    restart: always
     environment:
       - PORT=4003
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
@@ -94,16 +95,11 @@ services:
       - DB_NAME=Mutrapro_Notification
     ports:
       - "4003:4003"
-    depends_on:
-      rabbitmq:
-      sqlserver:
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:4003/actuator/health"]
-      interval: 15s
-      timeout: 5s
-      retries: 10
     networks:
       - microservices-net
+    depends_on:
+      - rabbitmq
+      - sqlserver
 
   # -------------------- MEDIA SERVICE --------------------
   media-service:
