@@ -1,3 +1,4 @@
+import React from "react";
 import { Auth } from "~/pages/auth"
 import { CustomerHome, CustomerProfile } from "~/pages/customer"
 import Services from "~/pages/customer/serivices/Services"
@@ -5,6 +6,7 @@ import { Order, OrderTracking } from "~/pages/customer/order"
 import Payment from "~/pages/customer/payment/Paymen"
 import { TaskDetail } from "~/pages/specialist"
 import { AdminProfile } from "~/pages/admin"
+import ProductApproval from "~/pages/customer/notification/ProductApproval.jsx";
 
 import AdminHome from "~/pages/admin/home/AdminHome"
 const publicRouter = [
@@ -17,6 +19,7 @@ const customerRouter = [
     {path: '/customer/services', element: <Services/>, layout: 'default'},
     {path: '/customer/orders', element: <Order/>, layout: 'default'},
     {path: '/customer/orders/tracking', element: <OrderTracking/>, layout: 'default'},
+    { path: "/customer/approval", element: <ProductApproval />, layout: "default" },
     {path: '/customer/payments', element: <Payment/>, layout: 'default'}
 ]
 
@@ -46,3 +49,12 @@ export {
     specialistRouter,
     studioAdminRouter
 }
+
+const publicRouter = [
+    {path: '/auth', element: <Auth/>},
+];
+
+const serviceCoordinatorRouter = [];
+
+export {publicRouter, customerRouter, serviceCoordinatorRouter}
+
