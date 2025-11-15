@@ -80,6 +80,7 @@ services:
   notification-service:
     build: ./notification-service
     container_name: notification-service
+    restart: always
     environment:
       - PORT=4003
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
