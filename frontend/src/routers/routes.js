@@ -7,6 +7,7 @@ import { TaskDetail } from "~/pages/specialist"
 import { AdminProfile } from "~/pages/admin"
 
 import AdminHome from "~/pages/admin/home/AdminHome"
+import UserManagement from "~/pages/admin/users/UserManagement"
 const publicRouter = [
     {path: '/auth', element: <Auth/>}
 ]
@@ -22,6 +23,7 @@ const customerRouter = [
 
 const adminRouter = [
     {path: '/admin', element: <AdminHome/>, layout: 'admin'},
+    {path: '/admin/users', element: <UserManagement/>, layout: 'admin'},
     {path: '/admin/profile', element: <AdminProfile/>, layout: 'admin'}
 ]
 
