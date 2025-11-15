@@ -51,6 +51,10 @@ export async function callGateway({ service, path, method = "GET", query, body, 
     data = await res.text();
   }
   if (!res.ok) {
+    console.error('[Gateway] Error response:', {
+      status: res.status,
+      data: data
+    });
     const err = new Error(`Gateway error ${res.status}`);
     err.status = res.status;
     err.data = data;

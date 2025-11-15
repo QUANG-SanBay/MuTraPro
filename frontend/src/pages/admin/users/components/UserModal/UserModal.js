@@ -81,8 +81,16 @@ const UserModal = ({ mode, user, onClose, onSuccess }) => {
         if (mode === 'create') {
             if (!formData.password) {
                 newErrors.password = 'Mật khẩu không được để trống';
-            } else if (formData.password.length < 6) {
-                newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
+            } else if (formData.password.length < 8) {
+                newErrors.password = 'Mật khẩu phải có ít nhất 8 ký tự';
+            } else if (!/[A-Z]/.test(formData.password)) {
+                newErrors.password = 'Mật khẩu phải chứa ít nhất 1 chữ hoa';
+            } else if (!/[a-z]/.test(formData.password)) {
+                newErrors.password = 'Mật khẩu phải chứa ít nhất 1 chữ thường';
+            } else if (!/[0-9]/.test(formData.password)) {
+                newErrors.password = 'Mật khẩu phải chứa ít nhất 1 chữ số';
+            } else if (/^[0-9]+$/.test(formData.password)) {
+                newErrors.password = 'Mật khẩu không được toàn bộ là số';
             }
 
             if (!formData.re_password) {
@@ -92,9 +100,18 @@ const UserModal = ({ mode, user, onClose, onSuccess }) => {
             }
         } else if (mode === 'edit' && formData.password) {
             // If password is entered in edit mode, validate it
-            if (formData.password.length < 6) {
-                newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
+            if (formData.password.length < 8) {
+                newErrors.password = 'Mật khẩu phải có ít nhất 8 ký tự';
+            } else if (!/[A-Z]/.test(formData.password)) {
+                newErrors.password = 'Mật khẩu phải chứa ít nhất 1 chữ hoa';
+            } else if (!/[a-z]/.test(formData.password)) {
+                newErrors.password = 'Mật khẩu phải chứa ít nhất 1 chữ thường';
+            } else if (!/[0-9]/.test(formData.password)) {
+                newErrors.password = 'Mật khẩu phải chứa ít nhất 1 chữ số';
+            } else if (/^[0-9]+$/.test(formData.password)) {
+                newErrors.password = 'Mật khẩu không được toàn bộ là số';
             }
+            
             if (formData.password !== formData.re_password) {
                 newErrors.re_password = 'Mật khẩu không khớp';
             }
@@ -168,10 +185,16 @@ const UserModal = ({ mode, user, onClose, onSuccess }) => {
                 });
             }
         } catch (err) {
-            setErrors({
-                general: 'Có lỗi xảy ra khi xử lý yêu cầu'
-            });
             console.error('Error submitting form:', err);
+            console.error('Error data:', err.data);
+            
+            // Extract backend validation errors if available
+            const backendErrors = err.data?.errors || {};
+            
+            setErrors({
+                general: err.data?.message || err.message || 'Có lỗi xảy ra khi gửi form',
+                ...backendErrors
+            });
         } finally {
             setLoading(false);
         }

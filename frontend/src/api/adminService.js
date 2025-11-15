@@ -47,10 +47,9 @@ export const getUserById = async (userId) => {
 export const createUser = async (userData) => {
     return await callGateway({
         service: 'user-service',
-        path: '/users/register',
+        path: '/users/admin/users/create',
         method: 'POST',
-        body: userData,
-        requireAuth: false
+        body: userData
     });
 };
 
@@ -63,7 +62,7 @@ export const createUser = async (userData) => {
 export const updateUser = async (userId, userData) => {
     return await callGateway({
         service: 'user-service',
-        path: `/users/admin/users/${userId}`,
+        path: `/users/admin/users/${userId}/update`,
         method: 'PUT',
         body: userData
     });
