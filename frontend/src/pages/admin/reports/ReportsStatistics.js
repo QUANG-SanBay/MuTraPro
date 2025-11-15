@@ -9,16 +9,13 @@ import {
     faDollarSign,
     faShoppingCart,
     faStar,
-    faFilter,
     faSync,
-    faTrendUp,
-    faTrendDown,
     faArrowUp,
     faArrowDown,
-    faClock,
     faCheckCircle,
     faExclamationCircle,
-    faUserClock
+    faUserClock,
+    faClock
 } from '@fortawesome/free-solid-svg-icons';
 import styles from './ReportsStatistics.module.scss';
 
@@ -161,7 +158,7 @@ const ReportsStatistics = () => {
     };
 
     const getTrendIcon = (trend) => {
-        return trend >= 0 ? faTrendUp : faTrendDown;
+        return trend >= 0 ? faArrowUp : faArrowDown;
     };
 
     const getTrendClass = (trend) => {
