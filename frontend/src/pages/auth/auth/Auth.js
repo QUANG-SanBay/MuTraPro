@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMusic } from '@fortawesome/free-solid-svg-icons';
 
@@ -6,33 +6,36 @@ import styles from './Auth.module.scss'
 import AuthAction from './action/AuthAction';
 import RegisterForm from './registerForm/Register';
 import LoginForm from './loginForm/LoginForm';
-// import { callGateway } from '~/api/gateway';
+import AlreadyLoggedIn from './alreadyLoggedIn/AlreadyLoggedIn';
+import { isAuthenticated, getUser } from '~/utils/auth';
 
 function Login(){
     const [isLogin, setIsLogin] = useState(true);
-    // const [userSvcMsg, setUserSvcMsg] = useState(null);
-    // const [userSvcErr, setUserSvcErr] = useState(null);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
+
+    useEffect(() => {
+        // Check if user is already logged in
+        const loggedIn = isAuthenticated();
+        setIsLoggedIn(loggedIn);
+        
+        if (loggedIn) {
+            const user = getUser();
+            setCurrentUser(user);
+        }
+    }, []);
+
     const handleActive = (mode)=>{
         setIsLogin(mode === 'loginBtn');
     }
 
-    // Demo: call user-service via gateway and show result
-    // useEffect(() => {
-    //     let mounted = true;
-    //     (async () => {
-    //         try {
-    //             const data = await callGateway({
-    //                 service: 'user',
-    //                 path: '/api/hello',
-    //                 method: 'GET'
-    //             });
-    //             if (mounted) setUserSvcMsg(data?.message || JSON.stringify(data));
-    //         } catch (e) {
-    //             if (mounted) setUserSvcErr(e?.data || e?.message);
-    //         }
-    //     })();
-    //     return () => { mounted = false };
-    // }, []);
+    const handleLogout = () => {
+        // After logout, reset state to show login form
+        setIsLoggedIn(false);
+        setCurrentUser(null);
+        setIsLogin(true);
+    };
+
     return(
         <div className={styles.container}>
             <div className={styles.authBox}>
@@ -45,15 +48,19 @@ function Login(){
                     <div className={styles.authIntro}>
                         <h1 className={styles.authTitle}>Hệ thống MuTraPro</h1>
                         <p className={styles.authDescription}>Quản lý phục vụ âm nhạc chuyên nghiệp</p>
-                        {/* Quick user-service check */}
-                        {/* {userSvcMsg && <p className={styles.userSvcOk}>UserSvc: {userSvcMsg}</p>}
-                        {userSvcErr && <p className={styles.userSvcErr}>UserSvc error: {typeof userSvcErr === 'string' ? userSvcErr : JSON.stringify(userSvcErr)}</p>} */}
                     </div>
                 </div>
-                <AuthAction active={isLogin} onClick={handleActive}></AuthAction>
-                {isLogin ? 
-                <LoginForm></LoginForm> : 
-                <RegisterForm></RegisterForm>}
+                
+                {isLoggedIn ? (
+                    <AlreadyLoggedIn user={currentUser} onLogout={handleLogout} />
+                ) : (
+                    <>
+                        <AuthAction active={isLogin} onClick={handleActive}></AuthAction>
+                        {isLogin ? 
+                        <LoginForm></LoginForm> : 
+                        <RegisterForm setIsLogin={setIsLogin}></RegisterForm>}
+                    </>
+                )}
             </div>
         </div>
     )

@@ -1,10 +1,45 @@
 // Lightweight client for the unified gateway endpoint
+import { getAccessToken } from '~/utils/auth';
+
 const GATEWAY_URL = process.env.REACT_APP_GATEWAY_URL || "http://localhost:8000/api";
 
-export async function callGateway({ service, path, method = "GET", query, body, headers } = {}) {
+// Public endpoints that don't require authentication
+const PUBLIC_ENDPOINTS = [
+  '/users/register',
+  '/users/login',
+  '/users/hello'
+];
+
+export async function callGateway({ service, path, method = "GET", query, body, headers, requireAuth = true } = {}) {
+  // Check if this is a public endpoint
+  const isPublicEndpoint = PUBLIC_ENDPOINTS.some(endpoint => path.startsWith(endpoint));
+  
+  // Only add JWT token if:
+  // 1. requireAuth is explicitly true (default), OR
+  // 2. It's not a public endpoint
+  const authHeaders = {};
+  if (requireAuth && !isPublicEndpoint) {
+    const token = getAccessToken();
+    
+    // If token is required but not found, throw error early
+    if (!token) {
+      const err = new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+      err.status = 401;
+      err.code = 'NO_TOKEN';
+      throw err;
+    }
+    
+    authHeaders.Authorization = `Bearer ${token}`;
+    console.log('[Gateway] Adding Authorization header with token:', token.substring(0, 20) + '...');
+  }
+  
   const res = await fetch(GATEWAY_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...(headers || {}) },
+    headers: { 
+      "Content-Type": "application/json", 
+      ...authHeaders,
+      ...(headers || {}) 
+    },
     body: JSON.stringify({ service, path, method, query, body }),
     credentials: "include", // forward cookies if needed
   });
@@ -16,6 +51,10 @@ export async function callGateway({ service, path, method = "GET", query, body, 
     data = await res.text();
   }
   if (!res.ok) {
+    console.error('[Gateway] Error response:', {
+      status: res.status,
+      data: data
+    });
     const err = new Error(`Gateway error ${res.status}`);
     err.status = res.status;
     err.data = data;

@@ -14,6 +14,7 @@ $desktop: 1024px;
 // ==================== FOOTER ====================
 .footer {
     background-color: $footer-bg;
+    border-top: 1px solid $footer-border;
     color: $footer-text;
     padding-top: 4rem;
     margin-top: auto; // Push footer to bottom if using flex layout

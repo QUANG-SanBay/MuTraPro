@@ -1,0 +1,117 @@
+// UserFilters.module.scss
+.filtersPanel {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    animation: slideDown 0.3s ease;
+
+    .filtersHeader {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+
+        svg {
+            color: #6366f1;
+        }
+
+        span {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+    }
+
+    .filtersContent {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+
+        .filterGroup {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+
+            label {
+                font-size: 1.4rem;
+                font-weight: 500;
+                color: #374151;
+            }
+
+            select {
+                padding: 0.75rem;
+                border: 1px solid #d1d5db;
+                border-radius: 0.5rem;
+                font-size: 1.4rem;
+                background-color: white;
+                cursor: pointer;
+                transition: all 0.2s;
+
+                &:focus {
+                    outline: none;
+                    border-color: #6366f1;
+                    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+                }
+
+                &:hover {
+                    border-color: #9ca3af;
+                }
+            }
+        }
+
+        .filterActions {
+            display: flex;
+            align-items: flex-end;
+
+            .clearButton {
+                padding: 0.75rem 1.5rem;
+                border: 1px solid #d1d5db;
+                background: white;
+                color: #374151;
+                border-radius: 0.5rem;
+                font-size: 1.2rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s;
+
+                &:hover {
+                    background-color: #f9fafb;
+                    border-color: #9ca3af;
+                }
+            }
+        }
+    }
+}
+
+// Animation
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-1rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+    .filtersPanel {
+        padding: 1rem;
+
+        .filtersContent {
+            grid-template-columns: 1fr;
+
+            .filterActions {
+                .clearButton {
+                    width: 100%;
+                }
+            }
+        }
+    }
+}

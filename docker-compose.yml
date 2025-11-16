@@ -1,5 +1,5 @@
+
 services:
-  # -------------------- SQL SERVER -------------------- #
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sqlserver
@@ -10,7 +10,9 @@ services:
       - "1433:1433"
     networks:
       - microservices-net
-
+    volumes:
+      - ./init-sql:/docker-entrypoint-initdb.d
+ 
   # -------------------- RABBITMQ -------------------- #
   rabbitmq:
     image: rabbitmq:3-management
@@ -34,7 +36,7 @@ services:
   payment-service:
     build: ./payment-service
     volumes:
-    - ./payment-service:/app
+      - ./payment-service:/app
     container_name: payment-service
     restart: always
     environment:
@@ -52,30 +54,29 @@ services:
     depends_on:
       - rabbitmq
       - sqlserver
-  # -------------------- ORDER SERVICE --------------------
+
+  # -------------------- ORDER SERVICE -------------------- #
   order-service:
-      build: ./order-service
-      # volumes:
-      #   - ./order-service:/app
-      container_name: order-service
-      restart: always
-      # nếu có file .env bạn có thể thêm: env_file: - ./order-service/.env
-      environment:
-        - PORT=4001
-        - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
-        - DB_HOST=sqlserver
-        - DB_PORT=1433
-        - DB_USER=sa
-        - DB_PASSWORD=Strong@Pass123
-        - DB_NAME=Mutrapro_Order
-      ports:
-        - "4001:4001"
-      networks:
-        - microservices-net
-      depends_on:
-        - rabbitmq
-        - sqlserver
-# -------------------- NOTIFICATION SERVICE --------------------
+    build: ./order-service
+    container_name: order-service
+    restart: always
+    environment:
+      - PORT=4001
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - DB_HOST=sqlserver
+      - DB_PORT=1433
+      - DB_USER=sa
+      - DB_PASSWORD=Strong@Pass123
+      - DB_NAME=Mutrapro_Order
+    ports:
+      - "4001:4001"
+    networks:
+      - microservices-net
+    depends_on:
+      - rabbitmq
+      - sqlserver
+
+  # -------------------- NOTIFICATION SERVICE -------------------- #
   notification-service:
     build: ./notification-service
     container_name: notification-service
@@ -96,11 +97,9 @@ services:
       - rabbitmq
       - sqlserver
 
-  # -------------------- MEDIA SERVICE --------------------
+  # -------------------- MEDIA SERVICE -------------------- #
   media-service:
     build: ./media-service
-    # volumes:
-    #   - ./media-service:/app
     container_name: media-service
     restart: always
     environment:
@@ -118,11 +117,9 @@ services:
     depends_on:
       - rabbitmq
       - sqlserver
-# -------------------- MANAGEMENT STUDIO SERVICE --------------------
+# -------------------- MANAGEMENT STUDIO SERVICE -------------------- #
   management-studio-service:
     build: ./management-studio-service
-    # volumes:
-    #   - ./management-studio-service:/app
     container_name: management-studio-service
     restart: always
     environment:
@@ -140,7 +137,8 @@ services:
     depends_on:
       - rabbitmq
       - sqlserver
-# -------------------- USER (DJANGO) SERVICE --------------------
+
+  # -------------------- USER (DJANGO) SERVICE -------------------- #
   user-service:
       build: ./user-service
       volumes:
@@ -162,11 +160,12 @@ services:
       depends_on:
         - rabbitmq
         - sqlserver
+
   # -------------------- GATEWAY SERVICE -------------------- #
   gateway:
     build: ./gate-way
     volumes:
-    - ./gate-way:/app
+      - ./gate-way:/app
     container_name: gateway
     restart: always
     environment:
@@ -188,3 +187,6 @@ services:
 networks:
   microservices-net:
     driver: bridge
+
+volumes:
+    sqlserver-data:

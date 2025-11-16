@@ -1,42 +1,77 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { publicRouter, customerRouter } from "./routes";
 // Nếu alias "~" chưa hoạt động, đổi import này sang đường dẫn tương đối:
+import {publicRouter, customerRouter, specialistRouter, adminRouter} from './routes';
 import DefaultLayout from "~/components/layouts/defaultLayout/DefaultLayout";
+import AdminLayout from "~/components/layouts/adminLayout/AdminLayout";
+import ProtectedRoute from "~/components/ProtectedRoute/ProtectedRoute";
+import Unauthorized from "~/pages/Unauthorized/Unauthorized";
+import NotFound from "~/pages/NotFound/NotFound";
 
-function AppRouter() {
-  return (
-    <Routes>
-      {/* redirect root */}
-      <Route path="/" element={<Navigate to="/customer/approval" replace />} />
+function AppRouter(){
+    return(
+        <Routes>
+            {/* public router */}
+            {publicRouter.map((item, index)=>(
+                <Route key={index} path={item.path} element={item.element}></Route>
+            ))}
+            
+            {/* Unauthorized route */}
+            <Route path="/unauthorized" element={<Unauthorized />} />
+            
+            {/* customer router - Protected with customer role */}
+            {customerRouter.map((item, index)=>{
+                const protectedElement = (
+                    <ProtectedRoute allowedRoles={['customer']}>
+                        {item.element}
+                    </ProtectedRoute>
+                );
+                
+                if(item.layout === 'default'){
+                    return (
+                        <Route key={index} path={item.path} element={
+                            <ProtectedRoute allowedRoles={['customer']}>
+                                <DefaultLayout type="customer">
+                                    {item.element}
+                                </DefaultLayout>
+                            </ProtectedRoute>
+                        }></Route>
+                    )
+                }
+                return (
+                    <Route key={index} path={item.path} element={protectedElement}></Route>
+                )
+            })}
+            {/* specialist router - Protected with specialist role */}
+            {specialistRouter.map((item, index)=>{
+                return (
+                    <Route key={index} path={item.path} element={
+                        <ProtectedRoute allowedRoles={['customer', 'specialist']}>
+                            <DefaultLayout type="specialist">
+                                {item.element}
+                            </DefaultLayout>
+                        </ProtectedRoute>
+                    }></Route>
+                )
 
-      {/* public router */}
-      {publicRouter.map((item, index) => (
-        <Route key={`pub-${index}`} path={item.path} element={item.element} />
-      ))}
-
-      {/* customer router */}
-      {customerRouter.map((item, index) =>
-        item.layout === "default" ? (
-          <Route
-            key={`cus-${index}`}
-            path={item.path}
-            element={
-              <DefaultLayout type="customer">{item.element}</DefaultLayout>
-            }
-          />
-        ) : (
-          <Route key={`cus-${index}`} path={item.path} element={item.element} />
-        )
-      )}
-
-      {/* 404 */}
-      <Route
-        path="*"
-        element={<div style={{ padding: 24 }}>404 — Not Found</div>}
-      />
-    </Routes>
-  );
+            })}
+            {/* admin router - Protected with admin role */}
+            {adminRouter.map((item, index)=>{
+                return (
+                    <Route key={index} path={item.path} element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                            <AdminLayout>
+                                {item.element}
+                            </AdminLayout>
+                        </ProtectedRoute>
+                    }></Route>
+                )
+            })}
+            
+            {/* Catch-all route for 404 Not Found */}
+            <Route path="*" element={<NotFound />} />
+        </Routes>
+    )
 }
 
 export default AppRouter;

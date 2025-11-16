@@ -56,14 +56,23 @@ app.use((req, res, next) => {
 // Bản đồ Service từ ENV -> URL nội bộ trong docker network
 const serviceMap = {
   payment: process.env.PAYMENT_SERVICE_URL || "http://payment-service:4002",
+  "payment-service": process.env.PAYMENT_SERVICE_URL || "http://payment-service:4002",
   order: process.env.ORDER_SERVICE_URL || "http://order-service:4001",
+  "order-service": process.env.ORDER_SERVICE_URL || "http://order-service:4001",
   notification:
     process.env.NOTIFICATION_SERVICE_URL || "http://notification-service:4003",
+  "notification-service":
+    process.env.NOTIFICATION_SERVICE_URL || "http://notification-service:4003",
   media: process.env.MEDIA_SERVICE_URL || "http://media-service:4004",
+  "media-service": process.env.MEDIA_SERVICE_URL || "http://media-service:4004",
   management:
     process.env.MANAGEMENT_STUDIO_SERVICE_URL ||
     "http://management-studio-service:4005",
+  "management-studio-service":
+    process.env.MANAGEMENT_STUDIO_SERVICE_URL ||
+    "http://management-studio-service:4005",
   user: process.env.USER_SERVICE_URL || "http://user-service:8000",
+  "user-service": process.env.USER_SERVICE_URL || "http://user-service:8000",
 };
 
 // Health check đơn giản
