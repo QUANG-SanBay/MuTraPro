@@ -1,9 +1,14 @@
 // ReportsStatistics.module.scss
 .reportsStatistics {
-    padding: 2rem;
+    padding: 12px;
     background: #f9fafb;
     min-height: 100vh;
-
+    display: flex;
+    .container{
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
     .pageHeader {
         display: flex;
         justify-content: space-between;
@@ -18,13 +23,13 @@
             gap: 1rem;
 
             svg {
-                font-size: 2rem;
+                font-size: 3.2rem;
                 color: #667eea;
             }
 
             h1 {
                 margin: 0;
-                font-size: 2rem;
+                font-size: 2.8rem;
                 font-weight: 700;
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 background-clip: text;
@@ -46,7 +51,7 @@
                 background: white;
                 border: 2px solid #e5e7eb;
                 border-radius: 0.5rem;
-                font-size: 0.95rem;
+                font-size: 1.4rem;
                 font-weight: 600;
                 color: #374151;
                 cursor: pointer;
@@ -76,7 +81,7 @@
                     color: white;
                     border: none;
                     border-radius: 0.5rem;
-                    font-size: 0.95rem;
+                    font-size: 1.4rem;
                     font-weight: 600;
                     cursor: pointer;
                     transition: all 0.3s;
@@ -123,7 +128,7 @@
             gap: 1rem;
 
             svg {
-                font-size: 1.5rem;
+                font-size: 2.4rem;
                 color: #667eea;
             }
 
@@ -139,7 +144,7 @@
                     flex: 1;
 
                     label {
-                        font-size: 0.875rem;
+                        font-size: 1.4rem;
                         font-weight: 600;
                         color: #374151;
                     }
@@ -148,7 +153,7 @@
                         padding: 0.75rem 1rem;
                         border: 2px solid #e5e7eb;
                         border-radius: 0.5rem;
-                        font-size: 0.95rem;
+                        font-size: 1.4rem;
                         transition: all 0.2s;
 
                         &:focus {
@@ -170,7 +175,7 @@
                 display: flex;
                 align-items: center;
                 gap: 0.5rem;
-                font-size: 0.875rem;
+                font-size: 1.4rem;
                 font-weight: 600;
                 color: #374151;
 
@@ -183,7 +188,7 @@
                 padding: 0.75rem 1rem;
                 border: 2px solid #e5e7eb;
                 border-radius: 0.5rem;
-                font-size: 0.95rem;
+                font-size: 1.4rem;
                 font-weight: 500;
                 background: white;
                 cursor: pointer;
@@ -207,12 +212,12 @@
         gap: 1rem;
 
         svg {
-            font-size: 3rem;
+            font-size: 4.8rem;
             color: #667eea;
         }
 
         p {
-            font-size: 1.1rem;
+            font-size: 1.6rem;
             color: #6b7280;
             font-weight: 500;
         }
@@ -258,7 +263,7 @@
 
                 h3 {
                     margin: 0 0 0.5rem 0;
-                    font-size: 0.875rem;
+                    font-size: 1.3rem;
                     font-weight: 600;
                     color: #6b7280;
                     text-transform: uppercase;
@@ -267,7 +272,7 @@
 
                 .mainValue {
                     margin: 0 0 0.5rem 0;
-                    font-size: 1.75rem;
+                    font-size: 2.8rem;
                     font-weight: 700;
                     color: #1f2937;
                 }
@@ -276,7 +281,7 @@
                     display: flex;
                     align-items: center;
                     gap: 0.5rem;
-                    font-size: 0.875rem;
+                    font-size: 1.3rem;
                     font-weight: 600;
 
                     svg {
@@ -336,7 +341,7 @@
                 align-items: center;
                 gap: 0.75rem;
                 margin: 0 0 1.5rem 0;
-                font-size: 1.5rem;
+                font-size: 2.2rem;
                 font-weight: 700;
                 color: #1f2937;
                 padding-bottom: 1rem;
@@ -361,7 +366,7 @@
                             th {
                                 padding: 1rem;
                                 text-align: left;
-                                font-size: 0.875rem;
+                                font-size: 1.4rem;
                                 font-weight: 700;
                                 color: #374151;
                                 text-transform: uppercase;
@@ -382,7 +387,7 @@
                             td {
                                 padding: 1rem;
                                 border-bottom: 1px solid #e5e7eb;
-                                font-size: 0.95rem;
+                                font-size: 1.4rem;
                                 color: #374151;
 
                                 &.numberCell {
@@ -424,7 +429,7 @@
                                     display: inline-block;
                                     padding: 0.375rem 0.875rem;
                                     border-radius: 0.375rem;
-                                    font-size: 0.875rem;
+                                    font-size: 1.4rem;
                                     font-weight: 600;
                                     background: #dbeafe;
                                     color: #1e40af;
@@ -460,7 +465,7 @@
                                         justify-content: center;
                                         color: white;
                                         font-weight: 700;
-                                        font-size: 0.875rem;
+                                        font-size: 1.4rem;
                                         transition: width 0.3s;
                                     }
                                 }
@@ -469,7 +474,7 @@
                                     display: inline-block;
                                     padding: 0.375rem 0.875rem;
                                     border-radius: 0.375rem;
-                                    font-size: 0.875rem;
+                                    font-size: 1.4rem;
                                     font-weight: 600;
 
                                     &.high {
@@ -498,7 +503,7 @@
 
                             td {
                                 padding: 1rem;
-                                font-size: 0.95rem;
+                                font-size: 1.4rem;
                             }
                         }
                     }
@@ -537,7 +542,7 @@
 
                     h3 {
                         margin: 0 0 1rem 0;
-                        font-size: 1.1rem;
+                        font-size: 1.6rem;
                         font-weight: 700;
                         color: #1f2937;
                     }
@@ -553,7 +558,7 @@
                             align-items: center;
 
                             .label {
-                                font-size: 0.875rem;
+                                font-size: 1.4rem;
                                 color: #6b7280;
                                 font-weight: 500;
                             }
@@ -568,7 +573,7 @@
 
                                 svg {
                                     color: #f59e0b;
-                                    font-size: 0.875rem;
+                                    font-size: 1.4rem;
                                 }
                             }
                         }
@@ -606,14 +611,14 @@
 
                     h3 {
                         margin: 0 0 0.5rem 0;
-                        font-size: 1rem;
+                        font-size: 1.5rem;
                         font-weight: 600;
                         color: #374151;
                     }
 
                     .percentage {
                         margin: 0;
-                        font-size: 2.5rem;
+                        font-size: 3.6rem;
                         font-weight: 800;
                     }
 
@@ -673,14 +678,14 @@
 
                     h4 {
                         margin: 0 0 1rem 0;
-                        font-size: 0.95rem;
+                        font-size: 1.4rem;
                         font-weight: 600;
                         opacity: 0.9;
                     }
 
                     .timeValue {
                         margin: 0;
-                        font-size: 2.5rem;
+                        font-size: 3.6rem;
                         font-weight: 800;
                     }
                 }
@@ -696,21 +701,21 @@
             text-align: center;
 
             svg {
-                font-size: 5rem;
+                font-size: 8rem;
                 color: #d1d5db;
                 margin-bottom: 1.5rem;
             }
 
             h2 {
                 margin: 0 0 0.5rem 0;
-                font-size: 2rem;
+                font-size: 2.4rem;
                 font-weight: 700;
                 color: #374151;
             }
 
             p {
                 margin: 0;
-                font-size: 1.1rem;
+                font-size: 1.6rem;
                 color: #6b7280;
             }
         }
@@ -737,7 +742,7 @@
 
             .headerLeft {
                 h1 {
-                    font-size: 1.5rem;
+                    font-size: 2.2rem;
                 }
             }
 
@@ -771,7 +776,7 @@
                 padding: 1rem;
 
                 h2 {
-                    font-size: 1.25rem;
+                    font-size: 1.8rem;
                 }
 
                 .tableWrapper {

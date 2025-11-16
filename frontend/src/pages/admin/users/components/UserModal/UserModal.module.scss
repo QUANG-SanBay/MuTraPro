@@ -33,7 +33,7 @@
 
             h2 {
                 margin: 0;
-                font-size: 1.5rem;
+                font-size: 1.8rem;
                 font-weight: 600;
                 color: #1f2937;
             }
@@ -41,7 +41,7 @@
             .closeButton {
                 background: none;
                 border: none;
-                font-size: 1.5rem;
+                font-size: 1.6rem;
                 color: #6b7280;
                 cursor: pointer;
                 transition: color 0.2s;
@@ -79,7 +79,7 @@
                         display: flex;
                         align-items: center;
                         gap: 0.5rem;
-                        font-size: 0.875rem;
+                        font-size: 1.4rem;
                         font-weight: 500;
                         color: #374151;
                         margin-bottom: 0.5rem;
@@ -95,7 +95,7 @@
                         .optional {
                             font-weight: 400;
                             color: #6b7280;
-                            font-size: 0.75rem;
+                            font-size: 1.4rem;
                         }
                     }
 
@@ -105,7 +105,7 @@
                         padding: 0.75rem;
                         border: 1px solid #d1d5db;
                         border-radius: 0.5rem;
-                        font-size: 1rem;
+                        font-size: 1.4rem;
                         transition: all 0.2s;
 
                         &:focus {
@@ -132,7 +132,7 @@
                     .errorText {
                         display: block;
                         margin-top: 0.25rem;
-                        font-size: 0.75rem;
+                        font-size: 1.4rem;
                         color: #dc2626;
                     }
                 }
@@ -147,7 +147,7 @@
                     button {
                         padding: 0.75rem 1.5rem;
                         border-radius: 0.5rem;
-                        font-size: 1rem;
+                        font-size: 1.4rem;
                         font-weight: 500;
                         cursor: pointer;
                         transition: all 0.2s;
@@ -215,7 +215,7 @@
                 padding: 1rem;
 
                 h2 {
-                    font-size: 1.25rem;
+                    font-size: 1.6rem;
                 }
             }
 

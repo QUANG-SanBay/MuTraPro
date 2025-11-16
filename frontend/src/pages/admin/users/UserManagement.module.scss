@@ -1,7 +1,7 @@
 // UserManagement.module.scss
 .userManagement {
     padding: 2rem;
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 0 auto;
 
     // Page Header
@@ -17,12 +17,12 @@
             gap: 1rem;
 
             .headerIcon {
-                font-size: 2rem;
+                font-size: 2.4rem;
                 color: var(--primary-color, #6366f1);
             }
 
             h1 {
-                font-size: 2rem;
+                font-size: 2.4rem;
                 font-weight: 600;
                 color: #1f2937;
                 margin: 0;
@@ -38,7 +38,7 @@
             color: white;
             border: none;
             border-radius: 0.5rem;
-            font-size: 1rem;
+            font-size: 1.4rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -79,7 +79,7 @@
         button {
             background: none;
             border: none;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             cursor: pointer;
             color: inherit;
             opacity: 0.7;
@@ -116,7 +116,7 @@
                 padding: 0.75rem 1rem 0.75rem 2.5rem;
                 border: 1px solid #e5e7eb;
                 border-radius: 0.5rem;
-                font-size: 1rem;
+                font-size: 1.4rem;
                 transition: all 0.2s;
 
                 &:focus {
@@ -139,7 +139,7 @@
                 border: 1px solid #e5e7eb;
                 background: white;
                 border-radius: 0.5rem;
-                font-size: 0.875rem;
+                font-size: 1.4rem;
                 cursor: pointer;
                 transition: all 0.2s;
 
@@ -174,12 +174,12 @@
             gap: 0.5rem;
 
             .statLabel {
-                font-size: 0.875rem;
+                font-size: 1.4rem;
                 color: #6b7280;
             }
 
             .statValue {
-                font-size: 2rem;
+                font-size: 2.4rem;
                 font-weight: 700;
                 color: #1f2937;
             }
@@ -203,13 +203,13 @@
             color: #9ca3af;
 
             svg {
-                font-size: 3rem;
+                font-size: 3.8rem;
                 margin-bottom: 1rem;
             }
 
             span,
             p {
-                font-size: 1.125rem;
+                font-size: 1.4rem;
             }
         }
 
@@ -224,7 +224,7 @@
                 th {
                     padding: 1rem;
                     text-align: left;
-                    font-size: 0.875rem;
+                    font-size: 1.3rem;
                     font-weight: 600;
                     color: #374151;
                     text-transform: uppercase;
@@ -255,7 +255,7 @@
                             }
 
                             .userUsername {
-                                font-size: 0.875rem;
+                                font-size: 1.3rem;
                                 color: #6b7280;
                             }
                         }
@@ -264,7 +264,7 @@
                             display: inline-block;
                             padding: 0.25rem 0.75rem;
                             border-radius: 9999px;
-                            font-size: 0.75rem;
+                            font-size: 1.2rem;
                             font-weight: 600;
                             text-transform: capitalize;
 
@@ -300,7 +300,7 @@
                             display: inline-block;
                             padding: 0.25rem 0.75rem;
                             border-radius: 9999px;
-                            font-size: 0.75rem;
+                            font-size: 1.2rem;
                             font-weight: 600;
 
                             &.active {
@@ -386,7 +386,7 @@
                 border: 1px solid #e5e7eb;
                 background: white;
                 border-radius: 0.375rem;
-                font-size: 0.875rem;
+                font-size: 1.2rem;
                 cursor: pointer;
                 transition: all 0.2s;
 
