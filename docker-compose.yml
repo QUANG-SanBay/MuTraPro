@@ -29,11 +29,6 @@ services:
       - ./infrastructure/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
     networks:
       - microservices-net
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
 
   # -------------------- PAYMENT SERVICE -------------------- #
   payment-service:
