@@ -1,4 +1,6 @@
-import { Routes, Route } from "react-router-dom";
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+// Nếu alias "~" chưa hoạt động, đổi import này sang đường dẫn tương đối:
 import {publicRouter, customerRouter, specialistRouter, adminRouter} from './routes';
 import DefaultLayout from "~/components/layouts/defaultLayout/DefaultLayout";
 import AdminLayout from "~/components/layouts/adminLayout/AdminLayout";
@@ -71,4 +73,5 @@ function AppRouter(){
         </Routes>
     )
 }
+
 export default AppRouter;

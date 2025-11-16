@@ -23,6 +23,12 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+      # nạp sẵn exchange/queue/binding
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: >-
+        -rabbitmq_management load_definitions "/etc/rabbitmq/definitions.json"
+    volumes:
+      - ./infrastructure/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+      - ./infrastructure/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
     networks:
       - microservices-net
 
@@ -33,8 +39,6 @@ services:
       - ./payment-service:/app
     container_name: payment-service
     restart: always
-    env_file:
-      - ./payment-service/.env
     environment:
       - PORT=4002
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
@@ -77,8 +81,6 @@ services:
     build: ./notification-service
     container_name: notification-service
     restart: always
-    env_file:
-      - ./notification-service/.env
     environment:
       - PORT=4003
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
@@ -100,8 +102,6 @@ services:
     build: ./media-service
     container_name: media-service
     restart: always
-    env_file:
-      - ./media-service/.env
     environment:
       - PORT=4004
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
@@ -122,8 +122,6 @@ services:
     build: ./management-studio-service
     container_name: management-studio-service
     restart: always
-    env_file:
-      - ./management-studio-service/.env
     environment:
       - PORT=4005
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
@@ -142,28 +140,26 @@ services:
 
   # -------------------- USER (DJANGO) SERVICE -------------------- #
   user-service:
-    build: ./user-service
-    volumes:
-      - ./user-service:/app
-    container_name: user-service
-    restart: always
-    env_file:
-      - ./user-service/.env
-    environment:
-      - DJANGO_SETTINGS_MODULE=userService.settings
-      - DB_ENGINE=mssql
-      - DB_HOST=sqlserver
-      - DB_PORT=1433
-      - DB_USER=sa
-      - DB_PASSWORD=Strong@Pass123
-      - DB_NAME=Mutrapro_User
-    ports:
-      - "8005:8000"
-    networks:
-      - microservices-net
-    depends_on:
-      - rabbitmq
-      - sqlserver
+      build: ./user-service
+      volumes:
+        - ./user-service:/app
+      container_name: user-service
+      restart: always
+      environment:
+        - DJANGO_SETTINGS_MODULE=userService.settings
+        - DB_ENGINE=mssql
+        - DB_HOST=sqlserver
+        - DB_PORT=1433
+        - DB_USER=sa
+        - DB_PASSWORD=Strong@Pass123
+        - DB_NAME=Mutrapro_User
+      ports:
+        - "8005:8000"
+      networks:
+        - microservices-net
+      depends_on:
+        - rabbitmq
+        - sqlserver
 
   # -------------------- GATEWAY SERVICE -------------------- #
   gateway:
@@ -172,11 +168,14 @@ services:
       - ./gate-way:/app
     container_name: gateway
     restart: always
-    env_file:
-      - ./gate-way/.env
     environment:
       - PORT=8000
       - PAYMENT_SERVICE_URL=http://payment-service:4002
+      - NOTIFICATION_SERVICE_URL=http://notification-service:4003
+      - ORDER_SERVICE_URL=http://order-service:4001
+      - MEDIA_SERVICE_URL=http://media-service:4004
+      - MANAGEMENT_STUDIO_SERVICE_URL=http://management-studio-service:4005
+      - USER_SERVICE_URL=http://user-service:8005
     ports:
       - "8000:8000"
     networks:

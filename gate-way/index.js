@@ -8,9 +8,17 @@ const axios = require("axios");
 // Load biến môi trường
 dotenv.config();
 
+const logger = require('./middlewares/logger.js');
+const corsConfig = require('./middlewares/cors-config.js');
+const { notFound, errorHandler } = require('./middlewares/error-handler.js');
+
+
 const app = express();
 app.use(express.json({ limit: "2mb" }));
 app.use(cookieParser());
+app.use(logger);
+app.use(corsConfig);
+app.use(rateLimit({ windowMs: 60 * 1000, max: 120, standardHeaders: true }));
 
 // CORS setup: không dùng "*" khi credentials=true để tránh lỗi trình duyệt
 const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:3000")
@@ -144,6 +152,9 @@ app.post("/api", async (req, res) => {
     return res.status(status).send(data);
   }
 });
+
+app.use(notFound);
+app.use(errorHandler);
 
 // Port từ biến môi trường
 const PORT = process.env.PORT || 8000;
