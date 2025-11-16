@@ -92,7 +92,7 @@ services:
     ports:
       - "4003:4003"
     networks:
-      - microservices-net<<<<<<< HEAD
+      - microservices-net
     depends_on:
       - rabbitmq
       - sqlserver
@@ -145,8 +145,6 @@ services:
       - ./user-service:/app
     container_name: user-service
     restart: always
-    env_file:
-      - ./user-service/.env
     environment:
       - DJANGO_SETTINGS_MODULE=userService.settings
       - DB_ENGINE=mssql

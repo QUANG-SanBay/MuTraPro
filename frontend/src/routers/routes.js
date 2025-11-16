@@ -48,13 +48,6 @@ export {
     serviceCoordinatorRouter,
     specialistRouter,
     studioAdminRouter
-}
+};
 
-const publicRouter = [
-    {path: '/auth', element: <Auth/>},
-];
-
-const serviceCoordinatorRouter = [];
-
-export {publicRouter, customerRouter, serviceCoordinatorRouter}
 

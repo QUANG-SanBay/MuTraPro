@@ -1,8 +1,6 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import {publicRouter, customerRouter, specialistRouter, adminRouter} from './routes';
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import { publicRouter, customerRouter } from "./routes";
 import DefaultLayout from "~/components/layouts/defaultLayout/DefaultLayout";
 import AdminLayout from "~/components/layouts/adminLayout/AdminLayout";
 import ProtectedRoute from "~/components/ProtectedRoute/ProtectedRoute";
@@ -11,6 +9,9 @@ import Unauthorized from "~/pages/Unauthorized/Unauthorized";
 function AppRouter(){
     return(
         <Routes>
+            {/* redirect root */}
+                <Route path="/" element={<Navigate to="/customer/approval" replace />} />
+
             {/* public router */}
             {publicRouter.map((item, index)=>(
                 <Route key={index} path={item.path} element={item.element}></Route>
@@ -26,7 +27,7 @@ function AppRouter(){
                         {item.element}
                     </ProtectedRoute>
                 );
-                
+
                 if(item.layout === 'default'){
                     return (
                         <Route key={index} path={item.path} element={
@@ -67,33 +68,6 @@ function AppRouter(){
                     }></Route>
                 )
             })}
-        </Routes>
-    )
-function AppRouter() {
-    return (
-        <Routes>
-      {/* redirect root */}
-        <Route path="/" element={<Navigate to="/customer/approval" replace />} />
-
-      {/* public router */}
-        {publicRouter.map((item, index) => (
-        <Route key={`pub-${index}`} path={item.path} element={item.element} />
-))}
-
-      {/* customer router */}
-        {customerRouter.map((item, index) =>
-        item.layout === "default" ? (
-            <Route
-                key={`cus-${index}`}
-                path={item.path}
-                element={
-            <DefaultLayout type="customer">{item.element}</DefaultLayout>
-            }
-        />
-        ) : (
-            <Route key={`cus-${index}`} path={item.path} element={item.element} />
-        )
-    )}
 
       {/* 404 */}
         <Route
