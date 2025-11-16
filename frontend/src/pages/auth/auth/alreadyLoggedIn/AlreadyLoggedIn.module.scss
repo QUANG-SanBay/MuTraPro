@@ -1,0 +1,173 @@
+.alreadyLoggedIn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+
+    .iconWrapper {
+        margin-bottom: 24px;
+
+        .checkIcon {
+            font-size: 64px;
+            color: #10b981;
+            animation: scaleIn 0.5s ease-out;
+        }
+    }
+
+    .title {
+        font-size: 2.4rem;
+        font-weight: 600;
+        color: var(--text-c);
+        margin-bottom: 16px;
+    }
+
+    .userInfo {
+        margin-bottom: 24px;
+        padding: 16px 24px;
+        background: var(--primary-c-005);
+        border-radius: 12px;
+        border: 1px solid var(--primary-c-01);
+
+        .userName {
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: var(--text-c);
+            margin-bottom: 8px;
+        }
+
+        .userRole {
+            display: inline-block;
+            font-size: 1.3rem;
+            padding: 4px 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px;
+            font-weight: 500;
+        }
+    }
+
+    .message {
+        font-size: 1.5rem;
+        color: var(--text-c);
+        opacity: 0.8;
+        margin-bottom: 32px;
+        line-height: 1.6;
+    }
+
+    .actions {
+        display: flex;
+        gap: 16px;
+        width: 100%;
+        max-width: 400px;
+
+        button {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 24px;
+            font-size: 1.5rem;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+
+            svg {
+                font-size: 1.6rem;
+            }
+        }
+
+        .btnGoBack {
+            background: var(--section-bgr);
+            color: var(--text-c);
+            border: 2px solid var(--primary-c-02);
+
+            &:hover {
+                background: var(--primary-c-005);
+                border-color: var(--primary-c-03);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+
+            &:active {
+                transform: translateY(0);
+            }
+        }
+
+        .btnLogout {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: 2px solid transparent;
+
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            }
+
+            &:active {
+                transform: translateY(0);
+            }
+        }
+    }
+}
+
+@keyframes scaleIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .alreadyLoggedIn {
+        padding: 24px 16px;
+
+        .iconWrapper {
+            .checkIcon {
+                font-size: 48px;
+            }
+        }
+
+        .title {
+            font-size: 2rem;
+        }
+
+        .userInfo {
+            padding: 12px 16px;
+
+            .userName {
+                font-size: 1.6rem;
+            }
+
+            .userRole {
+                font-size: 1.2rem;
+            }
+        }
+
+        .message {
+            font-size: 1.4rem;
+            margin-bottom: 24px;
+        }
+
+        .actions {
+            flex-direction: column;
+            gap: 12px;
+
+            button {
+                padding: 12px 20px;
+                font-size: 1.4rem;
+            }
+        }
+    }
+}

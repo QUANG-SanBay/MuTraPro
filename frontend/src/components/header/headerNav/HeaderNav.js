@@ -28,7 +28,7 @@ function HeaderNav({ mobileMenuOpen, onNavClick, userType = 'customer' }) {
                 return [
                     { to: '/admin', label: 'Trang chủ' },
                     { to: '/admin/users', label: 'QL User' },
-                    { to: '/admin/roles', label: 'QL phân quyền' },
+                    { to: '/admin/permissions', label: 'QL phân quyền' },
                     { to: '/admin/reports', label: 'BCáo & TKê' },
                 ];
             

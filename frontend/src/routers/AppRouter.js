@@ -4,6 +4,7 @@ import DefaultLayout from "~/components/layouts/defaultLayout/DefaultLayout";
 import AdminLayout from "~/components/layouts/adminLayout/AdminLayout";
 import ProtectedRoute from "~/components/ProtectedRoute/ProtectedRoute";
 import Unauthorized from "~/pages/Unauthorized/Unauthorized";
+import NotFound from "~/pages/NotFound/NotFound";
 
 function AppRouter(){
     return(
@@ -64,6 +65,9 @@ function AppRouter(){
                     }></Route>
                 )
             })}
+            
+            {/* Catch-all route for 404 Not Found */}
+            <Route path="*" element={<NotFound />} />
         </Routes>
     )
 }
