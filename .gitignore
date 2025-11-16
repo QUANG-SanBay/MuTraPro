@@ -1,0 +1,8 @@
+# Ignore NiFi runtime files
+nifi/extensions/drivers/*.jar
+!nifi/extensions/drivers/.gitkeep
+
+# But keep the directory structure
+!nifi/
+!nifi/extensions/
+!nifi/extensions/drivers/

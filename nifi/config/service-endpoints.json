@@ -1,0 +1,74 @@
+{
+  "name": "Microservices Endpoints Configuration",
+  "description": "REST API endpoints for all microservices in MuTraPro project",
+  "services": {
+    "gateway": {
+      "name": "API Gateway",
+      "baseUrl": "http://gateway:8000",
+      "healthCheck": "/health"
+    },
+    "payment": {
+      "name": "Payment Service",
+      "baseUrl": "http://payment-service:4002",
+      "healthCheck": "/health",
+      "endpoints": {
+        "createPayment": "/api/payments",
+        "getPayment": "/api/payments/{id}",
+        "updatePayment": "/api/payments/{id}",
+        "listPayments": "/api/payments"
+      }
+    },
+    "order": {
+      "name": "Order Service",
+      "baseUrl": "http://order-service:4001",
+      "healthCheck": "/health",
+      "endpoints": {
+        "createOrder": "/api/orders",
+        "getOrder": "/api/orders/{id}",
+        "updateOrder": "/api/orders/{id}",
+        "listOrders": "/api/orders"
+      }
+    },
+    "notification": {
+      "name": "Notification Service",
+      "baseUrl": "http://notification-service:4003",
+      "healthCheck": "/health",
+      "endpoints": {
+        "sendNotification": "/api/notifications",
+        "getNotification": "/api/notifications/{id}",
+        "listNotifications": "/api/notifications"
+      }
+    },
+    "media": {
+      "name": "Media Service",
+      "baseUrl": "http://media-service:4004",
+      "healthCheck": "/health",
+      "endpoints": {
+        "uploadMedia": "/api/media/upload",
+        "getMedia": "/api/media/{id}",
+        "deleteMedia": "/api/media/{id}"
+      }
+    },
+    "management": {
+      "name": "Management Studio Service",
+      "baseUrl": "http://management-studio-service:4005",
+      "healthCheck": "/health",
+      "endpoints": {
+        "getStudio": "/api/studios/{id}",
+        "listStudios": "/api/studios",
+        "updateStudio": "/api/studios/{id}"
+      }
+    },
+    "user": {
+      "name": "User Service (Django)",
+      "baseUrl": "http://user-service:8000",
+      "healthCheck": "/health",
+      "endpoints": {
+        "getUser": "/api/users/{id}",
+        "listUsers": "/api/users",
+        "updateUser": "/api/users/{id}",
+        "authenticate": "/api/auth/login"
+      }
+    }
+  }
+}
