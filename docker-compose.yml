@@ -230,7 +230,7 @@ services:
       - ORDER_SERVICE_URL=http://order-service:4001
       - MEDIA_SERVICE_URL=http://media-service:4004
       - MANAGEMENT_STUDIO_SERVICE_URL=http://management-studio-service:4005
-      - USER_SERVICE_URL=http://user-service:8005
+      - USER_SERVICE_URL=http://user-service:8000
     ports:
       - "8000:8000"
     networks:
