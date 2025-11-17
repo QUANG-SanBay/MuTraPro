@@ -1,13 +1,13 @@
 ### MuTraPro - Microservices
 
-Dự án gồm nhiều service (Node.js, Spring Boot, Django) kết nối chung SQL Server và RabbitMQ, khởi chạy qua Docker Compose.
+Dự án gồm nhiều service (Node.js, Spring Boot, Django) kết nối chung SQL Server và RabbitMQ, khởi chạy qua Docker Compose. Tích hợp Apache NiFi để quản lý và xử lý luồng dữ liệu giữa các microservices.
 
 ---
 
 ### Yêu cầu
 
 - Docker Desktop 4.x (kèm Docker Compose)
-- RAM tối thiểu 6GB (SQL Server + nhiều service)
+- RAM tối thiểu 8GB (SQL Server + nhiều service + NiFi)
 - Windows: nên bật WSL2 trong Docker Desktop
 
 ---
@@ -24,6 +24,7 @@ management-studio-service (Spring Boot)
 notification-service/ (Spring Boot)
 user-service/ (Django)
 frontend/ (React)
+nifi/                            # Apache NiFi integration
 ```
 ---
 
@@ -38,6 +39,10 @@ Một số service có `.env` riêng (nếu chưa có, tạo theo mẫu dưới)
 - RabbitMQ:
   - `RABBITMQ_DEFAULT_USER=guest`
   - `RABBITMQ_DEFAULT_PASS=guest`
+
+- NiFi:
+  - `SINGLE_USER_CREDENTIALS_USERNAME=admin`
+  - `SINGLE_USER_CREDENTIALS_PASSWORD=AdminPass123456`
 
 - Django user-service (nếu cần `.env`):
 ```
@@ -72,42 +77,95 @@ lưu ý FE và payment service
 ```bash
 npm install
 ```
+
+#### Khởi động với NiFi
+Sử dụng script tự động:
+```powershell
+# Windows PowerShell
+.\nifi\scripts\start-nifi.ps1
+
+# hoặc thủ công:
+```
+
 1) Tắt/bỏ các volumes bind cho service Spring Boot trong `docker-compose.yml` (nếu đang có):
 - order-service, media-service, notification-service, management-studio-service không được mount `./xxx:/app`.
 
-2) Khởi động nền tảng
+2) Khởi động nền tảng (bao gồm NiFi)
 ```bash
-docker-compose up -d sqlserver rabbitmq
+docker-compose up -d sqlserver rabbitmq nifi
 # Đợi SQL Server sẵn sàng (30-60s):
 docker logs -f sqlserver
+# Đợi NiFi sẵn sàng (1-2 phút):
+docker logs -f nifi
 ```
 
-3) Tạo database (nếu chưa có)
+3) Tải JDBC Driver cho NiFi (để kết nối SQL Server)
+```powershell
+.\nifi\scripts\download-jdbc-driver.ps1
+# Sau đó restart NiFi:
+docker-compose restart nifi
+```
+
+4) Tạo database (nếu chưa có)
 ```bash
 docker exec -it sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "Strong@Pass123" -Q "CREATE DATABASE Mutrapro_User"
 docker exec -it sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "Strong@Pass123" -Q "CREATE DATABASE Mutrapro_Order"
 docker exec -it sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "Strong@Pass123" -Q "CREATE DATABASE Mutrapro_Media"
 docker exec -it sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "Strong@Pass123" -Q "CREATE DATABASE Mutrapro_Notification"
 docker exec -it sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "Strong@Pass123" -Q "CREATE DATABASE Mutrapro_ManagementStudio"
+docker exec -it sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "Strong@Pass123" -Q "CREATE DATABASE Mutrapro_Payment"
 ```
-
-4) Build images
+hoặc 
+``` bash
+CREATE DATABASE Mutrapro_User;
+CREATE DATABASE Mutrapro_Order;
+CREATE DATABASE Mutrapro_Media;
+CREATE DATABASE Mutrapro_Notification;
+CREATE DATABASE Mutrapro_ManagementStudio;
+CREATE DATABASE Mutrapro_Payment;
+```
+5) Build images
 ```bash
 docker-compose build
 ```
 
-5) Khởi động các service
+6) Khởi động các service
 ```bash
 docker-compose up
 # hoặc chạy nền:
 # docker-compose up -d
 ```
 
-6) Kiểm tra
+7) Kiểm tra
+- **NiFi UI**: https://localhost:8443/nifi (admin/AdminPass123456) - Xem `nifi/TRUY_CAP_NIFI.md` nếu gặp vấn đề
 - API Gateway: http://localhost:8000
 - Django user-service: http://localhost:8005
 - RabbitMQ UI: http://localhost:15672 (guest/guest)
 - SQL Server: localhost:1433 (sa/Strong@Pass123)
+
+---
+
+### Apache NiFi - Data Integration Platform
+
+NiFi đã được tích hợp để xử lý và quản lý luồng dữ liệu giữa các microservices.
+
+**Truy cập NiFi:**
+- URL: **https://localhost:8443/nifi** (⚠️ Chú ý: HTTPS, không phải HTTP)
+- Username: `admin`
+- Password: `AdminPass123456`
+- **Hướng dẫn truy cập**: Xem file `nifi/TRUY_CAP_NIFI.md`
+
+**Tài liệu:**
+- Hướng dẫn chi tiết: Xem file `nifi/docs/NIFI_SETUP.md`
+- Tham khảo nhanh: Xem file `nifi/docs/NIFI_QUICK_REFERENCE.md`
+- Ví dụ flow: Xem thư mục `nifi/templates/`
+
+**Use Cases:**
+- Event-driven order processing
+- Database ETL và synchronization
+- REST API orchestration
+- Real-time monitoring và alerts
+- File processing pipelines
 
 ---
 

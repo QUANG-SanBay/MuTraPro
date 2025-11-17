@@ -1,0 +1,58 @@
+{
+  "name": "SQL Server Database Connection Configuration",
+  "description": "Configuration for connecting NiFi to SQL Server databases",
+  "databases": {
+    "payment": {
+      "name": "Mutrapro_Payment",
+      "host": "sqlserver",
+      "port": 1433,
+      "username": "sa",
+      "password": "Strong@Pass123",
+      "connectionString": "jdbc:sqlserver://sqlserver:1433;databaseName=Mutrapro_Payment;user=sa;password=Strong@Pass123;encrypt=false;trustServerCertificate=true"
+    },
+    "order": {
+      "name": "Mutrapro_Order",
+      "host": "sqlserver",
+      "port": 1433,
+      "username": "sa",
+      "password": "Strong@Pass123",
+      "connectionString": "jdbc:sqlserver://sqlserver:1433;databaseName=Mutrapro_Order;user=sa;password=Strong@Pass123;encrypt=false;trustServerCertificate=true"
+    },
+    "notification": {
+      "name": "Mutrapro_Notification",
+      "host": "sqlserver",
+      "port": 1433,
+      "username": "sa",
+      "password": "Strong@Pass123",
+      "connectionString": "jdbc:sqlserver://sqlserver:1433;databaseName=Mutrapro_Notification;user=sa;password=Strong@Pass123;encrypt=false;trustServerCertificate=true"
+    },
+    "media": {
+      "name": "Mutrapro_Media",
+      "host": "sqlserver",
+      "port": 1433,
+      "username": "sa",
+      "password": "Strong@Pass123",
+      "connectionString": "jdbc:sqlserver://sqlserver:1433;databaseName=Mutrapro_Media;user=sa;password=Strong@Pass123;encrypt=false;trustServerCertificate=true"
+    },
+    "user": {
+      "name": "Mutrapro_User",
+      "host": "sqlserver",
+      "port": 1433,
+      "username": "sa",
+      "password": "Strong@Pass123",
+      "connectionString": "jdbc:sqlserver://sqlserver:1433;databaseName=Mutrapro_User;user=sa;password=Strong@Pass123;encrypt=false;trustServerCertificate=true"
+    },
+    "management": {
+      "name": "Mutrapro_ManagementStudio",
+      "host": "sqlserver",
+      "port": 1433,
+      "username": "sa",
+      "password": "Strong@Pass123",
+      "connectionString": "jdbc:sqlserver://sqlserver:1433;databaseName=Mutrapro_ManagementStudio;user=sa;password=Strong@Pass123;encrypt=false;trustServerCertificate=true"
+    }
+  },
+  "driver": {
+    "class": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+    "location": "/opt/nifi/nifi-current/extensions/drivers/mssql-jdbc.jar"
+  }
+}
