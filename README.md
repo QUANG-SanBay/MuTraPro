@@ -205,3 +205,7 @@ docker exec -it user-service python manage.py createsuperuser
   - Dockerfile đã cài `msodbcsql17`
   - Trong `user-service/userService/userService/settings.py` cần `driver: "ODBC Driver 17 for SQL Server"`.
 
+### Lệnh rebuild lại tất cả
+``` bash
+docker-compose stop gateway user-service payment-service order-service notification-service media-service management-studio-service rabbitmq nifi; docker-compose build --no-cache gateway user-service payment-service order-service notification-service media-service management-studio-service; docker-compose up -d
+```
