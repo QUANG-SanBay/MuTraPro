@@ -3,11 +3,13 @@ import { Upload } from "lucide-react";
 
 const UploadOrderForm = () => {
   const [form, setForm] = useState({
-    serviceType: "Gửi bản nhạc có sẵn",
-    songName: "",
-    note: "",
+    customerName: "",
+    email: "",
+    phone: "",
+    tags: "",
     file: null,
   });
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -23,97 +25,118 @@ const UploadOrderForm = () => {
 
     try {
       const formData = new FormData();
-      Object.entries(form).forEach(([key, value]) => {
-        if (value !== null) formData.append(key, value);
-      });
+      formData.append("customerName", form.customerName);
+      formData.append("email", form.email);
+      formData.append("phone", form.phone);
+      formData.append("tags", form.tags);
+      if (form.file) formData.append("file", form.file);
 
-      // Gọi đúng endpoint BE nhận FormData
       const response = await fetch("http://localhost:4001/orders/upload", {
         method: "POST",
         body: formData,
       });
 
-      if (!response.ok) throw new Error("Failed to create order");
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || "Failed to create order");
+      }
 
-      const data = await response.json(); // dữ liệu trả về từ BE
+      const data = await response.json();
       console.log("Created order:", data);
 
       setMessage("🎵 Gửi yêu cầu thành công!");
-      setForm({ serviceType: "Gửi bản nhạc có sẵn", songName: "", note: "", file: null });
+      setForm({ customerName: "", email: "", phone: "", tags: "", file: null });
     } catch (err) {
       console.error(err);
-      setMessage("❌ Lỗi khi gửi yêu cầu. Vui lòng thử lại.");
+      setMessage("❌ Lỗi khi gửi yêu cầu: " + err.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 space-y-6">
-        <h2 className="text-2xl font-bold text-center">Gửi yêu cầu bản nhạc</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 via-purple-50 to-orange-50 p-6">
+      <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl p-8 space-y-6">
+        <h2 className="text-3xl font-extrabold text-center text-gray-800">Gửi yêu cầu bản nhạc</h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Loại dịch vụ */}
-          <div>
-            <label className="block text-sm text-gray-700 mb-1">Loại dịch vụ</label>
-            <input
-              type="text"
-              value={form.serviceType}
-              readOnly
-              className="w-full border border-gray-300 rounded-lg p-2 bg-gray-100 text-gray-700"
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="space-y-5">
 
-          {/* Tên bài hát */}
-          <div>
-            <label className="block text-sm text-gray-700 mb-1">Tên bài hát</label>
+          {/** Customer Name */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-700 mb-1">Tên khách hàng</label>
             <input
-              type="text"
-              name="songName"
-              placeholder="Nhập tên bài hát"
-              value={form.songName}
+              name="customerName"
+              value={form.customerName}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Nhập tên của bạn"
+              className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent shadow-sm transition"
+              required
             />
           </div>
 
-          {/* Upload file */}
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-            <Upload className="mx-auto mb-2 text-gray-400" size={32} />
-            <p className="text-gray-600 text-sm">Upload bản nhạc/ký âm</p>
-            <p className="text-gray-400 text-xs mb-3">Hỗ trợ: MP3, WAV, FLAC, AIFF</p>
+          {/** Email */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="example@email.com"
+              className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent shadow-sm transition"
+              required
+            />
+          </div>
+
+          {/** Phone */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-700 mb-1">Số điện thoại</label>
+            <input
+              name="phone"
+              value={form.phone}
+              onChange={handleChange}
+              placeholder="Nhập số điện thoại"
+              className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent shadow-sm transition"
+              required
+            />
+          </div>
+
+          {/** Tags */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-700 mb-1">Tags</label>
+            <input
+              name="tags"
+              value={form.tags}
+              onChange={handleChange}
+              placeholder="Ví dụ: Thu âm, Cao, Mới"
+              className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent shadow-sm transition"
+            />
+          </div>
+
+          {/** File Upload */}
+          <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-purple-400 transition">
+            <Upload className="mx-auto mb-2 text-gray-400" size={36} />
+            <p className="text-gray-600 text-sm mb-2">Upload bản nhạc (tùy chọn)</p>
             <input
               type="file"
               name="file"
               onChange={handleChange}
-              className="w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-blue-500 file:text-white hover:file:bg-blue-600 cursor-pointer"
+              className="w-full text-sm"
             />
           </div>
 
-          {/* Ghi chú */}
-          <div>
-            <label className="block text-sm text-gray-700 mb-1">Ghi chú</label>
-            <textarea
-              name="note"
-              placeholder="Thêm ghi chú về yêu cầu xử lý (nếu có)"
-              value={form.note}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-          </div>
-
-          {/* Submit button */}
+          {/** Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-black text-white py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors"
+            className="w-full bg-purple-600 text-white py-3 rounded-xl font-semibold hover:bg-purple-700 transition"
           >
             {loading ? "Đang gửi..." : "📩 Gửi yêu cầu"}
           </button>
 
-          {/* Message */}
-          {message && <p className="text-center text-sm text-gray-600 mt-2">{message}</p>}
+          {message && (
+            <p className="text-center text-sm mt-2 font-medium text-gray-700">{message}</p>
+          )}
         </form>
       </div>
     </div>

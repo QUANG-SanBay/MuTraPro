@@ -2,17 +2,16 @@ package com.mutrapro.order_service.model;
 
 import java.util.Date;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "Orders")
@@ -21,77 +20,77 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "OrderID")
-    private Integer id;
-
-    @Column(name = "CustomerID", nullable = false)
-    private Integer customerId;
+    private Long id;
 
     @Column(name = "OrderDate")
-    private Date thoiGianTao;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date orderDate;
 
     @Column(name = "TotalAmount")
-    private double tongTien;
+    private Double totalAmount;
 
-    @Enumerated(EnumType.STRING)
-    private OrderStatus trangThai;
-
+    @Column(name = "lanCuoiCapNhat")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date lanCuoiCapNhat;
 
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private ServiceRequestFile serviceRequestFile;
-
     @Enumerated(EnumType.STRING)
-    private ServiceType serviceType;
+    @Column(name = "trangThai")
+    private OrderStatus trangThai;
 
-    @Column(name = "SongName")
-    private String songName;
+    @Column(name = "OrderType")
+    private String orderType;
 
-    @Column(name = "Note")
-    private String note;
+    @Column(name = "CustomerName")
+    private String customerName;
 
-    // ===== Getters & Setters =====
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
+    @Column(name = "Email")
+    private String email;
 
-    public Integer getCustomerId() { return customerId; }
-    public void setCustomerId(Integer customerId) { this.customerId = customerId; }
+    @Column(name = "Phone")
+    private String phone;
 
-    public Date getThoiGianTao() { return thoiGianTao; }
-    public void setThoiGianTao(Date thoiGianTao) { this.thoiGianTao = thoiGianTao; }
+    @Column(name = "Tags")
+    private String tags;
 
-    public double getTongTien() { return tongTien; }
-    public void setTongTien(double tongTien) { this.tongTien = tongTien; }
+    @Column(name = "FilePath")
+    private String filePath;
 
-    public OrderStatus getTrangThai() { return trangThai; }
-    public void setTrangThai(OrderStatus trangThai) { this.trangThai = trangThai; }
+    @Column(name = "RequestCode")
+    private String requestCode;
+
+    // Getters / Setters
+    public Long getId() { return id; }
+
+    public Date getOrderDate() { return orderDate; }
+    public void setOrderDate(Date orderDate) { this.orderDate = orderDate; }
+
+    public Double getTotalAmount() { return totalAmount; }
+    public void setTotalAmount(Double totalAmount) { this.totalAmount = totalAmount; }
 
     public Date getLanCuoiCapNhat() { return lanCuoiCapNhat; }
     public void setLanCuoiCapNhat(Date lanCuoiCapNhat) { this.lanCuoiCapNhat = lanCuoiCapNhat; }
 
-    public ServiceRequestFile getServiceRequestFile() { return serviceRequestFile; }
-    public void setServiceRequestFile(ServiceRequestFile serviceRequestFile) {
-        this.serviceRequestFile = serviceRequestFile;
-        if (serviceRequestFile != null) {
-            serviceRequestFile.setOrder(this);
-        }
-    }
+    public OrderStatus getTrangThai() { return trangThai; }
+    public void setTrangThai(OrderStatus trangThai) { this.trangThai = trangThai; }
 
-    public ServiceType getServiceType() { return serviceType; }
-    public void setServiceType(ServiceType serviceType) { this.serviceType = serviceType; }
+    public String getOrderType() { return orderType; }
+    public void setOrderType(String orderType) { this.orderType = orderType; }
 
-    public String getSongName() { return songName; }
-    public void setSongName(String songName) { this.songName = songName; }
+    public String getCustomerName() { return customerName; }
+    public void setCustomerName(String customerName) { this.customerName = customerName; }
 
-    public String getNote() { return note; }
-    public void setNote(String note) { this.note = note; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    // ===== Logic helper =====
-    public void tinhTongTien() {
-        this.tongTien = 100000; // hoặc logic tính tổng tiền thực tế
-    }
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
 
-    public void capNhatTrangThai(OrderStatus status) {
-        this.trangThai = status;
-        this.lanCuoiCapNhat = new Date();
-    }
+    public String getTags() { return tags; }
+    public void setTags(String tags) { this.tags = tags; }
+
+    public String getFilePath() { return filePath; }
+    public void setFilePath(String filePath) { this.filePath = filePath; }
+
+    public String getRequestCode() { return requestCode; }
+    public void setRequestCode(String requestCode) { this.requestCode = requestCode; }
 }

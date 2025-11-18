@@ -1,0 +1,2 @@
+CREATE DATABASE Mutrapro_Order;
+GO
