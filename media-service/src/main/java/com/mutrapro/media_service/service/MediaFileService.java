@@ -1,52 +1,38 @@
 package com.mutrapro.media_service.service;
 
-import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
+import com.mutrapro.media_service.model.AccessLevel;
 import com.mutrapro.media_service.model.MediaFile;
 import com.mutrapro.media_service.repository.MediaFileRepository;
 
 @Service
 public class MediaFileService {
 
-    private final MediaFileRepository mediaFileRepository;
+    private final MediaFileRepository repository;
 
-    public MediaFileService(MediaFileRepository mediaFileRepository) {
-        this.mediaFileRepository = mediaFileRepository;
+    public MediaFileService(MediaFileRepository repository) {
+        this.repository = repository;
     }
 
-    public MediaFile uploadFile(MultipartFile file, Long ownerUserId, Long entityId, String entityType, String urlStorage) throws IOException {
-        MediaFile mf = new MediaFile();
-        mf.setOwnerUserId(ownerUserId);
-        mf.setEntityId(entityId);
-        mf.setEntityType(entityType);
-        mf.setNameFile(file.getOriginalFilename());
-        mf.setUrlStorage(urlStorage);
-        mf.setTypemime(file.getContentType());
-        mf.setSizeInBytes(file.getSize());
-        mf.setStatus("Chờ xử lý");
-        mf.setProgress(0);
-        return mediaFileRepository.save(mf);
+    public MediaFile save(MediaFile file) {
+        file.ensureId();
+        file.setUploadTimestamp(LocalDateTime.now());
+        return repository.save(file);
     }
 
-    public Optional<MediaFile> getFileById(UUID fileId) {
-        return mediaFileRepository.findById(fileId);
+    public List<MediaFile> getAll() {
+        return repository.findAll();
     }
 
-    public List<MediaFile> getFilesByOwner(Long ownerUserId) {
-        return mediaFileRepository.findByOwnerUserId(ownerUserId);
+    public List<MediaFile> getAllPublic() {
+        return repository.findByAccessLevel(AccessLevel.PUBLIC);
     }
 
-    public List<MediaFile> getFilesByEntity(Long entityId, String entityType) {
-        return mediaFileRepository.findByEntityIdAndEntityType(entityId, entityType);
-    }
-
-    public void deleteFile(UUID fileId) {
-        mediaFileRepository.deleteById(fileId);
+    public MediaFile getById(String id) {
+        return repository.findById(id).orElse(null);
     }
 }

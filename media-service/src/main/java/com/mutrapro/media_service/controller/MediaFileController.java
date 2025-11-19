@@ -1,70 +1,47 @@
 package com.mutrapro.media_service.controller;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.mutrapro.media_service.model.MediaFile;
 import com.mutrapro.media_service.service.MediaFileService;
 
 @RestController
-@RequestMapping("/api/media")
+@RequestMapping("/media")
 public class MediaFileController {
 
-    private final MediaFileService mediaFileService;
+    private final MediaFileService service;
 
-    public MediaFileController(MediaFileService mediaFileService) {
-        this.mediaFileService = mediaFileService;
+    public MediaFileController(MediaFileService service) {
+        this.service = service;
     }
 
-    // ========== 1️⃣ Upload file thật ==========
     @PostMapping("/upload")
-    public ResponseEntity<MediaFile> uploadFile(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam("ownerUserId") Long ownerUserId,
-            @RequestParam("entityId") Long entityId,
-            @RequestParam("entityType") String entityType) throws IOException {
-
-        String fakeStorageUrl = "https://storage.mutrapro.com/uploads/" + file.getOriginalFilename();
-        MediaFile saved = mediaFileService.uploadFile(file, ownerUserId, entityId, entityType, fakeStorageUrl);
-        return ResponseEntity.ok(saved);
+    public MediaFile upload(@RequestBody MediaFile file) {
+        return service.save(file);
     }
 
-    // ========== 2️⃣ Lấy file theo ID ==========
-    @GetMapping("/{fileId}")
-    public ResponseEntity<MediaFile> getFileById(@PathVariable UUID fileId) {
-        Optional<MediaFile> file = mediaFileService.getFileById(fileId);
-        return file.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping
+    public List<MediaFile> getAll() {
+        return service.getAll();
     }
 
-    // ========== 3️⃣ Lấy danh sách theo Owner ==========
-    @GetMapping("/owner/{ownerUserId}")
-    public List<MediaFile> getFilesByOwner(@PathVariable Long ownerUserId) {
-        return mediaFileService.getFilesByOwner(ownerUserId);
+    @GetMapping("/public")
+    public List<MediaFile> getPublicFiles() {
+        return service.getAllPublic();
     }
 
-    // ========== 4️⃣ Lấy danh sách theo Entity ==========
-    @GetMapping("/entity")
-    public List<MediaFile> getFilesByEntity(@RequestParam Long entityId, @RequestParam String entityType) {
-        return mediaFileService.getFilesByEntity(entityId, entityType);
+    @GetMapping("/{id}")
+    public ResponseEntity<MediaFile> get(@PathVariable String id) {
+        MediaFile file = service.getById(id);
+        if (file == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(file);
     }
-
-    // ========== 5️⃣ Xoá file ==========
-    @DeleteMapping("/{fileId}")
-    public ResponseEntity<Void> deleteFile(@PathVariable UUID fileId) {
-        mediaFileService.deleteFile(fileId);
-        return ResponseEntity.noContent().build();
-    }
-
 }

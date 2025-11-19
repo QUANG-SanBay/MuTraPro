@@ -3,82 +3,162 @@ package com.mutrapro.media_service.model;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "MediaFile")
+@Table(name = "media_file")
 public class MediaFile {
 
     @Id
-    @GeneratedValue
-    @Column(name = "IDfile")
-    private UUID idfile;
+    @Column(name = "id_file", nullable = false, updatable = false)
+    private String idFile;
 
-    @Column(name = "IDUser", nullable = false)
-    private Long ownerUserId;
+    @Column(name = "id_user", nullable = false)
+    private Long idUser;
 
-    @Column(name = "NameFile", nullable = false)
+    @Column(name = "name_file", nullable = false)
     private String nameFile;
 
-    @Column(name = "IDEntity", nullable = false)
-    private Long entityId;
+    @Column(name = "id_entity")
+    private Long idEntity;
 
-    @Column(name = "TypeEntity", nullable = false)
-    private String entityType;
+    @Column(name = "type_entity")
+    private String typeEntity;
 
-    @Column(name = "UrlStorage", nullable = false)
+    @Column(name = "url_storage")
     private String urlStorage;
 
-    @Column(name = "Typemime")
-    private String typemime;
+    @Column(name = "typemime")
+    private String typeMime;
 
-    @Column(name = "sizeInBytes")
-    private Long sizeInBytes;
+    @Column(name = "size_in_bytes")
+    private String sizeInBytes;
 
-    @Column(name = "uploadTimestamp")
-    private LocalDateTime uploadTimestamp = LocalDateTime.now();
+    @Column(name = "upload_timestamp")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime uploadTimestamp;
 
-    @Column(name = "status")
-    private String status = "Chờ xử lý";
+    @Enumerated(EnumType.STRING)
+    @Column(name = "access_level", nullable = false)
+    private AccessLevel accessLevel;
 
-    @Column(name = "progress")
-    private Integer progress = 0;
+    // ===== Constructor rỗng =====
+    public MediaFile() {
+    }
 
-    // Getters & Setters
-    public UUID getIdfile() { return idfile; }
-    public void setIdfile(UUID idfile) { this.idfile = idfile; }
+    // ===== Constructor đầy đủ =====
+    public MediaFile(String idFile, Long idUser, String nameFile, Long idEntity,
+                     String typeEntity, String urlStorage, String typeMime,
+                     String sizeInBytes, LocalDateTime uploadTimestamp, AccessLevel accessLevel) {
+        this.idFile = idFile;
+        this.idUser = idUser;
+        this.nameFile = nameFile;
+        this.idEntity = idEntity;
+        this.typeEntity = typeEntity;
+        this.urlStorage = urlStorage;
+        this.typeMime = typeMime;
+        this.sizeInBytes = sizeInBytes;
+        this.uploadTimestamp = uploadTimestamp;
+        this.accessLevel = accessLevel;
+    }
 
-    public Long getOwnerUserId() { return ownerUserId; }
-    public void setOwnerUserId(Long ownerUserId) { this.ownerUserId = ownerUserId; }
+    // ===== GETTER/SETTER =====
+    public String getIdFile() {
+        return idFile;
+    }
 
-    public String getNameFile() { return nameFile; }
-    public void setNameFile(String nameFile) { this.nameFile = nameFile; }
+    public void setIdFile(String idFile) {
+        this.idFile = idFile;
+    }
 
-    public Long getEntityId() { return entityId; }
-    public void setEntityId(Long entityId) { this.entityId = entityId; }
+    public Long getIdUser() {
+        return idUser;
+    }
 
-    public String getEntityType() { return entityType; }
-    public void setEntityType(String entityType) { this.entityType = entityType; }
+    public void setIdUser(Long idUser) {
+        this.idUser = idUser;
+    }
 
-    public String getUrlStorage() { return urlStorage; }
-    public void setUrlStorage(String urlStorage) { this.urlStorage = urlStorage; }
+    public String getNameFile() {
+        return nameFile;
+    }
 
-    public String getTypemime() { return typemime; }
-    public void setTypemime(String typemime) { this.typemime = typemime; }
+    public void setNameFile(String nameFile) {
+        this.nameFile = nameFile;
+    }
 
-    public Long getSizeInBytes() { return sizeInBytes; }
-    public void setSizeInBytes(Long sizeInBytes) { this.sizeInBytes = sizeInBytes; }
+    public Long getIdEntity() {
+        return idEntity;
+    }
 
-    public LocalDateTime getUploadTimestamp() { return uploadTimestamp; }
-    public void setUploadTimestamp(LocalDateTime uploadTimestamp) { this.uploadTimestamp = uploadTimestamp; }
+    public void setIdEntity(Long idEntity) {
+        this.idEntity = idEntity;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public String getTypeEntity() {
+        return typeEntity;
+    }
 
-    public Integer getProgress() { return progress; }
-    public void setProgress(Integer progress) { this.progress = progress; }
+    public void setTypeEntity(String typeEntity) {
+        this.typeEntity = typeEntity;
+    }
+
+    public String getUrlStorage() {
+        return urlStorage;
+    }
+
+    public void setUrlStorage(String urlStorage) {
+        this.urlStorage = urlStorage;
+    }
+
+    public String getTypeMime() {
+        return typeMime;
+    }
+
+    public void setTypeMime(String typeMime) {
+        this.typeMime = typeMime;
+    }
+
+    public String getSizeInBytes() {
+        return sizeInBytes;
+    }
+
+    public void setSizeInBytes(String sizeInBytes) {
+        this.sizeInBytes = sizeInBytes;
+    }
+
+    public LocalDateTime getUploadTimestamp() {
+        return uploadTimestamp;
+    }
+
+    public void setUploadTimestamp(LocalDateTime uploadTimestamp) {
+        this.uploadTimestamp = uploadTimestamp;
+    }
+
+    public AccessLevel getAccessLevel() {
+        return accessLevel;
+    }
+
+    public void setAccessLevel(AccessLevel accessLevel) {
+        this.accessLevel = accessLevel;
+    }
+
+    // ===== Tự sinh UUID nếu không có =====
+    public void ensureId() {
+        if (this.idFile == null || this.idFile.isEmpty()) {
+            this.idFile = UUID.randomUUID().toString();
+        }
+    }
+
+    // ===== URL truy cập file =====
+    public String generatePresignedUrl() {
+        return "https://storage.mutrapro.com/media/" + idFile;
+    }
 }
