@@ -8,6 +8,10 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterSerializer, UserSerializer, LoginSerializer, UpdateProfileSerializer, ChangePasswordSerializer
 from .permissions import IsAdmin, IsCustomer, role_required
+from utils.rabbitmq import publish_user_event, publish_notification
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def hello(request):
@@ -57,6 +61,43 @@ def register(request):
 	if serializer.is_valid():
 		user = serializer.save()
 		user_data = UserSerializer(user).data
+		
+		# 📤 Publish user.registered event to RabbitMQ
+		try:
+			publish_user_event(
+				event_type='user.registered',
+				user_data={
+					'user_id': user.id,
+					'username': user.username,
+					'email': user.email,
+					'full_name': user.full_name,
+					'role': user.role
+				},
+				extra_data={
+					'ip_address': request.META.get('REMOTE_ADDR', 'unknown'),
+					'user_agent': request.META.get('HTTP_USER_AGENT', 'unknown')
+				}
+			)
+			logger.info(f"📤 Published user.registered event for user_id={user.id}")
+			
+			# 📧 Publish welcome notification
+			publish_notification(
+				notification_type='email',
+				recipient={
+					'user_id': user.id,
+					'email': user.email,
+					'full_name': user.full_name
+				},
+				template='welcome_email',
+				data={
+					'verification_link': f'https://app.com/verify/{user.id}'
+				},
+				priority='high'
+			)
+			logger.info(f"📧 Published welcome notification for user_id={user.id}")
+		except Exception as e:
+			logger.error(f"❌ Failed to publish events: {e}")
+			# Don't fail registration if event publishing fails
 		
 		return Response({
 			"message": "Đăng ký thành công",
@@ -112,6 +153,27 @@ def login(request):
 		
 		# Return user data and tokens
 		user_data = UserSerializer(user).data
+		
+		# 📤 Publish user.login event to RabbitMQ
+		try:
+			publish_user_event(
+				event_type='user.login',
+				user_data={
+					'user_id': user.id,
+					'username': user.username,
+					'email': user.email,
+					'role': user.role
+				},
+				extra_data={
+					'ip_address': request.META.get('REMOTE_ADDR', 'unknown'),
+					'user_agent': request.META.get('HTTP_USER_AGENT', 'unknown'),
+					'login_timestamp': datetime.utcnow().isoformat() + 'Z'
+				}
+			)
+			logger.info(f"📤 Published user.login event for user_id={user.id}")
+		except Exception as e:
+			logger.error(f"❌ Failed to publish login event: {e}")
+			# Don't fail login if event publishing fails
 		
 		return Response({
 			"message": "Đăng nhập thành công",

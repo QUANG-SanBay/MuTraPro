@@ -241,6 +241,15 @@
                         background-color: #f9fafb;
                     }
 
+                    // Highlight animations for live activity
+                    &.highlightSuccess {
+                        animation: flashGreen 2s ease-out;
+                    }
+
+                    &.highlightInfo {
+                        animation: flashBlue 2s ease-out;
+                    }
+
                     td {
                         padding: 1rem;
                         color: #1f2937;
@@ -471,5 +480,38 @@
                 min-width: 800px;
             }
         }
+    }
+}
+
+// Keyframe animations for live activity highlights
+@keyframes flashGreen {
+    0% {
+        background-color: rgba(34, 197, 94, 0.3);
+        transform: scale(1.01);
+        box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+    }
+    50% {
+        background-color: rgba(34, 197, 94, 0.15);
+    }
+    100% {
+        background-color: transparent;
+        transform: scale(1);
+        box-shadow: none;
+    }
+}
+
+@keyframes flashBlue {
+    0% {
+        background-color: rgba(59, 130, 246, 0.3);
+        transform: scale(1.01);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+    50% {
+        background-color: rgba(59, 130, 246, 0.15);
+    }
+    100% {
+        background-color: transparent;
+        transform: scale(1);
+        box-shadow: none;
     }
 }

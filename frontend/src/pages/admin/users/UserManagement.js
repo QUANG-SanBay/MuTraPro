@@ -21,6 +21,7 @@ import {
 import UserModal from './components/UserModal/UserModal';
 import DeleteConfirmModal from './components/DeleteConfirmModal/DeleteConfirmModal';
 import UserFilters from './components/UserFilters/UserFilters';
+import LiveActivityFeed from './LiveActivityFeed';
 
 const UserManagement = () => {
     // State management
@@ -47,6 +48,10 @@ const UserManagement = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [modalMode, setModalMode] = useState('create'); // 'create' or 'edit'
+    
+    // Highlight state for live events
+    const [highlightedUserId, setHighlightedUserId] = useState(null);
+    const [highlightType, setHighlightType] = useState(null);
 
     // Fetch users on component mount
     useEffect(() => {
@@ -88,6 +93,25 @@ const UserManagement = () => {
             console.error('Error fetching users:', err);
         } finally {
             setLoading(false);
+        }
+    };
+    
+    /**
+     * Handle highlighting user from live activity
+     */
+    const handleHighlightUser = (userId, eventType) => {
+        setHighlightedUserId(userId);
+        setHighlightType(eventType === 'user.registered' ? 'success' : 'info');
+        
+        // Auto-clear highlight after 5 seconds
+        setTimeout(() => {
+            setHighlightedUserId(null);
+            setHighlightType(null);
+        }, 5000);
+        
+        // If user registered, refresh user list to show new user
+        if (eventType === 'user.registered') {
+            fetchUsers();
         }
     };
 
@@ -286,6 +310,9 @@ const UserManagement = () => {
                     <button onClick={() => setSuccess(null)}>&times;</button>
                 </div>
             )}
+            
+            {/* Live Activity Feed */}
+            <LiveActivityFeed onHighlightUser={handleHighlightUser} />
 
             {/* Search and Filter Bar */}
             <div className={styles.searchFilterBar}>
@@ -372,7 +399,10 @@ const UserManagement = () => {
                             </thead>
                             <tbody>
                                 {currentUsers.map((user) => (
-                                    <tr key={user.id}>
+                                    <tr 
+                                        key={user.id}
+                                        className={user.id === highlightedUserId ? styles[`highlight${highlightType === 'success' ? 'Success' : 'Info'}`] : ''}
+                                    >
                                         <td>{user.id}</td>
                                         <td>
                                             <div className={styles.userInfo}>

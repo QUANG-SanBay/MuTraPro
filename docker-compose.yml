@@ -21,8 +21,8 @@ services:
       - "5672:5672"
       - "15672:15672"
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: Admin@123
       # nạp sẵn exchange/queue/binding
       RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: >-
         -rabbitmq_management load_definitions "/etc/rabbitmq/definitions.json"
@@ -208,6 +208,10 @@ services:
         - DB_USER=sa
         - DB_PASSWORD=Strong@Pass123
         - DB_NAME=Mutrapro_User
+        - RABBITMQ_HOST=rabbitmq
+        - RABBITMQ_PORT=5672
+        - RABBITMQ_USER=admin
+        - RABBITMQ_PASS=Admin@123
       ports:
         - "8005:8000"
       networks:
@@ -231,6 +235,10 @@ services:
       - MEDIA_SERVICE_URL=http://media-service:4004
       - MANAGEMENT_STUDIO_SERVICE_URL=http://management-studio-service:4005
       - USER_SERVICE_URL=http://user-service:8000
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=admin
+      - RABBITMQ_PASS=Admin@123
     ports:
       - "8000:8000"
     networks:
