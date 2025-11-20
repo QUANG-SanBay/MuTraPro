@@ -1,19 +1,20 @@
-# ./payment-service/Dockerfile
-FROM node:20-alpine
+# Sử dụng Node.js chính thức
+FROM node:20
 
+# Đặt thư mục làm việc
 WORKDIR /app
 
-# Copy package.json + package-lock.json
+# Copy package.json và package-lock.json (nếu có)
 COPY package*.json ./
 
 # Cài dependencies
 RUN npm install
 
-# Copy toàn bộ code
+# Copy toàn bộ code vào container
 COPY . .
 
-# Expose port
+# Expose port (nếu app chạy ở 4002)
 EXPOSE 4002
 
-# Khởi chạy app
-CMD ["node", "src/index.js"]
+# Lệnh chạy app
+CMD ["npm", "start"]

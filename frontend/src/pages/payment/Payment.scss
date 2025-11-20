@@ -1,0 +1,520 @@
+/* Basic layout */
+.root-bg {
+    background: linear-gradient(180deg, #f7fafc, #f1f5f9);
+    min-height: 100vh;
+    padding: 32px 16px;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* card */
+.card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.card-header {
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.card-footer {
+    padding: 14px 20px;
+    background: #fbfbfb;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* gradients */
+.gradient-red {
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+    color: #fff;
+}
+
+.gradient-blue {
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    color: #fff;
+}
+
+/* steps header */
+.steps-header .steps-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 12px 6px;
+}
+
+.step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    text-align: center;
+}
+
+.step-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #d1d5db;
+    margin-bottom: 8px;
+}
+
+.step-circle.active {
+    background: #ef4444;
+}
+
+.step-circle.completed {
+    background: #10b981;
+}
+
+.step-label {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.step-label.text-active {
+    color: #ef4444;
+}
+
+.step-label.text-completed {
+    color: #10b981;
+}
+
+.step-line {
+    height: 6px;
+    background: #e5e7eb;
+    flex: 1;
+    margin: 0 12px;
+    border-radius: 6px;
+}
+
+.step-line.line-active {
+    background: #10b981;
+}
+
+/* Step1 guide */
+.header-left {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.header-left h1 {
+    font-size: 20px;
+    margin: 0;
+}
+
+.notice {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.notice.warning {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    color: #92400e;
+}
+
+.notice .notice-title {
+    font-weight: 600;
+}
+
+.method-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.method-card {
+    border: 1px solid #e6e6e6;
+    border-radius: 12px;
+    padding: 14px;
+}
+
+.method-top {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.method-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.pm-blue {
+    background: linear-gradient(135deg, #60a5fa, #3b82f6);
+}
+
+.pm-purple {
+    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+}
+
+.pm-green {
+    background: linear-gradient(135deg, #34d399, #10b981);
+}
+
+.method-info .method-name {
+    font-weight: 600;
+}
+
+.method-desc {
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.method-guide {
+    margin-left: 60px;
+    margin-top: 8px;
+}
+
+.guide-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 6px;
+}
+
+.guide-index {
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: #fff1f2;
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.btn {
+    border: 0;
+    padding: 10px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+    color: #fff;
+}
+
+.btn-primary.full {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-outline {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    color: #374151;
+}
+
+/* grid layout for steps 2 & 3 */
+.grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 20px;
+    align-items: start;
+}
+
+.col-main {}
+
+.col-side {}
+
+/* order item */
+.order-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.order-item {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.item-thumb {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #e5e7eb, #f3f4f6);
+}
+
+.item-info .item-name {
+    font-weight: 600;
+}
+
+.item-price {
+    margin-left: auto;
+    text-align: right;
+}
+
+/* shipping info */
+.shipping-card {
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ship-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    color: #374151;
+}
+
+/* action row */
+.action-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.action-row .btn {
+    flex: 1;
+}
+
+/* summary card */
+.summary-card {
+    padding: 16px;
+    border-radius: 12px;
+}
+
+.summary-title {
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.summary-body .row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    color: #374151;
+}
+
+.summary-body .discount {
+    color: #059669;
+}
+
+.summary-body .total {
+    font-weight: 700;
+    font-size: 18px;
+    color: #b91c1c;
+}
+
+.order-code {
+    margin-top: 12px;
+    background: #f8fafc;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: left;
+}
+
+/* method selects in step3 */
+.method-select-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.method-select {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #e6e6e6;
+    padding: 12px;
+    border-radius: 12px;
+    background: #fff;
+    cursor: pointer;
+    text-align: left;
+}
+
+.method-select.selected {
+    border-color: #ef4444;
+    background: #fff7f6;
+    transform: scale(1.01);
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.08);
+}
+
+.method-checked {
+    margin-left: auto;
+    background: #ef4444;
+    color: #fff;
+    padding: 6px 8px;
+    border-radius: 8px;
+    font-weight: 700;
+}
+
+/* form styles */
+.card.small {
+    padding: 16px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: none;
+    border: 1px solid #f1f5f9;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.form-row label {
+    font-size: 13px;
+    color: #374151;
+}
+
+.form-row input {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #e6e6e6;
+    outline: none;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.card-logos img {
+    height: 28px;
+    margin-right: 8px;
+}
+
+/* qr */
+.qr-card .qr-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+    margin-bottom: 12px;
+}
+
+.qr-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* small helpers */
+.small {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.muted {
+    color: #6b7280;
+}
+
+.text-red {
+    color: #b91c1c;
+}
+
+.num-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: #ef4444;
+    font-weight: 700;
+    margin-right: 12px;
+}
+
+
+.bank-card {
+    max-width: 500px;
+    margin: 30px auto;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 20px 25px;
+    font-family: 'Segoe UI', sans-serif;
+
+    h3{
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+        font-weight: 600;
+    }
+
+
+    .bank-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 8px 0;
+        font-size: 15px;
+
+        span {
+            color: #555;
+        }
+
+        strong {
+            color: #222;
+        }
+
+        .text-red {
+            color: #d93025;
+            font-weight: bold;
+        }
+    }}
+/* responsive */
+@media (max-width: 900px) {
+    .grid-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .container {
+        padding: 0 12px;
+    }
+}

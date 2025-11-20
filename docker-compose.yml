@@ -1,4 +1,3 @@
-
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -11,7 +10,7 @@ services:
     networks:
       - microservices-net
     volumes:
-      - ./init-sql:/docker-entrypoint-initdb.d
+      - sqlserver-data:/var/opt/mssql
  
   # -------------------- RABBITMQ -------------------- #
   rabbitmq:
@@ -94,14 +93,16 @@ services:
       - ./payment-service:/app
     container_name: payment-service
     restart: always
+    env_file:
+      - ./payment-service/.env
     environment:
-      - PORT=4002
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
-      - DB_HOST=sqlserver
-      - DB_PORT=1433
-      - DB_USER=sa
-      - DB_PASSWORD=Strong@Pass123
-      - DB_NAME=Mutrapro_Payment
+      PORT: 4002
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      DB_HOST: sqlserver  
+      DB_PORT: 1433
+      DB_USER: sa
+      DB_PASSWORD: Strong@Pass123
+      DB_NAME: Mutrapro_Payment
     ports:
       - "4002:4002"
     networks:
@@ -109,8 +110,8 @@ services:
     depends_on:
       - rabbitmq
       - sqlserver
-
-  # -------------------- ORDER SERVICE -------------------- #
+    command: npm run dev
+  # -------------------- ORDER SERVICE --------------------
   order-service:
     build: ./order-service
     container_name: order-service
@@ -151,7 +152,6 @@ services:
     depends_on:
       - rabbitmq
       - sqlserver
-
   # -------------------- MEDIA SERVICE -------------------- #
   media-service:
     build: ./media-service
@@ -172,7 +172,8 @@ services:
     depends_on:
       - rabbitmq
       - sqlserver
-# -------------------- MANAGEMENT STUDIO SERVICE -------------------- #
+
+  # -------------------- MANAGEMENT STUDIO SERVICE -------------------- #
   management-studio-service:
     build: ./management-studio-service
     container_name: management-studio-service
@@ -227,6 +228,8 @@ services:
       - ./gate-way:/app
     container_name: gateway
     restart: always
+    env_file:
+      - ./gate-way/.env
     environment:
       - PORT=8000
       - PAYMENT_SERVICE_URL=http://payment-service:4002
@@ -246,17 +249,20 @@ services:
     depends_on:
       - payment-service
       - rabbitmq
+    command: npm run dev
 
+# -------------------- NETWORKS -------------------- #
 networks:
   microservices-net:
     driver: bridge
 
+# -------------------- VOLUMES -------------------- #
 volumes:
-    sqlserver-data:
-    nifi-conf:
-    nifi-database-repository:
-    nifi-flowfile-repository:
-    nifi-content-repository:
-    nifi-provenance-repository:
-    nifi-state:
-    nifi-logs:
+  sqlserver-data:
+  nifi-conf:
+  nifi-database-repository:
+  nifi-flowfile-repository:
+  nifi-content-repository:
+  nifi-provenance-repository:
+  nifi-state:
+  nifi-logs:

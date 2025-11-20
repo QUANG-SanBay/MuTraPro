@@ -13,6 +13,7 @@ Dự án gồm nhiều service (Node.js, Spring Boot, Django) kết nối chung 
 ---
 
 ### Cấu trúc thư mục
+
 ```
 MuTraPro/
 docker-compose.yml
@@ -26,6 +27,7 @@ user-service/ (Django)
 frontend/ (React)
 nifi/                            # Apache NiFi integration
 ```
+
 ---
 
 ### Biến môi trường
@@ -33,10 +35,12 @@ nifi/                            # Apache NiFi integration
 Một số service có `.env` riêng (nếu chưa có, tạo theo mẫu dưới). Mặc định `docker-compose.yml` đã set sẵn hầu hết biến quan trọng.
 
 - SQL Server (trong docker-compose):
+
   - `SA_PASSWORD=Strong@Pass123`
   - `ACCEPT_EULA=Y`
 
 - RabbitMQ:
+
   - `RABBITMQ_DEFAULT_USER=guest`
   - `RABBITMQ_DEFAULT_PASS=guest`
 
@@ -45,6 +49,7 @@ Một số service có `.env` riêng (nếu chưa có, tạo theo mẫu dưới)
   - `SINGLE_USER_CREDENTIALS_PASSWORD=AdminPass123456`
 
 - Django user-service (nếu cần `.env`):
+
 ```
 DJANGO_SETTINGS_MODULE=userService.settings
 DB_ENGINE=mssql
@@ -56,6 +61,7 @@ DB_NAME=Mutrapro_User
 ```
 
 - Gateway
+
 ```
 PORT=8000
 PAYMENT_SERVICE_URL=http://payment-service:4002
@@ -73,7 +79,9 @@ PAYMENT_SERVICE_URL=http://payment-service:4002
 ---
 
 ### Chạy nhanh (Quick Start)
-lưu ý FE và payment service 
+
+lưu ý FE và payment service
+
 ```bash
 npm install
 ```
@@ -172,16 +180,19 @@ NiFi đã được tích hợp để xử lý và quản lý luồng dữ liệu
 ### Câu lệnh hữu ích
 
 - Dừng/xóa tất cả
+
 ```bash
 docker-compose down
 ```
 
 - Xóa image/dangling data (cẩn thận)
+
 ```bash
 docker system prune -f
 ```
 
 - Xem log một service
+
 ```bash
 docker logs -f user-service
 ```
@@ -194,7 +205,6 @@ tạo tk admin trong user service
 docker exec -it user-service python manage.py createsuperuser
 ```
 ---
-
 
 ---
 
