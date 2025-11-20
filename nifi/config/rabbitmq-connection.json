@@ -1,0 +1,50 @@
+{
+  "name": "RabbitMQ Connection Configuration",
+  "description": "Configuration for connecting NiFi to RabbitMQ message broker",
+  "connection": {
+    "host": "rabbitmq",
+    "port": 5672,
+    "username": "guest",
+    "password": "guest",
+    "virtualHost": "/",
+    "useSsl": false
+  },
+  "queues": {
+    "payment": {
+      "name": "payment-queue",
+      "durable": true,
+      "exclusive": false,
+      "autoDelete": false,
+      "routingKey": "payment.*"
+    },
+    "order": {
+      "name": "order-queue",
+      "durable": true,
+      "exclusive": false,
+      "autoDelete": false,
+      "routingKey": "order.*"
+    },
+    "notification": {
+      "name": "notification-queue",
+      "durable": true,
+      "exclusive": false,
+      "autoDelete": false,
+      "routingKey": "notification.*"
+    },
+    "media": {
+      "name": "media-queue",
+      "durable": true,
+      "exclusive": false,
+      "autoDelete": false,
+      "routingKey": "media.*"
+    }
+  },
+  "exchanges": {
+    "main": {
+      "name": "mutrapro-exchange",
+      "type": "topic",
+      "durable": true,
+      "autoDelete": false
+    }
+  }
+}

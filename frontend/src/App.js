@@ -1,20 +1,7 @@
-import { BrowserRouter as Router } from "react-router-dom";
-import AppRouter from "./routers/AppRouter"; // đúng với file của bạn
+import AppRouter from "./routers/AppRouter";
 import GlobalStyles from "./assets/css/globalstyles/GlobalStyles";
-import { useState, useEffect } from "react";
-import axios from "axios";
-import "./App.css";
 
 function App() {
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:8000/auth/api/hello")
-      .then((res) => setMessage(res.data))
-      .catch((err) => console.error(err));
-  }, []);
-
   return (
     <GlobalStyles>
       <Router>

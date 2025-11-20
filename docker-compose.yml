@@ -1,7 +1,4 @@
-version: '3.9'
-
 services:
-  # -------------------- SQL SERVER -------------------- #
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sqlserver
@@ -14,9 +11,7 @@ services:
       - microservices-net
     volumes:
       - sqlserver-data:/var/opt/mssql
-      - ./sqlserver-init:/docker-entrypoint-initdb.d
-
-
+ 
   # -------------------- RABBITMQ -------------------- #
   rabbitmq:
     image: rabbitmq:3-management
@@ -25,18 +20,79 @@ services:
       - "5672:5672"
       - "15672:15672"
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: Admin@123
+      # nạp sẵn exchange/queue/binding
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: >-
+        -rabbitmq_management load_definitions "/etc/rabbitmq/definitions.json"
+    volumes:
+      - ./infrastructure/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+      - ./infrastructure/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
     networks:
       - microservices-net
+
+  # -------------------- APACHE NIFI -------------------- #
+  nifi:
+    image: apache/nifi:latest
+    container_name: nifi
+    ports:
+      - "8080:8080"   # NiFi Web UI (HTTP - if configured)
+      - "8443:8443"   # NiFi Web UI (HTTPS - default)
+      - "10000:10000" # NiFi Site-to-Site
+    environment:
+      # Single User Authentication
+      SINGLE_USER_CREDENTIALS_USERNAME: admin
+      SINGLE_USER_CREDENTIALS_PASSWORD: AdminPass123456
+      # NiFi Configuration
+      NIFI_WEB_HTTP_HOST: 0.0.0.0
+      NIFI_WEB_HTTP_PORT: 8080
+      NIFI_WEB_HTTPS_HOST: ''
+      NIFI_WEB_HTTPS_PORT: ''
+      NIFI_CLUSTER_IS_NODE: 'false'
+      NIFI_ZK_CONNECT_STRING: ''
+      NIFI_ELECTION_MAX_WAIT: 1 min
+      # JVM Configuration
+      NIFI_JVM_HEAP_INIT: 512m
+      NIFI_JVM_HEAP_MAX: 2g
+      # RabbitMQ Integration
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      # Database Integration
+      DB_HOST: sqlserver
+      DB_PORT: 1433
+      DB_USER: sa
+      DB_PASSWORD: Strong@Pass123
+    volumes:
+      - nifi-conf:/opt/nifi/nifi-current/conf
+      - nifi-database-repository:/opt/nifi/nifi-current/database_repository
+      - nifi-flowfile-repository:/opt/nifi/nifi-current/flowfile_repository
+      - nifi-content-repository:/opt/nifi/nifi-current/content_repository
+      - nifi-provenance-repository:/opt/nifi/nifi-current/provenance_repository
+      - nifi-state:/opt/nifi/nifi-current/state
+      - nifi-logs:/opt/nifi/nifi-current/logs
+      - ./nifi/templates:/opt/nifi/nifi-current/templates
+      - ./nifi/extensions:/opt/nifi/nifi-current/extensions
+    networks:
+      - microservices-net
+    depends_on:
+      - rabbitmq
+      - sqlserver
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/nifi"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   # -------------------- PAYMENT SERVICE -------------------- #
   payment-service:
     build: ./payment-service
-    container_name: payment-service
-    restart: always
     volumes:
       - ./payment-service:/app
+    container_name: payment-service
+    restart: always
     env_file:
       - ./payment-service/.env
     environment:
@@ -73,16 +129,14 @@ services:
     networks:
       - microservices-net
     depends_on:
-      - sqlserver
       - rabbitmq
+      - sqlserver
 
   # -------------------- NOTIFICATION SERVICE -------------------- #
   notification-service:
     build: ./notification-service
     container_name: notification-service
     restart: always
-    env_file:
-      - ./notification-service/.env
     environment:
       - PORT=4003
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
@@ -104,8 +158,6 @@ services:
     build: ./media-service
     container_name: media-service
     restart: always
-    env_file:
-      - ./media-service/.env
     environment:
       - PORT=4004
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
@@ -127,8 +179,6 @@ services:
     build: ./management-studio-service
     container_name: management-studio-service
     restart: always
-    env_file:
-      - ./management-studio-service/.env
     environment:
       - PORT=4005
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
@@ -148,10 +198,10 @@ services:
   # -------------------- USER (DJANGO) SERVICE -------------------- #
   user-service:
     build: ./user-service
-    container_name: user-service
-    restart: always
     volumes:
       - ./user-service:/app
+    container_name: user-service
+    restart: always
     env_file:
       - ./user-service/.env
     environment:
@@ -162,6 +212,10 @@ services:
       - DB_USER=sa
       - DB_PASSWORD=Strong@Pass123
       - DB_NAME=Mutrapro_User
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=admin
+      - RABBITMQ_PASS=Admin@123
     ports:
       - "8005:8000"
     networks:
@@ -173,15 +227,24 @@ services:
   # -------------------- GATEWAY SERVICE -------------------- #
   gateway:
     build: ./gate-way
-    container_name: gateway
-    restart: always
     volumes:
       - ./gate-way:/app
+    container_name: gateway
+    restart: always
     env_file:
       - ./gate-way/.env
     environment:
       - PORT=8000
       - PAYMENT_SERVICE_URL=http://payment-service:4002
+      - NOTIFICATION_SERVICE_URL=http://notification-service:4003
+      - ORDER_SERVICE_URL=http://order-service:4001
+      - MEDIA_SERVICE_URL=http://media-service:4004
+      - MANAGEMENT_STUDIO_SERVICE_URL=http://management-studio-service:4005
+      - USER_SERVICE_URL=http://user-service:8000
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=admin
+      - RABBITMQ_PASS=Admin@123
     ports:
       - "8000:8000"
     networks:
@@ -198,3 +261,10 @@ networks:
 # -------------------- VOLUMES -------------------- #
 volumes:
   sqlserver-data:
+  nifi-conf:
+  nifi-database-repository:
+  nifi-flowfile-repository:
+  nifi-content-repository:
+  nifi-provenance-repository:
+  nifi-state:
+  nifi-logs:

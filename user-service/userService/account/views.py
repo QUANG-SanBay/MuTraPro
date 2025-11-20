@@ -400,6 +400,149 @@ def admin_update_user_status(request, user_id):
 		}, status=status.HTTP_404_NOT_FOUND)
 
 
+@api_view(['PUT', 'PATCH'])
+@permission_classes([IsAuthenticated, IsAdmin])
+def admin_update_user(request, user_id):
+	"""
+	Admin endpoint - Update user information
+	PUT/PATCH /users/admin/users/{user_id}
+	
+	Requires: Admin role
+	
+	Request body:
+	{
+		"email": "string (optional)",
+		"full_name": "string (optional)",
+		"phone_number": "string (optional)",
+		"gender": "string (optional)",
+		"role": "string (optional)",
+		"password": "string (optional)",
+		"re_password": "string (optional, required if password is set)"
+	}
+	
+	Response:
+	{
+		"message": "Cập nhật thông tin người dùng thành công",
+		"user": {...}
+	}
+	"""
+	from .models import User
+	
+	try:
+		user = User.objects.get(id=user_id)
+		
+		# Update basic fields
+		if 'email' in request.data:
+			email = request.data['email']
+			# Check if email already exists (exclude current user)
+			if User.objects.filter(email=email).exclude(id=user_id).exists():
+				return Response({
+					"message": "Cập nhật thông tin thất bại",
+					"errors": {
+						"email": ["Email đã tồn tại"]
+					}
+				}, status=status.HTTP_400_BAD_REQUEST)
+			user.email = email
+		
+		if 'full_name' in request.data:
+			user.full_name = request.data['full_name']
+		
+		if 'phone_number' in request.data:
+			user.phone_number = request.data['phone_number']
+		
+		if 'gender' in request.data:
+			user.gender = request.data['gender']
+		
+		if 'role' in request.data:
+			user.role = request.data['role']
+		
+		# Update password if provided
+		if 'password' in request.data and request.data['password']:
+			password = request.data['password']
+			re_password = request.data.get('re_password', '')
+			
+			# Validate password match
+			if password != re_password:
+				return Response({
+					"message": "Cập nhật thông tin thất bại",
+					"errors": {
+						"re_password": ["Mật khẩu không khớp"]
+					}
+				}, status=status.HTTP_400_BAD_REQUEST)
+			
+			# Validate password length
+			if len(password) < 6:
+				return Response({
+					"message": "Cập nhật thông tin thất bại",
+					"errors": {
+						"password": ["Mật khẩu phải có ít nhất 6 ký tự"]
+					}
+				}, status=status.HTTP_400_BAD_REQUEST)
+			
+			user.set_password(password)
+		
+		user.save()
+		user_data = UserSerializer(user).data
+		
+		return Response({
+			"message": "Cập nhật thông tin người dùng thành công",
+			"user": user_data
+		}, status=status.HTTP_200_OK)
+	except User.DoesNotExist:
+		return Response({
+			"message": "Người dùng không tồn tại"
+		}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsAdmin])
+def admin_create_user(request):
+	"""
+	Admin endpoint - Create new user
+	POST /users/admin/users
+	
+	Requires: Admin role
+	
+	Request body:
+	{
+		"email": "string",
+		"full_name": "string",
+		"password": "string",
+		"re_password": "string",
+		"phone_number": "string (optional)",
+		"gender": "string (optional)",
+		"role": "string (optional, default: customer)"
+	}
+	
+	Response:
+	{
+		"message": "Tạo người dùng mới thành công",
+		"user": {...}
+	}
+	"""
+	serializer = RegisterSerializer(data=request.data)
+	
+	if serializer.is_valid():
+		user = serializer.save()
+		
+		# Update role if provided
+		if 'role' in request.data:
+			user.role = request.data['role']
+			user.save()
+		
+		user_data = UserSerializer(user).data
+		
+		return Response({
+			"message": "Tạo người dùng mới thành công",
+			"user": user_data
+		}, status=status.HTTP_201_CREATED)
+	
+	return Response({
+		"message": "Tạo người dùng thất bại",
+		"errors": serializer.errors
+	}, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def check_role_access(request):
