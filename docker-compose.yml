@@ -96,13 +96,13 @@ services:
     env_file:
       - ./payment-service/.env
     environment:
-      - PORT=4002
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
-      - DB_HOST=sqlserver
-      - DB_PORT=1433
-      - DB_USER=sa
-      - DB_PASSWORD=Strong@Pass123
-      - DB_NAME=Mutrapro_Payment
+      PORT: 4002
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      DB_HOST: sqlserver  
+      DB_PORT: 1433
+      DB_USER: sa
+      DB_PASSWORD: Strong@Pass123
+      DB_NAME: Mutrapro_Payment
     ports:
       - "4002:4002"
     networks:
@@ -110,8 +110,8 @@ services:
     depends_on:
       - rabbitmq
       - sqlserver
-
-  # -------------------- ORDER SERVICE -------------------- #
+    command: npm run dev
+  # -------------------- ORDER SERVICE --------------------
   order-service:
     build: ./order-service
     container_name: order-service
@@ -152,7 +152,6 @@ services:
     depends_on:
       - rabbitmq
       - sqlserver
-
   # -------------------- MEDIA SERVICE -------------------- #
   media-service:
     build: ./media-service
@@ -252,6 +251,7 @@ services:
     depends_on:
       - payment-service
       - rabbitmq
+    command: npm run dev
 
 # -------------------- NETWORKS -------------------- #
 networks:

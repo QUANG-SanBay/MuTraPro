@@ -12,12 +12,12 @@ async function main() {
   // 3. Gửi test message (publish)
   const message = { orderId: 101, status: "SUCCESS" };
   channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
-  console.log("📤 Test message sent:", message);
+  console.log("Test message sent:", message);
 
   // 4. Nhận message (consume)
   channel.consume(queue, (msg) => {
     if (msg) {
-      console.log("📥 Message received:", msg.content.toString());
+      console.log("Message received:", msg.content.toString());
       channel.ack(msg); // Xác nhận đã nhận
     }
   });

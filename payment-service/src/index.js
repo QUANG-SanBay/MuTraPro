@@ -3,7 +3,8 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.config.js";
-import { connectRabbitMQ } from "./config/rabbit.js"
+//import { connectRabbitMQ } from "./config/rabbit.js";
+import paymentRoute from "./routes/payment.routes.js";
 import "./models/index.js";
 
 dotenv.config();
@@ -30,8 +31,10 @@ app.get("/", (req, res) => {
   res.send("Hello, Express Payment Service is running");
 });
 
+app.use("/api",paymentRoute);
+
 
 app.listen(port, "0.0.0.0", async () => {
-  await connectRabbitMQ();
+  //await connectRabbitMQ();
   console.log(`Payment service listening on port ${port}`);
 });

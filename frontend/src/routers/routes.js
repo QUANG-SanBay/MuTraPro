@@ -2,13 +2,15 @@ import React from "react";
 import { Auth } from "~/pages/auth";
 import { CustomerHome, CustomerProfile } from "~/pages/customer";
 import Services from "~/pages/customer/serivices/Services";
-// import OrderPage from "~/pages/customer/order/OrderPage";
 import { Order, OrderTracking } from "~/pages/customer/order";
 import OrderPage from "~/pages/customer/order/OrderPage";
 import Payment from "~/pages/customer/payment/Paymen";
+import PaymentPage from "~/pages/payment/PaymentPage";
+import PaymentOrders from "~/pages/payment/PaymentOrder/PaymentOrderUI";
 import { TaskDetail } from "~/pages/specialist";
 import { AdminProfile, RolePermissionManagement, ReportsStatistics } from "~/pages/admin";
 import ProductApproval from "~/pages/customer/ProductApproval.jsx";
+import ManageTaskUI from "~/pages/ManageTask/ManageTaskUI";
 
 import RequestIntakePage from "~/pages/customer/order/RequestIntakePage";
 import AssignmentPage from "../pages/customer/order/AssignmentPage";
@@ -27,7 +29,8 @@ export const customerRouter = [
     { path: '/customer/orders', element: <Order />, layout: 'default' },
     { path: '/customer/orders/tracking', element: <OrderTracking />, layout: 'default' },
     { path: '/customer/approval', element: <ProductApproval />, layout: 'default' },
-    { path: '/customer/payments', element: <Payment />, layout: 'default' }
+    { path: '/customer/payments', element: <PaymentOrders />, layout: 'default' },
+    { path: '/payments', element: <PaymentPage />, layout: 'default' },
 ];
 
 export const adminRouter = [
@@ -35,13 +38,13 @@ export const adminRouter = [
     { path: '/admin/users', element: <UserManagement />, layout: 'admin' },
     { path: '/admin/permissions', element: <RolePermissionManagement />, layout: 'admin' },
     { path: '/admin/reports', element: <ReportsStatistics />, layout: 'admin' },
-    { path: '/admin/profile', element: <AdminProfile />, layout: 'admin' }
+    { path: '/admin/profile', element: <AdminProfile />, layout: 'admin' },
+    // { path: '/admin/manage-tasks', element: <ManageTaskUI />, layout: 'admin' }
 ];
 
 export const serviceCoordinatorRouter = [
     { path: '/coordinator/requests', element: <RequestIntakePage />, layout: 'default' },
-    { path: '/coordinator/assignments', element: <AssignmentPage />, layout: 'default' },
-    // Service coordinator routes will be added here
+    { path: '/coordinator/assignments', element: <AssignmentPage />, layout: 'default' }
 ];
 
 export const specialistRouter = [

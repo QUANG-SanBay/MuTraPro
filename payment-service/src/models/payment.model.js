@@ -11,7 +11,7 @@ export const Payment = sequelize.define(
       primaryKey: true,
     },
     orderId: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.UUID,
       allowNull: false,
     },
     amount: {
@@ -21,7 +21,7 @@ export const Payment = sequelize.define(
     currency: {
       type: DataTypes.STRING(10),
       allowNull: false,
-      defaultValue: "VND", // ✅ chỉ tạo khi bảng mới, không gây lỗi alter
+      defaultValue: "VND", 
     },
     status: {
       type: DataTypes.ENUM("PENDING", "SUCCESSFUL", "FAILED"),
@@ -29,7 +29,7 @@ export const Payment = sequelize.define(
       defaultValue: "PENDING",
     },
     method: {
-      type: DataTypes.ENUM("MOMO", "PAYPAL", "STRIPE"),
+      type: DataTypes.ENUM("QR" ,"BANK","STRIPE","CARD"),
       allowNull: false,
     },
     creationDate: {

@@ -1,16 +1,11 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import { publicRouter, customerRouter, specialistRouter, adminRouter } from './routes';
+import { publicRouter, customerRouter, specialistRouter, adminRouter, serviceCoordinatorRouter } from './routes';
 import DefaultLayout from "../components/layouts/defaultLayout/DefaultLayout";
 import AdminLayout from "../components/layouts/adminLayout/AdminLayout";
 import ProtectedRoute from "../components/ProtectedRoute/ProtectedRoute";
 import Unauthorized from "../pages/Unauthorized/Unauthorized";
 import NotFound from "../pages/NotFound/NotFound";
-
-// Import các page từ order feature
-// import OrderPage from "../pages/customer/order/OrderPage";
-// import RequestIntakePage from "../pages/customer/order/RequestIntakePage";
-import AssignmentPage from "../pages/customer/order/AssignmentPage";
 
 function AppRouter() {
   return (
@@ -50,6 +45,21 @@ function AppRouter() {
         return <Route key={index} path={item.path} element={protectedElement} />;
       })}
 
+      {/* Service Coordinator routes */}
+      {serviceCoordinatorRouter.map((item, index) => (
+        <Route
+          key={index}
+          path={item.path}
+          element={
+            <ProtectedRoute allowedRoles={['service_coordinator']}>
+              <DefaultLayout type="coordinator">
+                {item.element}
+              </DefaultLayout>
+            </ProtectedRoute>
+          }
+        />
+      ))}
+
       {/* Specialist routes */}
       {specialistRouter.map((item, index) => (
         <Route
@@ -79,6 +89,7 @@ function AppRouter() {
           }
         />
       ))}
+
       {/* Catch-all route for 404 Not Found */}
       <Route path="*" element={<NotFound />} />
     </Routes>
