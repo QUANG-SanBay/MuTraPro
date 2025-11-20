@@ -1,56 +1,57 @@
-import { Auth } from "~/pages/auth"
-import { CustomerHome, CustomerProfile } from "~/pages/customer"
-import Services from "~/pages/customer/serivices/Services"
-import Order from "~/pages/customer/order/Order"
-import Payment from "~/pages/payment/PaymentPage"
+import React from "react";
+import { Auth } from "~/pages/auth";
+import { CustomerHome, CustomerProfile } from "~/pages/customer";
+import Services from "~/pages/customer/serivices/Services";
+import { Order, OrderTracking } from "~/pages/customer/order";
+import OrderPage from "~/pages/customer/order/OrderPage";
+import Payment from "~/pages/customer/payment/Paymen";
+import PaymentPage from "~/pages/payment/PaymentPage";
+import PaymentOrders from "~/pages/payment/PaymentOrder/PaymentOrderUI";
+import { TaskDetail } from "~/pages/specialist";
+import { AdminProfile, RolePermissionManagement, ReportsStatistics } from "~/pages/admin";
+import ProductApproval from "~/pages/customer/ProductApproval.jsx";
+import ManageTaskUI from "~/pages/ManageTask/ManageTaskUI";
 
+import RequestIntakePage from "~/pages/customer/order/RequestIntakePage";
+import AssignmentPage from "../pages/customer/order/AssignmentPage";
 
-import PaymentPage from "~/pages/payment/PaymentPage"
-import PaymentOrders from "~/pages/payment/PaymentOrder/PaymentOrderUI"
-import ManageTaskUI from "~/pages/ManageTask/ManageTaskUI"
+import AdminHome from "~/pages/admin/home/AdminHome";
+import UserManagement from "~/pages/admin/users/UserManagement";
 
-const publicRouter = [
-    { path: '/auth', element: <Auth/> }
-]
+export const publicRouter = [
+    { path: '/auth', element: <Auth /> }
+];
 
-const customerRouter = [
-    { path: '/customer', element: <CustomerHome/>, layout: 'default' },
-    { path: '/customer/profile', element: <CustomerProfile/>, layout: 'default' },
-    { path: '/customer/services', element: <Services/>, layout: 'default' },
-    { path: '/customer/orders', element: <Order/>, layout: 'default' },
-    { path: '/customer/payments', element: <PaymentPage/>, layout: 'default' }
-]
+export const customerRouter = [
+    { path: '/customer', element: <CustomerHome />, layout: 'default' },
+    { path: '/customer/profile', element: <CustomerProfile />, layout: 'default' },
+    { path: '/customer/services', element: <OrderPage />, layout: 'default' },
+    { path: '/customer/orders', element: <Order />, layout: 'default' },
+    { path: '/customer/orders/tracking', element: <OrderTracking />, layout: 'default' },
+    { path: '/customer/approval', element: <ProductApproval />, layout: 'default' },
+    { path: '/customer/payments', element: <Payment />, layout: 'default' },
+    { path: '/payments', element: <PaymentPage />, layout: 'default' },
+    { path: '/payments/payment-orders', element: <PaymentOrders />, layout: 'default' }
+];
 
-const paymentRouter = [
-    { path: '/payments', element: <PaymentPage/>, layout: 'default' },
-    { path: '/payments/payment-orders', element: <PaymentOrders/>, layout: 'default' },
-    { path: '/admin/manage-tasks', element: <ManageTaskUI/>, layout: 'default' },
-]
- 
-const adminRouter = [
-    // Admin routes will be added here
-    // Example: { path: '/admin/users', element: <AdminUsers/>, layout: 'admin' }
-    { path: '/admin/manage-tasks', element: <ManageTaskUI/>, layout: 'default' },
-]
+export const adminRouter = [
+    { path: '/admin', element: <AdminHome />, layout: 'admin' },
+    { path: '/admin/users', element: <UserManagement />, layout: 'admin' },
+    { path: '/admin/permissions', element: <RolePermissionManagement />, layout: 'admin' },
+    { path: '/admin/reports', element: <ReportsStatistics />, layout: 'admin' },
+    { path: '/admin/profile', element: <AdminProfile />, layout: 'admin' },
+    { path: '/admin/manage-tasks', element: <ManageTaskUI />, layout: 'admin' }
+];
 
-const serviceCoordinatorRouter = [
-    // Service coordinator routes will be added here
-]
+export const serviceCoordinatorRouter = [
+    { path: '/coordinator/requests', element: <RequestIntakePage />, layout: 'default' },
+    { path: '/coordinator/assignments', element: <AssignmentPage />, layout: 'default' }
+];
 
-const specialistRouter = [
-    // Specialist routes will be added here
-]
+export const specialistRouter = [
+    { path: '/specialist/tasks', element: <TaskDetail />, layout: 'default' }
+];
 
-const studioAdminRouter = [
-    
-]
-
-export {
-    publicRouter, 
-    customerRouter, 
-    paymentRouter,
-    adminRouter,
-    serviceCoordinatorRouter,
-    specialistRouter,
-    studioAdminRouter
-}
+export const studioAdminRouter = [
+    // Studio admin routes will be added here
+];

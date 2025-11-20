@@ -22,10 +22,12 @@ class RegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ('email', 'full_name', 'password', 're_password')
+        fields = ('email', 'full_name', 'password', 're_password', 'phone_number', 'gender')
         extra_kwargs = {
             'email': {'required': True},
-            'full_name': {'required': True}
+            'full_name': {'required': True},
+            'phone_number': {'required': False},
+            'gender': {'required': False}
         }
     
     def validate_email(self, value):
@@ -85,6 +87,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             email=email,
             password=validated_data['password'],
             full_name=validated_data['full_name'],
+            phone_number=validated_data.get('phone_number', ''),
+            gender=validated_data.get('gender', ''),
             role='customer',  # Default role
             is_active=True    # Active by default
         )

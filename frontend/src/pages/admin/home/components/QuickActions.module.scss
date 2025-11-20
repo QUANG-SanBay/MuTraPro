@@ -1,0 +1,121 @@
+.quickActions {
+    background: var(--section-bgr);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+    .title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--text-c);
+        margin-bottom: 20px;
+    }
+
+    .actionGrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+
+        .actionCard {
+            background: var(--bgr-c);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+
+            &:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            }
+
+            .icon {
+                font-size: 32px;
+                margin-bottom: 12px;
+            }
+
+            .actionTitle {
+                font-size: 1.6rem;
+                font-weight: 600;
+                color: var(--text-c);
+                margin-bottom: 8px;
+            }
+
+            .description {
+                font-size: 1.3rem;
+                color: var(--text-c);
+                opacity: 0.7;
+                line-height: 1.4;
+            }
+
+            // Color variants
+            &.blue {
+                &:hover {
+                    border-color: #667eea;
+                    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+                }
+            }
+
+            &.purple {
+                &:hover {
+                    border-color: #8b5cf6;
+                    background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(124, 58, 237, 0.05) 100%);
+                }
+            }
+
+            &.green {
+                &:hover {
+                    border-color: #10b981;
+                    background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.05) 100%);
+                }
+            }
+
+            &.orange {
+                &:hover {
+                    border-color: #f59e0b;
+                    background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(217, 119, 6, 0.05) 100%);
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .quickActions {
+        padding: 16px;
+
+        .title {
+            font-size: 1.6rem;
+        }
+
+        .actionGrid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+
+            .actionCard {
+                padding: 16px;
+
+                .icon {
+                    font-size: 28px;
+                }
+
+                .actionTitle {
+                    font-size: 1.4rem;
+                }
+
+                .description {
+                    font-size: 1.2rem;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .quickActions {
+        .actionGrid {
+            grid-template-columns: 1fr;
+        }
+    }
+}
