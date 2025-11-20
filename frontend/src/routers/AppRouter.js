@@ -8,8 +8,8 @@ import Unauthorized from "../pages/Unauthorized/Unauthorized";
 import NotFound from "../pages/NotFound/NotFound";
 
 // Import các page từ order feature
-import OrderPage from "../pages/customer/order/OrderPage";
-import RequestIntakePage from "../pages/customer/order/RequestIntakePage";
+// import OrderPage from "../pages/customer/order/OrderPage";
+// import RequestIntakePage from "../pages/customer/order/RequestIntakePage";
 import AssignmentPage from "../pages/customer/order/AssignmentPage";
 
 function AppRouter() {
@@ -79,46 +79,6 @@ function AppRouter() {
           }
         />
       ))}
-
-      {/* Additional order routes */}
-      <Route
-        path="/"
-        element={
-          <DefaultLayout type="customer">
-            <div className="p-6">
-              <h1 className="text-2xl font-bold text-blue-600">Welcome to MuTraPro!</h1>
-              <p className="text-gray-600 mt-2">
-                Hệ thống đặt hàng dịch vụ thu âm & upload thông minh.
-              </p>
-            </div>
-          </DefaultLayout>
-        }
-      />
-      <Route
-        path="/order"
-        element={
-          <DefaultLayout type="customer">
-            <OrderPage />
-          </DefaultLayout>
-        }
-      />
-      <Route
-        path="/requests"
-        element={
-          <DefaultLayout type="customer">
-            <RequestIntakePage />
-          </DefaultLayout>
-        }
-      />
-      <Route
-        path="/assignments"
-        element={
-          <DefaultLayout type="customer">
-            <AssignmentPage />
-          </DefaultLayout>
-        }
-      />
-
       {/* Catch-all route for 404 Not Found */}
       <Route path="*" element={<NotFound />} />
     </Routes>
