@@ -29,9 +29,8 @@ export const customerRouter = [
     { path: '/customer/orders', element: <Order />, layout: 'default' },
     { path: '/customer/orders/tracking', element: <OrderTracking />, layout: 'default' },
     { path: '/customer/approval', element: <ProductApproval />, layout: 'default' },
-    { path: '/customer/payments', element: <Payment />, layout: 'default' },
+    { path: '/customer/payments', element: <PaymentOrders />, layout: 'default' },
     { path: '/payments', element: <PaymentPage />, layout: 'default' },
-    { path: '/payments/payment-orders', element: <PaymentOrders />, layout: 'default' }
 ];
 
 export const adminRouter = [
@@ -40,7 +39,7 @@ export const adminRouter = [
     { path: '/admin/permissions', element: <RolePermissionManagement />, layout: 'admin' },
     { path: '/admin/reports', element: <ReportsStatistics />, layout: 'admin' },
     { path: '/admin/profile', element: <AdminProfile />, layout: 'admin' },
-    { path: '/admin/manage-tasks', element: <ManageTaskUI />, layout: 'admin' }
+    // { path: '/admin/manage-tasks', element: <ManageTaskUI />, layout: 'admin' }
 ];
 
 export const serviceCoordinatorRouter = [
