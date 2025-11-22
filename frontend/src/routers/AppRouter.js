@@ -7,7 +7,7 @@ import Unauthorized from "~/pages/Unauthorized/Unauthorized";
 
 import { OrderTracking } from "~/pages/customer/order";
 import TaskDetail from "~/pages/specialist/transcription_Specialist/TaskDetail/TaskDetail";
-
+import TaskModal from "~/pages/specialist/transcription_Specialist/TaskModal/TaskModal";
 function AppRouter() {
   return (
     <Routes>
@@ -83,7 +83,14 @@ function AppRouter() {
           </DefaultLayout>
         }
       />
-
+      <Route
+        path="/TaskModal"
+        element={
+          <DefaultLayout type="customer">
+            <TaskModal />
+          </DefaultLayout>
+        }
+      />
     </Routes>
   );
 }

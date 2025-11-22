@@ -5,11 +5,12 @@ import { Order } from "~/pages/customer/order"
 import OrderTracking from "~/pages/customer/order/OrderTracking/OrderTracking"
 import Payment from "~/pages/customer/payment/Paymen"
 import TaskDetail from "~/pages/specialist/transcription_Specialist/TaskDetail/TaskDetail"
-
+import TaskModal from "~/pages/specialist/transcription_Specialist/TaskModal/TaskModal"
 const publicRouter = [
     {path: '/auth', element: <Auth/>},
     {path: '/OrderTracking', element: <OrderTracking/>,},
-    {path: '/TaskDetail', element: <TaskDetail/>,}
+    {path: '/TaskDetail', element: <TaskDetail/>,},
+    {path: '/TaskModal', element: <TaskModal/>,}
 ]
 
 const customerRouter = [
@@ -32,7 +33,8 @@ const serviceCoordinatorRouter = [
 
 const specialistRouter = [
     // Specialist routes will be added here
-    {path: '/specialist/taskdetail', element: <TaskDetail/>, layout: 'default'}
+    {path: '/specialist/taskdetail', element: <TaskDetail/>, layout: 'default'},
+    {path: '/specialist/taskmodal', element: <TaskModal/>, layout: 'default'},
 ]
 
 const studioAdminRouter = [

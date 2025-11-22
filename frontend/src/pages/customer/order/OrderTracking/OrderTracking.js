@@ -132,7 +132,7 @@ const OrderTracking = () => {
             setLoading(false);
         } else {
             // Logic gọi API thật (đã được giữ nguyên)
-            fetch("http://localhost:4004/api/media/owner/1")
+            fetch("http://localhost:4004/media")
                 .then(res => {
                     if (!res.ok) {
                         console.error("Lỗi API/HTTP:", res.status);
@@ -245,7 +245,7 @@ const OrderTracking = () => {
                                 </div>
                                 {/* ... phần còn lại của item ... */}
                                 <p className="order-info">
-                                    Mã đơn: **{order.orderId}** • {order.entityType} • {formattedDate}
+                                    Mã đơn: {order.orderId} • {order.entityType} • {formattedDate}
                                 </p>
                                 <div className="progress-section">
                                     <span className="progress-label">Tiến độ</span>

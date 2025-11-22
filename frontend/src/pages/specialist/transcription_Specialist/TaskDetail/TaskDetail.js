@@ -183,22 +183,27 @@ const TaskDetail = () => {
       </div>
 
       {/* TASK INFO */}
-      <div className="task-info-card">
-        <div className="task-info-row">
-          <div className="task-info-item">
-            <p className="label">Mã nhiệm vụ</p>
-            <p className="value">{task?.id}</p>
+              <div class="task-info-card">
+          <div class="task-info-row">
+            <div class="task-info-item">
+              <label>Mã nhiệm vụ</label>
+              <p>TASK001</p>
+            </div>
+
+            <div class="task-info-item">
+              <label>Khách hàng</label>
+              <p>Nguyễn Văn A</p>
+            </div>
           </div>
-          <div className="task-info-item">
-            <p className="label">Khách hàng</p>
-            <p className="value">{task?.customer}</p>
+
+          <div class="task-info-row full">
+            <div class="task-info-item">
+              <label>Mô tả</label>
+              <p>Chuyển đổi file âm thanh thành bản ký âm chính xác cho bài hát pop</p>
+            </div>
           </div>
         </div>
-        <div className="task-info-desc">
-          <p className="label">Mô tả</p>
-          <p className="value">{task?.description}</p>
-        </div>
-      </div>
+
 
       {/* FILES */}
       <div className="task-files">
