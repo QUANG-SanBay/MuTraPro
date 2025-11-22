@@ -45,13 +45,20 @@ function LiveActivityFeed({ onHighlightUser }) {
 
             ws.onmessage = (event) => {
                 try {
-                    const message = JSON.parse(event.data);
-                    console.log('[LiveActivityFeed] Received:', message.type);
+                    const data = JSON.parse(event.data);
+                    console.log('[LiveActivityFeed] Received:', data);
 
-                    if (message.type === 'event') {
-                        handleNewEvent(message.data);
-                    } else if (message.type === 'connection') {
-                        console.log('[LiveActivityFeed] Connection status:', message.rabbitmqConnected);
+                    // Handle direct event from RabbitMQ (via gateway broadcast)
+                    if (data.event_type) {
+                        handleNewEvent(data);
+                    } 
+                    // Handle wrapped message format
+                    else if (data.type === 'event') {
+                        handleNewEvent(data.data);
+                    } 
+                    // Handle connection status
+                    else if (data.type === 'connection') {
+                        console.log('[LiveActivityFeed] Connection status:', data.rabbitmqConnected);
                     }
                 } catch (error) {
                     console.error('[LiveActivityFeed] Error parsing message:', error);
@@ -96,9 +103,9 @@ function LiveActivityFeed({ onHighlightUser }) {
         }
 
         // Notify parent to highlight user in table
-        if (onHighlightUser && eventData.data?.user_id) {
-            const eventType = eventData.event_type === 'user.registered' ? 'success' : 'info';
-            onHighlightUser(eventData.data.user_id, eventType);
+        // Event structure: { event_type: 'user.registered', user: { id, email, full_name, ... } }
+        if (onHighlightUser && eventData.user?.id) {
+            onHighlightUser(eventData.user.id, eventData.event_type);
         }
     };
 
@@ -152,12 +159,12 @@ function LiveActivityFeed({ onHighlightUser }) {
                             <span className={styles.icon}>{getEventIcon(event.event_type)}</span>
                             <div className={styles.content}>
                                 <div className={styles.line1}>
-                                    <strong>{event.data?.email || event.data?.username || 'Unknown'}</strong>
+                                    <strong>{event.user?.full_name || event.user?.email || event.user?.username || 'Unknown'}</strong>
                                     <span className={styles.action}>{getEventLabel(event.event_type)}</span>
                                 </div>
                                 <div className={styles.line2}>
                                     <span className={styles.role}>
-                                        {event.data?.role || 'user'}
+                                        {event.user?.role || 'user'}
                                     </span>
                                     <span className={styles.time}>{formatTimestamp(event.timestamp)}</span>
                                 </div>
