@@ -5,12 +5,16 @@ function RecentActivity({ activities = [] }) {
         switch(type) {
             case 'user_registered':
                 return '👤';
+            case 'user_login':
+                return '🔐';
             case 'order_created':
                 return '📦';
             case 'payment_completed':
                 return '💰';
             case 'role_changed':
-                return '🔐';
+                return '🔑';
+            case 'system_start':
+                return '✅';
             default:
                 return '📌';
         }
@@ -19,6 +23,8 @@ function RecentActivity({ activities = [] }) {
     const getActivityColor = (type) => {
         switch(type) {
             case 'user_registered':
+                return 'green';
+            case 'user_login':
                 return 'blue';
             case 'order_created':
                 return 'green';
@@ -26,6 +32,8 @@ function RecentActivity({ activities = [] }) {
                 return 'orange';
             case 'role_changed':
                 return 'purple';
+            case 'system_start':
+                return 'gray';
             default:
                 return 'gray';
         }

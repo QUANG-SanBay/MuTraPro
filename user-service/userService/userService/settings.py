@@ -210,3 +210,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Use custom user model from account app
 AUTH_USER_MODEL = 'account.User'
+
+# ==================== RABBITMQ CONFIGURATION ==================== #
+RABBITMQ_HOST = os.environ.get('RABBITMQ_HOST', 'rabbitmq')
+RABBITMQ_PORT = int(os.environ.get('RABBITMQ_PORT', 5672))
+RABBITMQ_USER = os.environ.get('RABBITMQ_USER', 'admin')
+RABBITMQ_PASS = os.environ.get('RABBITMQ_PASS', 'Admin@123')
+

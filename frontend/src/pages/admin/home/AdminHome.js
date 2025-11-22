@@ -6,6 +6,7 @@ import {
     QuickActions,
     SystemStatus
 } from './components';
+import { getAllUsers } from '~/api/adminService';
 
 function AdminHome() {
     const [stats, setStats] = useState({
@@ -17,52 +18,145 @@ function AdminHome() {
 
     const [recentActivities, setRecentActivities] = useState([]);
     const [systemStatus, setSystemStatus] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [wsConnected, setWsConnected] = useState(false);
 
-    // Mock data - Replace with API calls
+    // WebSocket connection for real-time activity
     useEffect(() => {
-        // Simulate API call
-        setStats({
-            totalUsers: 1245,
-            totalOrders: 856,
-            revenue: 125000000,
-            activeServices: 24
-        });
+        const wsUrl = process.env.REACT_APP_WS_URL || 'ws://localhost:8000/ws/events';
+        let ws = null;
+        let reconnectTimeout = null;
 
-        setRecentActivities([
-            {
-                type: 'user_registered',
-                description: 'Người dùng mới "Nguyễn Văn A" đã đăng ký tài khoản',
-                time: '5 phút trước'
-            },
-            {
-                type: 'order_created',
-                description: 'Đơn hàng #ORD-2024-001 đã được tạo',
-                time: '15 phút trước'
-            },
-            {
-                type: 'payment_completed',
-                description: 'Thanh toán đơn hàng #ORD-2024-002 thành công',
-                time: '30 phút trước'
-            },
-            {
-                type: 'role_changed',
-                description: 'Phân quyền "Specialist" được cập nhật',
-                time: '1 giờ trước'
-            },
-            {
-                type: 'user_registered',
-                description: 'Người dùng mới "Trần Thị B" đã đăng ký tài khoản',
-                time: '2 giờ trước'
+        const connectWebSocket = () => {
+            try {
+                ws = new WebSocket(wsUrl);
+
+                ws.onopen = () => {
+                    console.log('[AdminHome] WebSocket connected');
+                    setWsConnected(true);
+                };
+
+                ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        console.log('[AdminHome] Received event:', data);
+
+                        if (data.event_type === 'user.registered' || data.event_type === 'user.login') {
+                            const userData = data.user || data.data || {};
+                            const newActivity = {
+                                type: data.event_type === 'user.registered' ? 'user_registered' : 'user_login',
+                                description: data.event_type === 'user.registered' 
+                                    ? `Người dùng mới "${userData.full_name || userData.email || 'Unknown'}" đã đăng ký tài khoản`
+                                    : `Người dùng "${userData.full_name || userData.email || 'Unknown'}" đã đăng nhập`,
+                                time: 'Vừa xong',
+                                timestamp: new Date().toISOString()
+                            };
+
+                            console.log('[AdminHome] Adding new activity:', newActivity);
+                            setRecentActivities(prev => [newActivity, ...prev.slice(0, 9)]);
+
+                            // Refresh user stats
+                            if (data.event_type === 'user.registered') {
+                                fetchUserStats();
+                            }
+                        }
+                    } catch (error) {
+                        console.error('[AdminHome] Error parsing WebSocket message:', error);
+                    }
+                };
+
+                ws.onerror = (error) => {
+                    console.error('[AdminHome] WebSocket error:', error);
+                    setWsConnected(false);
+                };
+
+                ws.onclose = () => {
+                    console.log('[AdminHome] WebSocket disconnected, reconnecting in 5s...');
+                    setWsConnected(false);
+                    reconnectTimeout = setTimeout(connectWebSocket, 5000);
+                };
+            } catch (error) {
+                console.error('[AdminHome] Failed to create WebSocket:', error);
+                reconnectTimeout = setTimeout(connectWebSocket, 5000);
             }
-        ]);
+        };
 
-        setSystemStatus({
-            server: 'online',
-            database: 'online',
-            api: 'online',
-            storage: 'online'
-        });
+        connectWebSocket();
+
+        return () => {
+            if (reconnectTimeout) clearTimeout(reconnectTimeout);
+            if (ws) {
+                ws.close();
+            }
+        };
     }, []);
+
+    // Fetch user statistics
+    const fetchUserStats = async () => {
+        try {
+            const response = await getAllUsers();
+            if (response && response.users) {
+                const activeUsers = response.users.filter(u => u.is_active).length;
+                setStats(prev => ({
+                    ...prev,
+                    totalUsers: response.total || response.users.length,
+                    activeServices: activeUsers
+                }));
+            }
+        } catch (error) {
+            console.error('[AdminHome] Error fetching user stats:', error);
+        }
+    };
+
+    // Fetch all data on mount
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                // Fetch user stats
+                await fetchUserStats();
+
+                // Mock data for orders and revenue (replace with real API calls later)
+                setStats(prev => ({
+                    ...prev,
+                    totalOrders: 856,
+                    revenue: 125000000
+                }));
+
+                // Initialize recent activities (will be updated by WebSocket)
+                setRecentActivities([
+                    {
+                        type: 'system_start',
+                        description: 'Hệ thống đã khởi động thành công',
+                        time: 'Vừa xong'
+                    }
+                ]);
+
+                // Check system status
+                setSystemStatus({
+                    server: 'online',
+                    database: 'online',
+                    api: 'online',
+                    storage: 'online',
+                    websocket: wsConnected ? 'online' : 'offline'
+                });
+            } catch (error) {
+                console.error('[AdminHome] Error fetching data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    // Update system status when WebSocket connection changes
+    useEffect(() => {
+        setSystemStatus(prev => ({
+            ...prev,
+            websocket: wsConnected ? 'online' : 'offline'
+        }));
+    }, [wsConnected]);
 
     const formatCurrency = (value) => {
         return new Intl.NumberFormat('vi-VN', {
@@ -77,62 +171,74 @@ function AdminHome() {
 
                 <div className={styles.header}>
                     <h1 className={styles.pageTitle}>Dashboard</h1>
-                    <p className={styles.subtitle}>Tổng quan hệ thống quản lý MuTraPro</p>
+                    <p className={styles.subtitle}>
+                        Tổng quan hệ thống quản lý MuTraPro
+                        {wsConnected && <span className={styles.wsIndicator}> 🟢 Live</span>}
+                    </p>
                 </div>
 
-                {/* Stats Cards */}
-                <div className={styles.statsGrid}>
-                    <StatCard
-                        title="Tổng người dùng"
-                        value={stats.totalUsers.toLocaleString()}
-                        icon="👥"
-                        trend="up"
-                        trendValue="+12%"
-                        colorClass="blue"
-                    />
-                    <StatCard
-                        title="Đơn hàng"
-                        value={stats.totalOrders.toLocaleString()}
-                        icon="📦"
-                        trend="up"
-                        trendValue="+8%"
-                        colorClass="green"
-                    />
-                    <StatCard
-                        title="Doanh thu"
-                        value={formatCurrency(stats.revenue)}
-                        icon="💰"
-                        trend="up"
-                        trendValue="+23%"
-                        colorClass="orange"
-                    />
-                    <StatCard
-                        title="Dịch vụ hoạt động"
-                        value={stats.activeServices.toLocaleString()}
-                        icon="⚡"
-                        trend="down"
-                        trendValue="-2%"
-                        colorClass="purple"
-                    />
-                </div>
-
-                {/* Quick Actions */}
-                <div className={styles.section}>
-                    <QuickActions />
-                </div>
-
-                {/* Two Column Layout */}
-                <div className={styles.twoColumnLayout}>
-                    {/* Recent Activity */}
-                    <div className={styles.column}>
-                        <RecentActivity activities={recentActivities} />
+                {loading ? (
+                    <div className={styles.loading}>
+                        <div className={styles.spinner}></div>
+                        <p>Đang tải dữ liệu...</p>
                     </div>
+                ) : (
+                    <>
+                        {/* Stats Cards */}
+                        <div className={styles.statsGrid}>
+                            <StatCard
+                                title="Tổng người dùng"
+                                value={stats.totalUsers.toLocaleString()}
+                                icon="👥"
+                                trend="up"
+                                trendValue="+12%"
+                                colorClass="blue"
+                            />
+                            <StatCard
+                                title="Đơn hàng"
+                                value={stats.totalOrders.toLocaleString()}
+                                icon="📦"
+                                trend="up"
+                                trendValue="+8%"
+                                colorClass="green"
+                            />
+                            <StatCard
+                                title="Doanh thu"
+                                value={formatCurrency(stats.revenue)}
+                                icon="💰"
+                                trend="up"
+                                trendValue="+23%"
+                                colorClass="orange"
+                            />
+                            <StatCard
+                                title="Dịch vụ hoạt động"
+                                value={stats.activeServices.toLocaleString()}
+                                icon="⚡"
+                                trend="stable"
+                                trendValue="0%"
+                                colorClass="purple"
+                            />
+                        </div>
 
-                    {/* System Status */}
-                    <div className={styles.column}>
-                        <SystemStatus status={systemStatus} />
-                    </div>
-                </div>
+                        {/* Quick Actions */}
+                        <div className={styles.section}>
+                            <QuickActions />
+                        </div>
+
+                        {/* Two Column Layout */}
+                        <div className={styles.twoColumnLayout}>
+                            {/* Recent Activity */}
+                            <div className={styles.column}>
+                                <RecentActivity activities={recentActivities} />
+                            </div>
+
+                            {/* System Status */}
+                            <div className={styles.column}>
+                                <SystemStatus status={systemStatus} />
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );

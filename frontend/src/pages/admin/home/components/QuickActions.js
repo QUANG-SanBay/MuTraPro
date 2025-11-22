@@ -16,7 +16,7 @@ function QuickActions() {
             icon: '🔐',
             title: 'Phân quyền',
             description: 'Cấu hình vai trò & quyền',
-            path: '/admin/roles',
+            path: '/admin/permissions',
             color: 'purple'
         },
         {

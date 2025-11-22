@@ -39,7 +39,8 @@ function SystemStatus({ status = {} }) {
         { label: 'Server', key: 'server', icon: '🖥️' },
         { label: 'Database', key: 'database', icon: '💾' },
         { label: 'API Gateway', key: 'api', icon: '🔌' },
-        { label: 'Storage', key: 'storage', icon: '📦' }
+        { label: 'Storage', key: 'storage', icon: '📦' },
+        { label: 'WebSocket', key: 'websocket', icon: '🔄' }
     ];
 
     return (
