@@ -38,14 +38,23 @@ function AdminHome() {
 
                 ws.onmessage = (event) => {
                     try {
-                        const data = JSON.parse(event.data);
-                        console.log('[AdminHome] Received event:', data);
+                        const message = JSON.parse(event.data);
+                        console.log('[AdminHome] Received event:', message);
 
-                        if (data.event_type === 'user.registered' || data.event_type === 'user.login') {
-                            const userData = data.user || data.data || {};
+                        // Handle wrapped event from gateway
+                        let eventData = null;
+                        if (message.type === 'event' && message.data) {
+                            eventData = message.data;
+                        } else if (message.event_type) {
+                            // Direct event (fallback)
+                            eventData = message;
+                        }
+
+                        if (eventData && (eventData.event_type === 'user.registered' || eventData.event_type === 'user.login')) {
+                            const userData = eventData.user || {};
                             const newActivity = {
-                                type: data.event_type === 'user.registered' ? 'user_registered' : 'user_login',
-                                description: data.event_type === 'user.registered' 
+                                type: eventData.event_type === 'user.registered' ? 'user_registered' : 'user_login',
+                                description: eventData.event_type === 'user.registered' 
                                     ? `Người dùng mới "${userData.full_name || userData.email || 'Unknown'}" đã đăng ký tài khoản`
                                     : `Người dùng "${userData.full_name || userData.email || 'Unknown'}" đã đăng nhập`,
                                 time: 'Vừa xong',
@@ -56,7 +65,7 @@ function AdminHome() {
                             setRecentActivities(prev => [newActivity, ...prev.slice(0, 9)]);
 
                             // Refresh user stats
-                            if (data.event_type === 'user.registered') {
+                            if (eventData.event_type === 'user.registered') {
                                 fetchUserStats();
                             }
                         }

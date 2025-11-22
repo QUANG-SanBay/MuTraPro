@@ -1,6 +1,6 @@
 """
 RabbitMQ Event Publisher for User Service
-Handles connection pooling and message publishing
+Creates fresh connection for each publish - better for Django's multi-threaded environment
 """
 import pika
 import json
@@ -13,81 +13,21 @@ logger = logging.getLogger(__name__)
 
 class RabbitMQPublisher:
     """
-    Singleton RabbitMQ connection manager for publishing events
+    RabbitMQ publisher that creates fresh connection for each publish
     """
-    _instance = None
-    _connection = None
-    _channel = None
-    
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super(RabbitMQPublisher, cls).__new__(cls)
-        return cls._instance
     
     def __init__(self):
-        """Initialize RabbitMQ connection from environment variables"""
-        if self._connection is None or self._connection.is_closed:
-            self._connect()
-    
-    def _connect(self):
-        """Establish connection to RabbitMQ"""
-        try:
-            # Get RabbitMQ configuration from environment or use defaults
-            rabbitmq_host = getattr(settings, 'RABBITMQ_HOST', 'rabbitmq')
-            rabbitmq_port = getattr(settings, 'RABBITMQ_PORT', 5672)
-            rabbitmq_user = getattr(settings, 'RABBITMQ_USER', 'guest')
-            rabbitmq_pass = getattr(settings, 'RABBITMQ_PASS', 'guest')
-            
-            credentials = pika.PlainCredentials(rabbitmq_user, rabbitmq_pass)
-            parameters = pika.ConnectionParameters(
-                host=rabbitmq_host,
-                port=rabbitmq_port,
-                credentials=credentials,
-                heartbeat=600,
-                blocked_connection_timeout=300
-            )
-            
-            self._connection = pika.BlockingConnection(parameters)
-            self._channel = self._connection.channel()
-            
-            # Declare exchanges (idempotent - safe to call multiple times)
-            self._declare_exchanges()
-            
-            logger.info(f"✅ Connected to RabbitMQ at {rabbitmq_host}:{rabbitmq_port}")
-        except Exception as e:
-            logger.error(f"❌ Failed to connect to RabbitMQ: {e}")
-            self._connection = None
-            self._channel = None
-    
-    def _declare_exchanges(self):
-        """Declare all required exchanges"""
-        exchanges = [
-            {
-                'name': 'user.events',
-                'type': 'fanout',
-                'durable': True
-            },
-            {
-                'name': 'notifications',
-                'type': 'topic',
-                'durable': True
-            }
-        ]
+        """Initialize with connection parameters"""
+        self.rabbitmq_host = getattr(settings, 'RABBITMQ_HOST', 'rabbitmq')
+        self.rabbitmq_port = getattr(settings, 'RABBITMQ_PORT', 5672)
+        self.rabbitmq_user = getattr(settings, 'RABBITMQ_USER', 'admin')
+        self.rabbitmq_pass = getattr(settings, 'RABBITMQ_PASS', 'Admin@123')
         
-        for exchange in exchanges:
-            try:
-                self._channel.exchange_declare(
-                    exchange=exchange['name'],
-                    exchange_type=exchange['type'],
-                    durable=exchange['durable']
-                )
-                logger.info(f"✅ Declared exchange: {exchange['name']}")
-            except Exception as e:
-                logger.error(f"❌ Failed to declare exchange {exchange['name']}: {e}")
+        logger.info(f"📝 RabbitMQ Publisher initialized: {self.rabbitmq_user}@{self.rabbitmq_host}:{self.rabbitmq_port}")
     
     def publish_event(self, exchange, routing_key, event_data):
         """
-        Publish event to RabbitMQ
+        Publish event to RabbitMQ with fresh connection
         
         Args:
             exchange (str): Exchange name (e.g., 'user.events')
@@ -97,14 +37,26 @@ class RabbitMQPublisher:
         Returns:
             bool: True if published successfully, False otherwise
         """
+        connection = None
+        channel = None
+        
         try:
-            # Reconnect if connection is closed
-            if self._connection is None or self._connection.is_closed:
-                self._connect()
+            # Create fresh connection
+            credentials = pika.PlainCredentials(self.rabbitmq_user, self.rabbitmq_pass)
+            parameters = pika.ConnectionParameters(
+                host=self.rabbitmq_host,
+                port=self.rabbitmq_port,
+                credentials=credentials,
+                heartbeat=0,  # Disable heartbeat for short-lived connections
+                connection_attempts=3,
+                retry_delay=1
+            )
             
-            if self._channel is None:
-                logger.error("❌ No active channel to publish message")
-                return False
+            connection = pika.BlockingConnection(parameters)
+            channel = connection.channel()
+            
+            # Declare exchange (idempotent)
+            channel.exchange_declare(exchange=exchange, exchange_type='fanout', durable=True)
             
             # Add metadata
             message = {
@@ -115,7 +67,7 @@ class RabbitMQPublisher:
             }
             
             # Publish message
-            self._channel.basic_publish(
+            channel.basic_publish(
                 exchange=exchange,
                 routing_key=routing_key,
                 body=json.dumps(message),
@@ -127,20 +79,20 @@ class RabbitMQPublisher:
             )
             
             logger.info(f"📤 Published event: {routing_key} to {exchange}")
+            logger.debug(f"   Data: {json.dumps(message)[:200]}...")
             return True
             
         except Exception as e:
             logger.error(f"❌ Failed to publish event: {e}")
             return False
-    
-    def close(self):
-        """Close RabbitMQ connection"""
-        try:
-            if self._connection and not self._connection.is_closed:
-                self._connection.close()
-                logger.info("🔌 Closed RabbitMQ connection")
-        except Exception as e:
-            logger.error(f"❌ Error closing RabbitMQ connection: {e}")
+            
+        finally:
+            # Always close connection
+            try:
+                if connection and not connection.is_closed:
+                    connection.close()
+            except Exception as e:
+                logger.error(f"⚠️ Error closing connection: {e}")
 
 
 # Global publisher instance
