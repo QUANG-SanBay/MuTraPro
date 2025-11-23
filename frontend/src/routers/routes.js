@@ -2,7 +2,6 @@ import React from "react";
 import { Auth } from "~/pages/auth";
 import { CustomerHome, CustomerProfile } from "~/pages/customer";
 import Services from "~/pages/customer/serivices/Services";
-// import OrderPage from "~/pages/customer/order/OrderPage";
 import { Order, OrderTracking } from "~/pages/customer/order";
 import OrderPage from "~/pages/customer/order/OrderPage";
 import Payment from "~/pages/customer/payment/Paymen";
@@ -11,7 +10,7 @@ import { AdminProfile, RolePermissionManagement, ReportsStatistics } from "~/pag
 import ProductApproval from "~/pages/customer/ProductApproval.jsx";
 
 import RequestIntakePage from "~/pages/customer/order/RequestIntakePage";
-import AssignmentPage from "../pages/customer/order/AssignmentPage";
+import AssignmentPage from "~/pages/customer/order/AssignmentPage";
 
 import AdminHome from "~/pages/admin/home/AdminHome";
 import UserManagement from "~/pages/admin/users/UserManagement";
@@ -27,7 +26,10 @@ export const customerRouter = [
     { path: '/customer/orders', element: <Order />, layout: 'default' },
     { path: '/customer/orders/tracking', element: <OrderTracking />, layout: 'default' },
     { path: '/customer/approval', element: <ProductApproval />, layout: 'default' },
-    { path: '/customer/payments', element: <Payment />, layout: 'default' }
+    { path: '/customer/payments', element: <Payment />, layout: 'default' },
+
+    // ⭐ Thêm route này để fix lỗi 404
+    { path: '/order', element: <OrderPage />, layout: 'default' },
 ];
 
 export const adminRouter = [
@@ -41,13 +43,10 @@ export const adminRouter = [
 export const serviceCoordinatorRouter = [
     { path: '/coordinator/requests', element: <RequestIntakePage />, layout: 'default' },
     { path: '/coordinator/assignments', element: <AssignmentPage />, layout: 'default' },
-    // Service coordinator routes will be added here
 ];
 
 export const specialistRouter = [
     { path: '/specialist/tasks', element: <TaskDetail />, layout: 'default' }
 ];
 
-export const studioAdminRouter = [
-    // Studio admin routes will be added here
-];
+export const studioAdminRouter = [];
