@@ -1,0 +1,5 @@
+# Place JDBC drivers in this directory
+# 
+# For SQL Server:
+# Download: https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/12.4.2/mssql-jdbc-12.4.2.jre11.jar
+# Or run: ..\..\scripts\download-jdbc-driver.ps1

@@ -1,0 +1,16 @@
+{
+  "vhosts": [{ "name": "/" }],
+  "exchanges": [
+    { "name": "notifications.exchange", "vhost": "/", "type": "topic", "durable": true, "auto_delete": false, "internal": false, "arguments": {} }
+  ],
+  "queues": [
+    { "name": "notifications.queue", "vhost": "/", "durable": true, "auto_delete": false, "arguments": {} }
+  ],
+  "bindings": [
+    { "source": "notifications.exchange", "vhost": "/", "destination_type": "queue", "destination": "notifications.queue", "routing_key": "notifications.*", "arguments": {} }
+  ],
+  "parameters": [],
+  "policies": [],
+  "permissions": [],
+  "users": []
+}

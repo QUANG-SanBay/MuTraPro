@@ -3,7 +3,7 @@ import styles from './HeaderProfile.module.scss';
 import { clearAuthData, getUser } from '~/utils/auth';
 import { useEffect, useState } from 'react';
 
-function HeaderProfile({ isOpen, onToggle }) {
+function HeaderProfile({ isOpen, onToggle, userType }) {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
 
@@ -20,7 +20,12 @@ function HeaderProfile({ isOpen, onToggle }) {
         // Chuyển hướng về trang đăng nhập
         navigate('/auth');
     };
-
+    const getProfileLink = () => {
+        if (userType === 'admin') {
+            return '/admin/profile';
+        }
+        return '/customer/profile';
+    };
     return (
         <div className={styles.profileWrapper}>
             <button
@@ -79,7 +84,7 @@ function HeaderProfile({ isOpen, onToggle }) {
                             <div className={styles.userEmail}>{user.email}</div>
                         </div>
                     )}
-                    <Link to="/customer/profile" className={styles.dropdownItem} onClick={onToggle}>
+                    <Link to={getProfileLink()} className={styles.dropdownItem} onClick={onToggle}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                             <path
                                 d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
