@@ -286,3 +286,110 @@ export const checkUserPermission = async (permission) => {
         method: 'GET'
     });
 };
+
+
+// ==================== SYSTEM HEALTH CHECKS ====================
+
+/**
+ * Check health status of user-service
+ * @returns {Promise} - Health status
+ */
+export const checkUserServiceHealth = async () => {
+    try {
+        const response = await callGateway({
+            service: 'user-service',
+            path: '/users/hello',
+            method: 'GET',
+            requireAuth: false
+        });
+        return { status: 'online', service: 'user-service', data: response };
+    } catch (error) {
+        return { status: 'offline', service: 'user-service', error: error.message };
+    }
+};
+
+/**
+ * Check WebSocket connection status
+ * @param {string} wsUrl - WebSocket URL
+ * @returns {Promise} - Connection status
+ */
+export const checkWebSocketHealth = (wsUrl) => {
+    return new Promise((resolve) => {
+        try {
+            const ws = new WebSocket(wsUrl);
+            const timeout = setTimeout(() => {
+                ws.close();
+                resolve({ status: 'offline', service: 'websocket', error: 'Connection timeout' });
+            }, 3000);
+
+            ws.onopen = () => {
+                clearTimeout(timeout);
+                ws.close();
+                resolve({ status: 'online', service: 'websocket' });
+            };
+
+            ws.onerror = () => {
+                clearTimeout(timeout);
+                resolve({ status: 'offline', service: 'websocket', error: 'Connection failed' });
+            };
+        } catch (error) {
+            resolve({ status: 'offline', service: 'websocket', error: error.message });
+        }
+    });
+};
+
+/**
+ * Check API Gateway health
+ * @returns {Promise} - Gateway status
+ */
+export const checkGatewayHealth = async () => {
+    try {
+        const GATEWAY_URL = process.env.REACT_APP_GATEWAY_URL || 'http://localhost:8000/api';
+        const response = await fetch(GATEWAY_URL.replace('/api', '/health'), {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (response.ok) {
+            return { status: 'online', service: 'gateway' };
+        }
+        return { status: 'warning', service: 'gateway', error: `HTTP ${response.status}` };
+    } catch (error) {
+        return { status: 'offline', service: 'gateway', error: error.message };
+    }
+};
+
+/**
+ * Check all system health statuses
+ * @param {string} wsUrl - WebSocket URL
+ * @returns {Promise} - Object with all service statuses
+ */
+export const checkSystemHealth = async (wsUrl) => {
+    try {
+        const [userService, gateway, websocket] = await Promise.all([
+            checkUserServiceHealth(),
+            checkGatewayHealth(),
+            checkWebSocketHealth(wsUrl)
+        ]);
+
+        return {
+            server: userService.status,
+            database: userService.status, // Database status inferred from user-service
+            api: gateway.status,
+            storage: 'online', // Mock for now - can add real check later
+            websocket: websocket.status,
+            lastCheck: new Date().toISOString()
+        };
+    } catch (error) {
+        console.error('[SystemHealth] Error checking system health:', error);
+        return {
+            server: 'offline',
+            database: 'offline',
+            api: 'offline',
+            storage: 'offline',
+            websocket: 'offline',
+            lastCheck: new Date().toISOString(),
+            error: error.message
+        };
+    }
+};

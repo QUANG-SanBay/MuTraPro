@@ -6,7 +6,7 @@ import {
     QuickActions,
     SystemStatus
 } from './components';
-import { getAllUsers } from '~/api/adminService';
+import { getAllUsers, checkSystemHealth } from '~/api/adminService';
 
 function AdminHome() {
     const [stats, setStats] = useState({
@@ -18,6 +18,7 @@ function AdminHome() {
 
     const [recentActivities, setRecentActivities] = useState([]);
     const [systemStatus, setSystemStatus] = useState({});
+    const [lastHealthCheck, setLastHealthCheck] = useState(null);
     const [loading, setLoading] = useState(true);
     const [wsConnected, setWsConnected] = useState(false);
 
@@ -117,6 +118,28 @@ function AdminHome() {
         }
     };
 
+    // Check system health
+    const fetchSystemHealth = async () => {
+        try {
+            const wsUrl = process.env.REACT_APP_WS_URL || 'ws://localhost:8000/ws/events';
+            const health = await checkSystemHealth(wsUrl);
+            
+            console.log('[AdminHome] System health check:', health);
+            
+            setSystemStatus(health);
+            setLastHealthCheck(new Date());
+        } catch (error) {
+            console.error('[AdminHome] Error checking system health:', error);
+            setSystemStatus({
+                server: 'offline',
+                database: 'offline',
+                api: 'offline',
+                storage: 'offline',
+                websocket: 'offline'
+            });
+        }
+    };
+
     // Fetch all data on mount
     useEffect(() => {
         const fetchData = async () => {
@@ -124,6 +147,9 @@ function AdminHome() {
             try {
                 // Fetch user stats
                 await fetchUserStats();
+
+                // Check system health
+                await fetchSystemHealth();
 
                 // Mock data for orders and revenue (replace with real API calls later)
                 setStats(prev => ({
@@ -140,15 +166,6 @@ function AdminHome() {
                         time: 'Vừa xong'
                     }
                 ]);
-
-                // Check system status
-                setSystemStatus({
-                    server: 'online',
-                    database: 'online',
-                    api: 'online',
-                    storage: 'online',
-                    websocket: wsConnected ? 'online' : 'offline'
-                });
             } catch (error) {
                 console.error('[AdminHome] Error fetching data:', error);
             } finally {
@@ -157,6 +174,16 @@ function AdminHome() {
         };
 
         fetchData();
+
+        // Auto refresh system health every 30 seconds
+        const healthCheckInterval = setInterval(() => {
+            console.log('[AdminHome] Auto refreshing system health...');
+            fetchSystemHealth();
+        }, 30000);
+
+        return () => {
+            clearInterval(healthCheckInterval);
+        };
     }, []);
 
     // Update system status when WebSocket connection changes
@@ -165,6 +192,7 @@ function AdminHome() {
             ...prev,
             websocket: wsConnected ? 'online' : 'offline'
         }));
+        setLastHealthCheck(new Date());
     }, [wsConnected]);
 
     const formatCurrency = (value) => {
@@ -243,7 +271,11 @@ function AdminHome() {
 
                             {/* System Status */}
                             <div className={styles.column}>
-                                <SystemStatus status={systemStatus} />
+                                <SystemStatus 
+                                    status={systemStatus} 
+                                    lastCheck={lastHealthCheck}
+                                    onRefresh={fetchSystemHealth}
+                                />
                             </div>
                         </div>
                     </>
