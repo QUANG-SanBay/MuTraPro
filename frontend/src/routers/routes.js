@@ -17,6 +17,7 @@ import AssignmentPage from "../pages/customer/order/AssignmentPage";
 
 import AdminHome from "~/pages/admin/home/AdminHome";
 import UserManagement from "~/pages/admin/users/UserManagement";
+import SystemSettings from "~/pages/admin/settings/SystemSettings";
 
 export const publicRouter = [
     { path: '/auth', element: <Auth /> }
@@ -37,6 +38,7 @@ export const adminRouter = [
     { path: '/admin', element: <AdminHome />, layout: 'admin' },
     { path: '/admin/users', element: <UserManagement />, layout: 'admin' },
     { path: '/admin/permissions', element: <RolePermissionManagement />, layout: 'admin' },
+    { path: '/admin/settings', element: <SystemSettings />, layout: 'admin' },
     { path: '/admin/reports', element: <ReportsStatistics />, layout: 'admin' },
     { path: '/admin/profile', element: <AdminProfile />, layout: 'admin' },
     // { path: '/admin/manage-tasks', element: <ManageTaskUI />, layout: 'admin' }
