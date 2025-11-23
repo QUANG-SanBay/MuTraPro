@@ -96,13 +96,13 @@ services:
     env_file:
       - ./payment-service/.env
     environment:
-      - PORT=4002
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
-      - DB_HOST=sqlserver
-      - DB_PORT=1433
-      - DB_USER=sa
-      - DB_PASSWORD=Strong@Pass123
-      - DB_NAME=Mutrapro_Payment
+      PORT: 4002
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      DB_HOST: sqlserver  
+      DB_PORT: 1433
+      DB_USER: sa
+      DB_PASSWORD: Strong@Pass123
+      DB_NAME: Mutrapro_Payment
     ports:
       - "4002:4002"
     networks:
@@ -111,7 +111,7 @@ services:
       - rabbitmq
       - sqlserver
 
-  # -------------------- ORDER SERVICE -------------------- #  # -------------------- ORDER SERVICE -------------------- #
+  # -------------------- ORDER SERVICE -------------------- # 
   order-service:
     build: ./order-service
     container_name: order-service
@@ -155,7 +155,6 @@ services:
     depends_on:
       - rabbitmq
       - sqlserver
-
   # -------------------- MEDIA SERVICE -------------------- #
   media-service:
     build: ./media-service
@@ -200,32 +199,30 @@ services:
 
   # -------------------- USER (DJANGO) SERVICE -------------------- #
   user-service:
-    build: ./user-service
-    volumes:
-      - ./user-service:/app
-    container_name: user-service
-    restart: always
-    env_file:
-      - ./user-service/.env
-    environment:
-      - DJANGO_SETTINGS_MODULE=userService.settings
-      - DB_ENGINE=mssql
-      - DB_HOST=sqlserver
-      - DB_PORT=1433
-      - DB_USER=sa
-      - DB_PASSWORD=Strong@Pass123
-      - DB_NAME=Mutrapro_User
-      - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_PORT=5672
-      - RABBITMQ_USER=admin
-      - RABBITMQ_PASS=Admin@123
-    ports:
-      - "8005:8000"
-    networks:
-      - microservices-net
-    depends_on:
-      - rabbitmq
-      - sqlserver
+      build: ./user-service
+      volumes:
+        - ./user-service:/app
+      container_name: user-service
+      restart: always
+      environment:
+        - DJANGO_SETTINGS_MODULE=userService.settings
+        - DB_ENGINE=mssql
+        - DB_HOST=sqlserver
+        - DB_PORT=1433
+        - DB_USER=sa
+        - DB_PASSWORD=Strong@Pass123
+        - DB_NAME=Mutrapro_User
+        - RABBITMQ_HOST=rabbitmq
+        - RABBITMQ_PORT=5672
+        - RABBITMQ_USER=admin
+        - RABBITMQ_PASS=Admin@123
+      ports:
+        - "8005:8000"
+      networks:
+        - microservices-net
+      depends_on:
+        - rabbitmq
+        - sqlserver
 
   # -------------------- GATEWAY SERVICE -------------------- #
   gateway:
@@ -255,6 +252,7 @@ services:
     depends_on:
       - payment-service
       - rabbitmq
+    command: npm run dev
 
 # -------------------- NETWORKS -------------------- #
 networks:

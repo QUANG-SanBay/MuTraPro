@@ -1,6 +1,6 @@
 import styles from './SystemStatus.module.scss';
 
-function SystemStatus({ status = {} }) {
+function SystemStatus({ status = {}, lastCheck = null, onRefresh }) {
     const defaultStatus = {
         server: 'online',
         database: 'online',
@@ -35,18 +35,44 @@ function SystemStatus({ status = {} }) {
         }
     };
 
+    const getTimeAgo = (date) => {
+        if (!date) return 'Chưa kiểm tra';
+        
+        const now = new Date();
+        const diff = Math.floor((now - date) / 1000); // seconds
+        
+        if (diff < 60) return 'Vừa xong';
+        if (diff < 3600) return `${Math.floor(diff / 60)} phút trước`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)} giờ trước`;
+        return `${Math.floor(diff / 86400)} ngày trước`;
+    };
+
     const statusItems = [
         { label: 'Server', key: 'server', icon: '🖥️' },
         { label: 'Database', key: 'database', icon: '💾' },
         { label: 'API Gateway', key: 'api', icon: '🔌' },
-        { label: 'Storage', key: 'storage', icon: '📦' }
+        { label: 'Storage', key: 'storage', icon: '📦' },
+        { label: 'WebSocket', key: 'websocket', icon: '🔄' }
     ];
 
     return (
         <div className={styles.systemStatus}>
             <div className={styles.header}>
                 <h2 className={styles.title}>Trạng thái hệ thống</h2>
-                <span className={styles.lastUpdate}>Cập nhật: 2 phút trước</span>
+                <div className={styles.headerActions}>
+                    <span className={styles.lastUpdate}>
+                        Cập nhật: {getTimeAgo(lastCheck)}
+                    </span>
+                    {onRefresh && (
+                        <button 
+                            className={styles.refreshButton}
+                            onClick={onRefresh}
+                            title="Làm mới trạng thái"
+                        >
+                            🔄
+                        </button>
+                    )}
+                </div>
             </div>
             <div className={styles.statusGrid}>
                 {statusItems.map((item) => (

@@ -1,13 +1,97 @@
 {
   "vhosts": [{ "name": "/" }],
   "exchanges": [
-    { "name": "notifications.exchange", "vhost": "/", "type": "topic", "durable": true, "auto_delete": false, "internal": false, "arguments": {} }
+    { 
+      "name": "user.events", 
+      "vhost": "/", 
+      "type": "fanout", 
+      "durable": true, 
+      "auto_delete": false, 
+      "internal": false, 
+      "arguments": {} 
+    },
+    { 
+      "name": "notifications", 
+      "vhost": "/", 
+      "type": "topic", 
+      "durable": true, 
+      "auto_delete": false, 
+      "internal": false, 
+      "arguments": {} 
+    },
+    { 
+      "name": "notifications.exchange", 
+      "vhost": "/", 
+      "type": "topic", 
+      "durable": true, 
+      "auto_delete": false, 
+      "internal": false, 
+      "arguments": {} 
+    }
   ],
   "queues": [
-    { "name": "notifications.queue", "vhost": "/", "durable": true, "auto_delete": false, "arguments": {} }
+    { 
+      "name": "user.events.analytics", 
+      "vhost": "/", 
+      "durable": true, 
+      "auto_delete": false, 
+      "arguments": {} 
+    },
+    { 
+      "name": "user.events.logs", 
+      "vhost": "/", 
+      "durable": true, 
+      "auto_delete": false, 
+      "arguments": {} 
+    },
+    { 
+      "name": "notifications.email", 
+      "vhost": "/", 
+      "durable": true, 
+      "auto_delete": false, 
+      "arguments": {} 
+    },
+    { 
+      "name": "notifications.queue", 
+      "vhost": "/", 
+      "durable": true, 
+      "auto_delete": false, 
+      "arguments": {} 
+    }
   ],
   "bindings": [
-    { "source": "notifications.exchange", "vhost": "/", "destination_type": "queue", "destination": "notifications.queue", "routing_key": "notifications.*", "arguments": {} }
+    { 
+      "source": "user.events", 
+      "vhost": "/", 
+      "destination_type": "queue", 
+      "destination": "user.events.analytics", 
+      "routing_key": "", 
+      "arguments": {} 
+    },
+    { 
+      "source": "user.events", 
+      "vhost": "/", 
+      "destination_type": "queue", 
+      "destination": "user.events.logs", 
+      "routing_key": "", 
+      "arguments": {} 
+    },
+    { 
+      "source": "notifications", 
+      "vhost": "/", 
+      "destination_type": "queue", 
+      "destination": "notifications.email", 
+      "routing_key": "notification.email.#", 
+      "arguments": {} 
+    },
+    { 
+      "source": "notifications.exchange", 
+      "vhost": "/", 
+      "destination_type": "queue", 
+      "destination": "notifications.queue", 
+      "routing_key": "notifications.*", 
+      "arguments": {} 
+    }
   ],
   "parameters": [],
   "policies": [],

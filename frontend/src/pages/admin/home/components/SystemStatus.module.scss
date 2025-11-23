@@ -16,10 +16,35 @@
             color: var(--text-c);
         }
 
-        .lastUpdate {
-            font-size: 1.2rem;
-            color: var(--text-c);
-            opacity: 0.6;
+        .headerActions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            .lastUpdate {
+                font-size: 1.2rem;
+                color: var(--text-c);
+                opacity: 0.6;
+            }
+
+            .refreshButton {
+                background: var(--primary-c);
+                border: none;
+                border-radius: 6px;
+                padding: 6px 10px;
+                font-size: 1.4rem;
+                cursor: pointer;
+                transition: all 0.2s;
+                
+                &:hover {
+                    transform: rotate(90deg);
+                    opacity: 0.8;
+                }
+
+                &:active {
+                    transform: rotate(180deg);
+                }
+            }
         }
     }
 

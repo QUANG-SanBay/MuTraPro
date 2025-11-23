@@ -4,6 +4,8 @@ const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 const axios = require("axios");
+const http = require("http");
+const WebSocket = require("ws");
 
 // Load biến môi trường
 dotenv.config();
@@ -11,6 +13,7 @@ dotenv.config();
 const logger = require('./middlewares/logger.js');
 const corsConfig = require('./middlewares/cors-config.js');
 const { notFound, errorHandler } = require('./middlewares/error-handler.js');
+const rabbitmqBridge = require('./services/rabbitmq-websocket.js');
 
 
 const app = express();
@@ -156,8 +159,96 @@ app.post("/api", async (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
+// Create HTTP server
+const server = http.createServer(app);
+
+// Setup WebSocket server for live events
+const wss = new WebSocket.Server({ 
+  server,
+  path: '/ws/events'
+});
+
+wss.on('connection', (ws, req) => {
+  console.log(`[WebSocket] New client connected from ${req.socket.remoteAddress}`);
+  
+  // Register client with RabbitMQ bridge
+  rabbitmqBridge.addClient(ws);
+  
+  // Handle ping/pong for keepalive
+  ws.isAlive = true;
+  ws.on('pong', () => {
+    ws.isAlive = true;
+  });
+  
+  // Handle client messages (optional)
+  ws.on('message', (message) => {
+    try {
+      const data = JSON.parse(message);
+      console.log('[WebSocket] Received message from client:', data);
+      
+      // Handle different message types if needed
+      if (data.type === 'ping') {
+        ws.send(JSON.stringify({ type: 'pong', timestamp: new Date().toISOString() }));
+      } else if (data.type === 'status') {
+        const status = rabbitmqBridge.getStatus();
+        ws.send(JSON.stringify({ type: 'status', data: status }));
+      }
+    } catch (error) {
+      console.error('[WebSocket] Error parsing client message:', error.message);
+    }
+  });
+});
+
+// WebSocket keepalive - ping clients every 30 seconds
+const keepaliveInterval = setInterval(() => {
+  wss.clients.forEach((ws) => {
+    if (ws.isAlive === false) {
+      console.log('[WebSocket] Terminating inactive client');
+      return ws.terminate();
+    }
+    
+    ws.isAlive = false;
+    ws.ping();
+  });
+}, 30000);
+
+wss.on('close', () => {
+  clearInterval(keepaliveInterval);
+});
+
+// WebSocket status endpoint
+app.get('/ws/status', (req, res) => {
+  const status = rabbitmqBridge.getStatus();
+  return res.json({
+    ...status,
+    websocketClients: wss.clients.size
+  });
+});
+
+// Initialize RabbitMQ connection
+rabbitmqBridge.connect().catch((error) => {
+  console.error('[Gateway] Failed to initialize RabbitMQ bridge:', error);
+});
+
 // Port từ biến môi trường
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Gateway chạy tại http://localhost:${PORT}`);
+  console.log(`WebSocket endpoint: ws://localhost:${PORT}/ws/events`);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  console.log('[Gateway] SIGTERM received, shutting down gracefully...');
+  
+  wss.close(() => {
+    console.log('[Gateway] WebSocket server closed');
+  });
+  
+  await rabbitmqBridge.close();
+  
+  server.close(() => {
+    console.log('[Gateway] HTTP server closed');
+    process.exit(0);
+  });
 });

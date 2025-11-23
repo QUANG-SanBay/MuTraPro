@@ -7,7 +7,11 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterSerializer, UserSerializer, LoginSerializer, UpdateProfileSerializer, ChangePasswordSerializer
-from .permissions import IsAdmin, IsCustomer, role_required
+from .permissions import IsAdmin, IsCustomer, role_required, HasPermission, require_permission
+from utils.rabbitmq import publish_user_event, publish_notification
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def hello(request):
@@ -57,6 +61,43 @@ def register(request):
 	if serializer.is_valid():
 		user = serializer.save()
 		user_data = UserSerializer(user).data
+		
+		# 📤 Publish user.registered event to RabbitMQ
+		try:
+			publish_user_event(
+				event_type='user.registered',
+				user_data={
+					'user_id': user.id,
+					'username': user.username,
+					'email': user.email,
+					'full_name': user.full_name,
+					'role': user.role
+				},
+				extra_data={
+					'ip_address': request.META.get('REMOTE_ADDR', 'unknown'),
+					'user_agent': request.META.get('HTTP_USER_AGENT', 'unknown')
+				}
+			)
+			logger.info(f"📤 Published user.registered event for user_id={user.id}")
+			
+			# 📧 Publish welcome notification
+			publish_notification(
+				notification_type='email',
+				recipient={
+					'user_id': user.id,
+					'email': user.email,
+					'full_name': user.full_name
+				},
+				template='welcome_email',
+				data={
+					'verification_link': f'https://app.com/verify/{user.id}'
+				},
+				priority='high'
+			)
+			logger.info(f"📧 Published welcome notification for user_id={user.id}")
+		except Exception as e:
+			logger.error(f"❌ Failed to publish events: {e}")
+			# Don't fail registration if event publishing fails
 		
 		return Response({
 			"message": "Đăng ký thành công",
@@ -113,6 +154,27 @@ def login(request):
 		# Return user data and tokens
 		user_data = UserSerializer(user).data
 		
+		# 📤 Publish user.login event to RabbitMQ
+		try:
+			publish_user_event(
+				event_type='user.login',
+				user_data={
+					'user_id': user.id,
+					'username': user.username,
+					'email': user.email,
+					'role': user.role
+				},
+				extra_data={
+					'ip_address': request.META.get('REMOTE_ADDR', 'unknown'),
+					'user_agent': request.META.get('HTTP_USER_AGENT', 'unknown'),
+					'login_timestamp': datetime.utcnow().isoformat() + 'Z'
+				}
+			)
+			logger.info(f"📤 Published user.login event for user_id={user.id}")
+		except Exception as e:
+			logger.error(f"❌ Failed to publish login event: {e}")
+			# Don't fail login if event publishing fails
+		
 		return Response({
 			"message": "Đăng nhập thành công",
 			"user": user_data,
@@ -127,12 +189,13 @@ def login(request):
 
 
 @api_view(['GET', 'PUT', 'PATCH'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, HasPermission])
+@require_permission('view_own_profile')
 def profile(request):
 	"""
-	User profile endpoint - Requires JWT authentication
-	GET /users/me - Get user profile
-	PUT/PATCH /users/me - Update user profile
+	User profile endpoint - Requires JWT authentication AND permission
+	GET /users/me - Get user profile (requires 'view_own_profile' permission)
+	PUT/PATCH /users/me - Update user profile (requires 'edit_own_profile' permission)
 	
 	Headers:
 	{
@@ -181,7 +244,7 @@ def profile(request):
 	user = request.user
 	
 	if request.method == 'GET':
-		# Get profile
+		# Get profile (already checked by @require_permission('view_own_profile'))
 		user_data = UserSerializer(user).data
 		return Response({
 			"message": "Lấy thông tin thành công",
@@ -189,6 +252,22 @@ def profile(request):
 		}, status=status.HTTP_200_OK)
 	
 	elif request.method in ['PUT', 'PATCH']:
+		# Update profile - check edit_own_profile permission
+		from .models import RolePermission, Role
+		
+		# Check if user has edit_own_profile permission
+		if user.role != Role.ADMIN:
+			has_edit_perm = RolePermission.objects.filter(
+				role=user.role,
+				permission__codename='edit_own_profile'
+			).exists()
+			
+			if not has_edit_perm:
+				return Response({
+					"error": "Bạn không có quyền chỉnh sửa hồ sơ",
+					"required_permission": "edit_own_profile"
+				}, status=status.HTTP_403_FORBIDDEN)
+		
 		# Update profile
 		serializer = UpdateProfileSerializer(user, data=request.data, partial=True)
 		
@@ -208,10 +287,11 @@ def profile(request):
 
 
 @api_view(['PUT'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, HasPermission])
+@require_permission('change_password')
 def change_password(request):
 	"""
-	Change user password endpoint - Requires JWT authentication
+	Change user password endpoint - Requires JWT authentication AND 'change_password' permission
 	PUT /users/change-password
 	
 	Headers:
