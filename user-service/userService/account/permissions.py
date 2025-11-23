@@ -104,3 +104,65 @@ def role_required(*allowed_roles):
             return f"RolePermission({', '.join(allowed_roles)})"
     
     return RolePermission
+
+
+class HasPermission(BasePermission):
+    """
+    Permission check based on granular permissions in RolePermission model.
+    
+    Usage in views:
+        @permission_classes([IsAuthenticated, HasPermission])
+        @require_permission('view_all_users')
+        def my_view(request):
+            ...
+    """
+    
+    def has_permission(self, request, view):
+        # Must be authenticated
+        if not request.user or not request.user.is_authenticated:
+            return False
+        
+        # Admin has all permissions
+        if request.user.role == 'admin':
+            return True
+        
+        # Check if view has required_permission attribute (set by decorator)
+        required_perm = getattr(view, 'required_permission', None)
+        
+        if not required_perm:
+            # No specific permission required, just authentication
+            return True
+        
+        # Check if user's role has this permission
+        from .models import RolePermission
+        
+        has_perm = RolePermission.objects.filter(
+            role=request.user.role,
+            permission__codename=required_perm
+        ).exists()
+        
+        return has_perm
+
+
+def require_permission(permission_codename):
+    """
+    Decorator to specify required permission for a view.
+    
+    Usage:
+        @api_view(['GET'])
+        @permission_classes([IsAuthenticated, HasPermission])
+        @require_permission('view_all_users')
+        def get_users(request):
+            ...
+    
+    Args:
+        permission_codename: The codename of the required permission
+    
+    Returns:
+        Decorated view function with required_permission attribute
+    """
+    def decorator(view_func):
+        view_func.required_permission = permission_codename
+        return view_func
+    return decorator
+

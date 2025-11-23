@@ -146,3 +146,52 @@ class CustomerProfile(models.Model):
 	def __str__(self) -> str:
 		return f"Customer: {self.user.username}"
 
+
+class Permission(models.Model):
+	"""Permission entity for RBAC system."""
+
+	codename = models.CharField(max_length=100, unique=True, db_index=True)
+	name = models.CharField(max_length=200)
+	category = models.CharField(max_length=100, db_index=True)
+	description = models.TextField(blank=True)
+
+	created_at = models.DateTimeField(auto_now_add=True)
+	updated_at = models.DateTimeField(auto_now=True)
+
+	class Meta:
+		verbose_name = "Permission"
+		verbose_name_plural = "Permissions"
+		ordering = ["category", "name"]
+
+	def __str__(self) -> str:
+		return f"{self.codename} - {self.name}"
+
+
+class RolePermission(models.Model):
+	"""Many-to-many relationship between roles and permissions."""
+
+	role = models.CharField(max_length=50, choices=Role.choices, db_index=True)
+	permission = models.ForeignKey(
+		Permission, on_delete=models.CASCADE, related_name="role_permissions"
+	)
+
+	created_at = models.DateTimeField(auto_now_add=True)
+	created_by = models.ForeignKey(
+		User,
+		on_delete=models.SET_NULL,
+		null=True,
+		blank=True,
+		related_name="created_role_permissions",
+	)
+
+	class Meta:
+		verbose_name = "Role Permission"
+		verbose_name_plural = "Role Permissions"
+		unique_together = ("role", "permission")
+		indexes = [
+			models.Index(fields=["role", "permission"]),
+		]
+
+	def __str__(self) -> str:
+		return f"{self.role} - {self.permission.codename}"
+

@@ -23,14 +23,14 @@ export const publicRouter = [
 ];
 
 export const customerRouter = [
-    { path: '/customer', element: <CustomerHome />, layout: 'default' },
+    { path: '/customer', element: <CustomerHome />, layout: 'default' },// Quang -> Trung -> Hiếu -> Lý -> Thắng.
     { path: '/customer/profile', element: <CustomerProfile />, layout: 'default' },
-    { path: '/customer/services', element: <OrderPage />, layout: 'default' },
+    { path: '/customer/services', element: <OrderPage />, layout: 'default' },//  Trung 
     { path: '/customer/orders', element: <Order />, layout: 'default' },
-    { path: '/customer/orders/tracking', element: <OrderTracking />, layout: 'default' },
-    { path: '/customer/approval', element: <ProductApproval />, layout: 'default' },
-    { path: '/customer/payments', element: <PaymentOrders />, layout: 'default' },
-    { path: '/payments', element: <PaymentPage />, layout: 'default' },
+    { path: '/customer/orders/tracking', element: <OrderTracking />, layout: 'default' },// Thắng
+    { path: '/customer/approval', element: <ProductApproval />, layout: 'default' },// Công Lý
+    { path: '/customer/payments', element: <PaymentOrders />, layout: 'default' },// Hiếu
+    { path: '/payments', element: <PaymentPage />, layout: 'default' },// Hiếu 
 ];
 
 export const adminRouter = [
@@ -43,12 +43,12 @@ export const adminRouter = [
 ];
 
 export const serviceCoordinatorRouter = [
-    { path: '/coordinator/requests', element: <RequestIntakePage />, layout: 'default' },
-    { path: '/coordinator/assignments', element: <AssignmentPage />, layout: 'default' }
+    { path: '/coordinator/requests', element: <RequestIntakePage />, layout: 'default' },// Trung
+    { path: '/coordinator/assignments', element: <AssignmentPage />, layout: 'default' },// Trung
+    { path: '/specialist/tasks', element: <TaskDetail />, layout: 'default' }// Thắng
 ];
 
 export const specialistRouter = [
-    { path: '/specialist/tasks', element: <TaskDetail />, layout: 'default' }
 ];
 
 export const studioAdminRouter = [

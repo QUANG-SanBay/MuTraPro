@@ -231,3 +231,57 @@ class ChangePasswordSerializer(serializers.Serializer):
         
         return attrs
 
+
+class PermissionSerializer(serializers.Serializer):
+    """Serializer for Permission model"""
+    
+    codename = serializers.CharField(max_length=100)
+    name = serializers.CharField(max_length=200)
+    category = serializers.CharField(max_length=100)
+    description = serializers.CharField(required=False, allow_blank=True)
+    
+    class Meta:
+        fields = ['codename', 'name', 'category', 'description']
+
+
+class RolePermissionSerializer(serializers.Serializer):
+    """Serializer for retrieving role permissions"""
+    
+    role = serializers.CharField()
+    permissions = serializers.ListField(
+        child=serializers.CharField(),
+        help_text="List of permission codenames"
+    )
+    
+    class Meta:
+        fields = ['role', 'permissions']
+
+
+class UpdateRolePermissionSerializer(serializers.Serializer):
+    """Serializer for updating role permissions"""
+    
+    permissions = serializers.ListField(
+        child=serializers.CharField(),
+        help_text="List of permission codenames to assign to the role"
+    )
+    
+    def validate_permissions(self, value):
+        """Validate that all permission codenames exist"""
+        from .models import Permission
+        
+        existing_codenames = set(Permission.objects.filter(
+            codename__in=value
+        ).values_list('codename', flat=True))
+        
+        invalid_codenames = set(value) - existing_codenames
+        
+        if invalid_codenames:
+            raise serializers.ValidationError(
+                f"Invalid permission codenames: {', '.join(invalid_codenames)}"
+            )
+        
+        return value
+    
+    class Meta:
+        fields = ['permissions']
+

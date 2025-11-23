@@ -205,3 +205,84 @@ export const getUserStatistics = async () => {
         ...stats
     };
 };
+
+
+// ==================== PERMISSION MANAGEMENT ====================
+
+/**
+ * Get all available permissions
+ * @returns {Promise} - Response with permissions array
+ */
+export const getAllPermissions = async () => {
+    return await callGateway({
+        service: 'user-service',
+        path: '/users/permissions',
+        method: 'GET'
+    });
+};
+
+/**
+ * Get all roles from backend API
+ * @returns {Promise} - Response with roles array
+ */
+export const fetchAllRoles = async () => {
+    return await callGateway({
+        service: 'user-service',
+        path: '/users/roles',
+        method: 'GET'
+    });
+};
+
+/**
+ * Get permissions for a specific role
+ * @param {string} role - Role name (e.g., 'customer', 'service_coordinator')
+ * @returns {Promise} - Response with role permissions
+ */
+export const getRolePermissions = async (role) => {
+    return await callGateway({
+        service: 'user-service',
+        path: `/users/roles/${role}/permissions`,
+        method: 'GET'
+    });
+};
+
+/**
+ * Update permissions for a role
+ * @param {string} role - Role name
+ * @param {Array<string>} permissions - Array of permission codenames
+ * @returns {Promise} - Response with update result
+ */
+export const updateRolePermissions = async (role, permissions) => {
+    return await callGateway({
+        service: 'user-service',
+        path: `/users/roles/${role}/permissions/update`,
+        method: 'PUT',
+        body: { permissions }
+    });
+};
+
+/**
+ * Reset role permissions to default
+ * @param {string} role - Role name
+ * @returns {Promise} - Response with reset result
+ */
+export const resetRoleToDefault = async (role) => {
+    return await callGateway({
+        service: 'user-service',
+        path: `/users/roles/${role}/reset-default`,
+        method: 'POST'
+    });
+};
+
+/**
+ * Check if current user has a specific permission
+ * @param {string} permission - Permission codename
+ * @returns {Promise} - Response with permission check result
+ */
+export const checkUserPermission = async (permission) => {
+    return await callGateway({
+        service: 'user-service',
+        path: `/users/permissions/check?permission=${permission}`,
+        method: 'GET'
+    });
+};
