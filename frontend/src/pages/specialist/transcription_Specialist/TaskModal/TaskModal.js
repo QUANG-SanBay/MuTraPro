@@ -122,7 +122,7 @@ function TaskModal({ taskId = "TASK001" }) {
 
                     <button
                         className="btn-black"
-                        onClick={() => navigate("/taskdetail")}
+                        onClick={() => navigate("/specialist/taskdetail")}
                     >
                         Bắt đầu làm việc
                     </button>

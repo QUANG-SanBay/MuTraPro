@@ -8,9 +8,9 @@ import TaskDetail from "~/pages/specialist/transcription_Specialist/TaskDetail/T
 import TaskModal from "~/pages/specialist/transcription_Specialist/TaskModal/TaskModal"
 const publicRouter = [
     {path: '/auth', element: <Auth/>},
-    {path: '/OrderTracking', element: <OrderTracking/>,},
-    {path: '/TaskDetail', element: <TaskDetail/>,},
-    {path: '/TaskModal', element: <TaskModal/>,}
+    {path: '/customer/orders/tracking', element: <OrderTracking/>,},
+    {path: '/specialist/taskdetail', element: <TaskDetail/>,},
+    {path: '/specialist/taskmodal', element: <TaskModal/>,}
 ]
 
 const customerRouter = [
