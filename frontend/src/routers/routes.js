@@ -17,38 +17,40 @@ import AssignmentPage from "../pages/customer/order/AssignmentPage";
 
 import AdminHome from "~/pages/admin/home/AdminHome";
 import UserManagement from "~/pages/admin/users/UserManagement";
+import SystemSettings from "~/pages/admin/settings/SystemSettings";
 
 export const publicRouter = [
     { path: '/auth', element: <Auth /> }
 ];
 
 export const customerRouter = [
-    { path: '/customer', element: <CustomerHome />, layout: 'default' },
+    { path: '/customer', element: <CustomerHome />, layout: 'default' },// Quang -> Trung -> Hiếu -> Lý -> Thắng.
     { path: '/customer/profile', element: <CustomerProfile />, layout: 'default' },
-    { path: '/customer/services', element: <OrderPage />, layout: 'default' },
+    { path: '/customer/services', element: <OrderPage />, layout: 'default' },//  Trung 
     { path: '/customer/orders', element: <Order />, layout: 'default' },
-    { path: '/customer/orders/tracking', element: <OrderTracking />, layout: 'default' },
-    { path: '/customer/approval', element: <ProductApproval />, layout: 'default' },
-    { path: '/customer/payments', element: <PaymentOrders />, layout: 'default' },
-    { path: '/payments', element: <PaymentPage />, layout: 'default' },
+    { path: '/customer/orders/tracking', element: <OrderTracking />, layout: 'default' },// Thắng
+    { path: '/customer/approval', element: <ProductApproval />, layout: 'default' },// Công Lý
+    { path: '/customer/payments', element: <PaymentOrders />, layout: 'default' },// Hiếu
+    { path: '/payments', element: <PaymentPage />, layout: 'default' },// Hiếu 
 ];
 
 export const adminRouter = [
     { path: '/admin', element: <AdminHome />, layout: 'admin' },
     { path: '/admin/users', element: <UserManagement />, layout: 'admin' },
     { path: '/admin/permissions', element: <RolePermissionManagement />, layout: 'admin' },
+    { path: '/admin/settings', element: <SystemSettings />, layout: 'admin' },
     { path: '/admin/reports', element: <ReportsStatistics />, layout: 'admin' },
     { path: '/admin/profile', element: <AdminProfile />, layout: 'admin' },
     // { path: '/admin/manage-tasks', element: <ManageTaskUI />, layout: 'admin' }
 ];
 
 export const serviceCoordinatorRouter = [
-    { path: '/coordinator/requests', element: <RequestIntakePage />, layout: 'default' },
-    { path: '/coordinator/assignments', element: <AssignmentPage />, layout: 'default' }
+    { path: '/coordinator/requests', element: <RequestIntakePage />, layout: 'default' },// Trung
+    { path: '/coordinator/assignments', element: <AssignmentPage />, layout: 'default' },// Trung
+    { path: '/specialist/tasks', element: <TaskDetail />, layout: 'default' }// Thắng
 ];
 
 export const specialistRouter = [
-    { path: '/specialist/tasks', element: <TaskDetail />, layout: 'default' }
 ];
 
 export const studioAdminRouter = [

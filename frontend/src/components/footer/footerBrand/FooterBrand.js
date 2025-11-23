@@ -1,12 +1,14 @@
 import Logo from '~/components/logo/Logo';
 import styles from './FooterBrand.module.scss';
 
-function FooterBrand() {
+function FooterBrand({ settings }) {
+    const description = settings?.siteDescription || 'Nền tảng ký âm, phối khí, thu âm theo yêu cầu.';
+
     return (
         <div className={styles.column}>
             <Logo className={styles.logo} />
             <p className={styles.description}>
-                Nền tảng ký âm, phối khí, thu âm theo yêu cầu.
+                {description}
             </p>
             <div className={styles.social}>
                 <a

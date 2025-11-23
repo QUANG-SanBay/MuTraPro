@@ -7,18 +7,20 @@ const GATEWAY_URL = process.env.REACT_APP_GATEWAY_URL || "http://localhost:8000/
 const PUBLIC_ENDPOINTS = [
   '/users/register',
   '/users/login',
-  '/users/hello'
+  '/users/hello',
+  '/users/settings/public'
 ];
 
-export async function callGateway({ service, path, method = "GET", query, body, headers, requireAuth = true } = {}) {
+export async function callGateway({ service, path, method = "GET", query, body, headers, requireAuth = true, skipAuth = false } = {}) {
   // Check if this is a public endpoint
   const isPublicEndpoint = PUBLIC_ENDPOINTS.some(endpoint => path.startsWith(endpoint));
   
   // Only add JWT token if:
-  // 1. requireAuth is explicitly true (default), OR
-  // 2. It's not a public endpoint
+  // 1. skipAuth is not true, AND
+  // 2. requireAuth is explicitly true (default), OR
+  // 3. It's not a public endpoint
   const authHeaders = {};
-  if (requireAuth && !isPublicEndpoint) {
+  if (!skipAuth && requireAuth && !isPublicEndpoint) {
     const token = getAccessToken();
     
     // If token is required but not found, throw error early

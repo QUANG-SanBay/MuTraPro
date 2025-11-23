@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+    getAllPermissions,
+    getRolePermissions,
+    updateRolePermissions,
+    resetRoleToDefault
+} from '../../../api/adminService';
+import {
     faUserShield,
     faSync,
     faSearch,
@@ -143,6 +149,7 @@ const RolePermissionManagement = () => {
 
     const [selectedRole, setSelectedRole] = useState(null);
     const [rolePermissions, setRolePermissions] = useState({});
+    const [rolePermissionCounts, setRolePermissionCounts] = useState({}); // Store actual permission counts from backend
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [alert, setAlert] = useState(null);
@@ -160,29 +167,104 @@ const RolePermissionManagement = () => {
     const [selectedChosen, setSelectedChosen] = useState([]);
 
     /**
-     * Initialize role permissions from defaults
+     * Fetch all permissions from backend on mount
      */
     useEffect(() => {
+        fetchAllPermissions();
+        fetchAllRolePermissionCounts();
         setRolePermissions(defaultRolePermissions);
     }, []);
 
     /**
+     * Fetch all permissions from backend
+     */
+    const fetchAllPermissions = async () => {
+        setLoading(true);
+        try {
+            const response = await getAllPermissions();
+            if (response.permissions) {
+                // Backend returns permissions, but we'll keep using local allPermissions
+                // for the demo. In production, replace allPermissions with response.permissions
+                console.log('[RolePermissionManagement] Fetched permissions:', response.permissions.length);
+            }
+        } catch (error) {
+            console.error('[RolePermissionManagement] Error fetching permissions:', error);
+            setAlert({
+                type: 'error',
+                message: 'Không thể tải danh sách quyền từ server'
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    /**
+     * Fetch permission counts for all roles from backend
+     */
+    const fetchAllRolePermissionCounts = async () => {
+        try {
+            const counts = {};
+            
+            // Fetch permission count for each managed role
+            for (const role of managedRoles) {
+                try {
+                    const response = await getRolePermissions(role.value);
+                    counts[role.value] = response.permissions?.length || 0;
+                } catch (error) {
+                    console.error(`[RolePermissionManagement] Error fetching permissions for ${role.value}:`, error);
+                    counts[role.value] = defaultRolePermissions[role.value]?.length || 0;
+                }
+            }
+            
+            setRolePermissionCounts(counts);
+            console.log('[RolePermissionManagement] Permission counts:', counts);
+        } catch (error) {
+            console.error('[RolePermissionManagement] Error fetching role permission counts:', error);
+        }
+    };
+
+    /**
      * Handle role selection
      */
-    const handleRoleSelect = (role) => {
+    const handleRoleSelect = async (role) => {
         setSelectedRole(role);
         setAlert(null);
+        setLoading(true);
 
-        const rolePerms = rolePermissions[role.value] || [];
+        try {
+            // Fetch role permissions from backend
+            const response = await getRolePermissions(role.value);
+            const rolePerms = response.permissions || [];
 
-        // Split permissions into available and chosen
-        const chosen = allPermissions.filter(p => rolePerms.includes(p.codename));
-        const available = allPermissions.filter(p => !rolePerms.includes(p.codename));
+            // Split permissions into available and chosen
+            const chosen = allPermissions.filter(p => rolePerms.includes(p.codename));
+            const available = allPermissions.filter(p => !rolePerms.includes(p.codename));
 
-        setChosenPermissions(chosen);
-        setAvailablePermissions(available);
-        setSelectedAvailable([]);
-        setSelectedChosen([]);
+            setChosenPermissions(chosen);
+            setAvailablePermissions(available);
+            setSelectedAvailable([]);
+            setSelectedChosen([]);
+
+            console.log(`[RolePermissionManagement] Loaded ${chosen.length} permissions for role: ${role.value}`);
+        } catch (error) {
+            console.error('[RolePermissionManagement] Error fetching role permissions:', error);
+            setAlert({
+                type: 'error',
+                message: `Không thể tải quyền cho vai trò ${role.label}`
+            });
+
+            // Fallback to default permissions
+            const rolePerms = rolePermissions[role.value] || [];
+            const chosen = allPermissions.filter(p => rolePerms.includes(p.codename));
+            const available = allPermissions.filter(p => !rolePerms.includes(p.codename));
+
+            setChosenPermissions(chosen);
+            setAvailablePermissions(available);
+            setSelectedAvailable([]);
+            setSelectedChosen([]);
+        } finally {
+            setLoading(false);
+        }
     };
 
     /**
@@ -253,28 +335,40 @@ const RolePermissionManagement = () => {
         setAlert(null);
 
         try {
-            // Update local state
             const permissionCodenames = chosenPermissions.map(p => p.codename);
+
+            // Call backend API
+            const response = await updateRolePermissions(
+                selectedRole.value,
+                permissionCodenames
+            );
+
+            // Update local state
             setRolePermissions({
                 ...rolePermissions,
                 [selectedRole.value]: permissionCodenames
             });
 
-            // TODO: Call API to save to backend
-            // await updateRolePermissions(selectedRole.value, permissionCodenames);
+            // Update permission count for this role
+            setRolePermissionCounts({
+                ...rolePermissionCounts,
+                [selectedRole.value]: permissionCodenames.length
+            });
+
+            console.log('[RolePermissionManagement] Update response:', response);
 
             setAlert({
                 type: 'success',
-                message: `Cập nhật quyền cho vai trò "${selectedRole.label}" thành công!`
+                message: `Cập nhật quyền cho vai trò "${selectedRole.label}" thành công! (+${response.added || 0} -${response.removed || 0})`
             });
 
             // Auto hide alert after 3 seconds
             setTimeout(() => setAlert(null), 3000);
         } catch (err) {
-            console.error('Error updating permissions:', err);
+            console.error('[RolePermissionManagement] Error updating permissions:', err);
             setAlert({
                 type: 'error',
-                message: 'Có lỗi xảy ra khi cập nhật quyền.'
+                message: err.message || 'Có lỗi xảy ra khi cập nhật quyền.'
             });
         } finally {
             setSaving(false);
@@ -284,24 +378,54 @@ const RolePermissionManagement = () => {
     /**
      * Handle reset to default
      */
-    const handleResetToDefault = () => {
+    const handleResetToDefault = async () => {
         if (!selectedRole) return;
 
-        const defaultPerms = defaultRolePermissions[selectedRole.value] || [];
-        const chosen = allPermissions.filter(p => defaultPerms.includes(p.codename));
-        const available = allPermissions.filter(p => !defaultPerms.includes(p.codename));
+        setSaving(true);
+        setAlert(null);
 
-        setChosenPermissions(chosen);
-        setAvailablePermissions(available);
-        setSelectedAvailable([]);
-        setSelectedChosen([]);
+        try {
+            // Call backend API
+            const response = await resetRoleToDefault(selectedRole.value);
 
-        setAlert({
-            type: 'success',
-            message: 'Đã khôi phục quyền mặc định!'
-        });
+            const defaultPerms = response.permissions || [];
+            const chosen = allPermissions.filter(p => defaultPerms.includes(p.codename));
+            const available = allPermissions.filter(p => !defaultPerms.includes(p.codename));
 
-        setTimeout(() => setAlert(null), 3000);
+            setChosenPermissions(chosen);
+            setAvailablePermissions(available);
+            setSelectedAvailable([]);
+            setSelectedChosen([]);
+
+            // Update local cache
+            setRolePermissions({
+                ...rolePermissions,
+                [selectedRole.value]: defaultPerms
+            });
+
+            // Update permission count for this role
+            setRolePermissionCounts({
+                ...rolePermissionCounts,
+                [selectedRole.value]: defaultPerms.length
+            });
+
+            console.log('[RolePermissionManagement] Reset to default:', defaultPerms.length, 'permissions');
+
+            setAlert({
+                type: 'success',
+                message: `Đã khôi phục ${defaultPerms.length} quyền mặc định cho vai trò "${selectedRole.label}"!`
+            });
+
+            setTimeout(() => setAlert(null), 3000);
+        } catch (error) {
+            console.error('[RolePermissionManagement] Error resetting to default:', error);
+            setAlert({
+                type: 'error',
+                message: error.message || 'Có lỗi xảy ra khi khôi phục quyền mặc định.'
+            });
+        } finally {
+            setSaving(false);
+        }
     };
 
     /**
@@ -398,7 +522,9 @@ const RolePermissionManagement = () => {
                                     <FontAwesomeIcon icon={faUserTag} />
                                     <span>{role.label}</span>
                                     <div className={styles.permCount}>
-                                        {rolePermissions[role.value]?.length || 0} quyền
+                                        {rolePermissionCounts[role.value] !== undefined 
+                                            ? rolePermissionCounts[role.value] 
+                                            : (rolePermissions[role.value]?.length || 0)} quyền
                                     </div>
                                 </div>
                             ))}
