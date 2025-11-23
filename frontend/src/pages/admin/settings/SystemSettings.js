@@ -1,9 +1,16 @@
 import { useState, useEffect } from 'react';
 import styles from './SystemSettings.module.scss';
+import { 
+    getSystemSettings, 
+    updateSystemSettings, 
+    getSettingsByCategory, 
+    updateSettingsByCategory 
+} from '~/api/adminService';
 
 function SystemSettings() {
     const [activeTab, setActiveTab] = useState('general');
     const [isSaving, setIsSaving] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [saveMessage, setSaveMessage] = useState('');
 
     // General settings
@@ -77,40 +84,145 @@ function SystemSettings() {
         { id: 'security', label: 'Bảo mật', icon: '🔒' }
     ];
 
+    // Load settings when component mounts
+    useEffect(() => {
+        loadAllSettings();
+    }, []);
+
+    /**
+     * Load all settings from backend
+     */
+    const loadAllSettings = async () => {
+        setIsLoading(true);
+        try {
+            console.log('[SystemSettings] Loading all settings...');
+            const response = await getSystemSettings();
+            
+            if (response && response.settings) {
+                const { general, email, payment, storage, service } = response.settings;
+                
+                if (general) setGeneralSettings(general);
+                if (email) setEmailSettings(email);
+                if (payment) setPaymentSettings(payment);
+                if (storage) setStorageSettings(storage);
+                if (service) setServiceSettings(service);
+                
+                console.log('[SystemSettings] Settings loaded successfully');
+            }
+        } catch (error) {
+            console.error('[SystemSettings] Error loading settings:', error);
+            // Keep default values if API fails
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    /**
+     * Load settings for specific category
+     */
+    const loadCategorySettings = async (category) => {
+        try {
+            console.log(`[SystemSettings] Loading ${category} settings...`);
+            const response = await getSettingsByCategory(category);
+            
+            if (response && response.settings) {
+                switch (category) {
+                    case 'general':
+                        setGeneralSettings(response.settings);
+                        break;
+                    case 'email':
+                        setEmailSettings(response.settings);
+                        break;
+                    case 'payment':
+                        setPaymentSettings(response.settings);
+                        break;
+                    case 'storage':
+                        setStorageSettings(response.settings);
+                        break;
+                    case 'service':
+                        setServiceSettings(response.settings);
+                        break;
+                }
+                console.log(`[SystemSettings] ${category} settings loaded`);
+            }
+        } catch (error) {
+            console.error(`[SystemSettings] Error loading ${category} settings:`, error);
+        }
+    };
+
     const handleSaveSettings = async () => {
         setIsSaving(true);
         setSaveMessage('');
 
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            console.log('[SystemSettings] Saving settings for tab:', activeTab);
 
-            // TODO: Replace with actual API call
-            // await updateSystemSettings({
-            //     general: generalSettings,
-            //     email: emailSettings,
-            //     payment: paymentSettings,
-            //     storage: storageSettings,
-            //     service: serviceSettings
-            // });
+            // Get current settings based on active tab
+            let settingsToSave = {};
+            switch (activeTab) {
+                case 'general':
+                    settingsToSave = generalSettings;
+                    break;
+                case 'email':
+                    settingsToSave = emailSettings;
+                    break;
+                case 'payment':
+                    settingsToSave = paymentSettings;
+                    break;
+                case 'storage':
+                    settingsToSave = storageSettings;
+                    break;
+                case 'service':
+                    settingsToSave = serviceSettings;
+                    break;
+                case 'security':
+                    setSaveMessage('⚠️ Các tính năng bảo mật sẽ có trong phiên bản tiếp theo');
+                    setIsSaving(false);
+                    return;
+            }
 
-            console.log('[SystemSettings] Saving settings:', {
-                activeTab,
-                general: generalSettings,
-                email: emailSettings,
-                payment: paymentSettings,
-                storage: storageSettings,
-                service: serviceSettings
-            });
+            // Validate required fields for general settings
+            if (activeTab === 'general') {
+                if (!generalSettings.siteName || generalSettings.siteName.trim() === '') {
+                    setSaveMessage('❌ Tên hệ thống không được để trống');
+                    setIsSaving(false);
+                    return;
+                }
+                if (!generalSettings.contactEmail || generalSettings.contactEmail.trim() === '') {
+                    setSaveMessage('❌ Email liên hệ không được để trống');
+                    setIsSaving(false);
+                    return;
+                }
+                // Validate email format
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(generalSettings.contactEmail)) {
+                    setSaveMessage('❌ Email liên hệ không hợp lệ');
+                    setIsSaving(false);
+                    return;
+                }
+            }
+
+            // Call API to update settings
+            const response = await updateSettingsByCategory(activeTab, settingsToSave);
+
+            console.log('[SystemSettings] Settings saved:', response);
 
             setSaveMessage('✅ Đã lưu cài đặt thành công!');
             setTimeout(() => setSaveMessage(''), 3000);
         } catch (error) {
             console.error('[SystemSettings] Error saving settings:', error);
-            setSaveMessage('❌ Có lỗi xảy ra khi lưu cài đặt');
+            setSaveMessage(`❌ Có lỗi xảy ra khi lưu cài đặt: ${error.message || 'Unknown error'}`);
         } finally {
             setIsSaving(false);
         }
+    };
+
+    /**
+     * Handle tab change
+     */
+    const handleTabChange = (tabId) => {
+        setActiveTab(tabId);
+        setSaveMessage(''); // Clear any previous messages
     };
 
     const renderGeneralSettings = () => (
@@ -675,44 +787,51 @@ function SystemSettings() {
                     <p className={styles.subtitle}>Quản lý các cấu hình và thông số của hệ thống</p>
                 </div>
 
-                <div className={styles.settingsLayout}>
-                    {/* Sidebar Tabs */}
-                    <div className={styles.sidebar}>
-                        <div className={styles.tabList}>
-                            {tabs.map((tab) => (
+                {isLoading ? (
+                    <div className={styles.loading}>
+                        <div className={styles.spinner}></div>
+                        <p>Đang tải cài đặt...</p>
+                    </div>
+                ) : (
+                    <div className={styles.settingsLayout}>
+                        {/* Sidebar Tabs */}
+                        <div className={styles.sidebar}>
+                            <div className={styles.tabList}>
+                                {tabs.map((tab) => (
+                                    <button
+                                        key={tab.id}
+                                        className={`${styles.tab} ${activeTab === tab.id ? styles.active : ''}`}
+                                        onClick={() => handleTabChange(tab.id)}
+                                    >
+                                        <span className={styles.tabIcon}>{tab.icon}</span>
+                                        <span className={styles.tabLabel}>{tab.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Content Area */}
+                        <div className={styles.content}>
+                            {renderTabContent()}
+
+                            {/* Save Button */}
+                            <div className={styles.actionBar}>
+                                {saveMessage && (
+                                    <div className={`${styles.saveMessage} ${saveMessage.includes('❌') ? styles.error : saveMessage.includes('⚠️') ? styles.warning : styles.success}`}>
+                                        {saveMessage}
+                                    </div>
+                                )}
                                 <button
-                                    key={tab.id}
-                                    className={`${styles.tab} ${activeTab === tab.id ? styles.active : ''}`}
-                                    onClick={() => setActiveTab(tab.id)}
+                                    className={styles.saveButton}
+                                    onClick={handleSaveSettings}
+                                    disabled={isSaving}
                                 >
-                                    <span className={styles.tabIcon}>{tab.icon}</span>
-                                    <span className={styles.tabLabel}>{tab.label}</span>
+                                    {isSaving ? '⏳ Đang lưu...' : '💾 Lưu cài đặt'}
                                 </button>
-                            ))}
+                            </div>
                         </div>
                     </div>
-
-                    {/* Content Area */}
-                    <div className={styles.content}>
-                        {renderTabContent()}
-
-                        {/* Save Button */}
-                        <div className={styles.actionBar}>
-                            {saveMessage && (
-                                <div className={`${styles.saveMessage} ${saveMessage.includes('❌') ? styles.error : styles.success}`}>
-                                    {saveMessage}
-                                </div>
-                            )}
-                            <button
-                                className={styles.saveButton}
-                                onClick={handleSaveSettings}
-                                disabled={isSaving}
-                            >
-                                {isSaving ? '⏳ Đang lưu...' : '💾 Lưu cài đặt'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                )}
             </div>
         </div>
     );

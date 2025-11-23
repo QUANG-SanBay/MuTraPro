@@ -393,3 +393,77 @@ export const checkSystemHealth = async (wsUrl) => {
         };
     }
 };
+
+// ==================== SYSTEM SETTINGS ====================
+
+/**
+ * Get public system settings (no auth required)
+ * @returns {Promise} - Response with public settings
+ */
+export const getPublicSettings = async () => {
+    return await callGateway({
+        service: 'user-service',
+        path: '/users/settings/public',
+        method: 'GET',
+        skipAuth: true // No authentication required
+    });
+};
+
+/**
+ * Get all system settings
+ * @returns {Promise} - Response with settings object
+ */
+export const getSystemSettings = async () => {
+    return await callGateway({
+        service: 'user-service',
+        path: '/users/admin/settings',
+        method: 'GET'
+    });
+};
+
+/**
+ * Update system settings
+ * @param {Object} settings - Settings object
+ * @param {Object} settings.general - General settings
+ * @param {Object} settings.email - Email settings
+ * @param {Object} settings.payment - Payment settings
+ * @param {Object} settings.storage - Storage settings
+ * @param {Object} settings.service - Service settings
+ * @returns {Promise} - Response with updated settings
+ */
+export const updateSystemSettings = async (settings) => {
+    return await callGateway({
+        service: 'user-service',
+        path: '/users/admin/settings',
+        method: 'PUT',
+        body: settings
+    });
+};
+
+/**
+ * Get specific settings category
+ * @param {string} category - Settings category (general, email, payment, storage, service)
+ * @returns {Promise} - Response with category settings
+ */
+export const getSettingsByCategory = async (category) => {
+    return await callGateway({
+        service: 'user-service',
+        path: `/users/admin/settings/${category}`,
+        method: 'GET'
+    });
+};
+
+/**
+ * Update specific settings category
+ * @param {string} category - Settings category
+ * @param {Object} settings - Settings data for the category
+ * @returns {Promise} - Response with updated settings
+ */
+export const updateSettingsByCategory = async (category, settings) => {
+    return await callGateway({
+        service: 'user-service',
+        path: `/users/admin/settings/${category}`,
+        method: 'PUT',
+        body: settings
+    });
+};

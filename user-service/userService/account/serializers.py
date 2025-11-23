@@ -285,3 +285,15 @@ class UpdateRolePermissionSerializer(serializers.Serializer):
     class Meta:
         fields = ['permissions']
 
+
+class SystemSettingsSerializer(serializers.Serializer):
+    """Serializer for system settings"""
+    
+    category = serializers.CharField(read_only=True)
+    settings_data = serializers.JSONField()
+    updated_at = serializers.DateTimeField(read_only=True)
+    updated_by = serializers.CharField(source='updated_by.full_name', read_only=True)
+    
+    class Meta:
+        fields = ['category', 'settings_data', 'updated_at', 'updated_by']
+

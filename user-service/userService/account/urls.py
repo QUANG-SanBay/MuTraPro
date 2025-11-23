@@ -21,6 +21,12 @@ from .permission_views import (
     reset_role_to_default,
     check_user_permission
 )
+from .settings_views import (
+    get_public_settings,
+    manage_all_settings,
+    manage_settings_by_category,
+    reset_settings_to_default
+)
 
 urlpatterns = [
     path('hello', hello, name='hello'),
@@ -46,4 +52,12 @@ urlpatterns = [
     path('roles/<str:role>/permissions', get_role_permissions, name='get_role_permissions'),
     path('roles/<str:role>/permissions/update', update_role_permissions, name='update_role_permissions'),
     path('roles/<str:role>/reset-default', reset_role_to_default, name='reset_role_to_default'),
+    
+    # Public settings endpoint (no auth required)
+    path('settings/public', get_public_settings, name='get_public_settings'),
+    
+    # System settings endpoints (admin only)
+    path('admin/settings', manage_all_settings, name='manage_all_settings'),
+    path('admin/settings/<str:category>', manage_settings_by_category, name='manage_settings_by_category'),
+    path('admin/settings/<str:category>/reset', reset_settings_to_default, name='reset_settings_to_default'),
 ]

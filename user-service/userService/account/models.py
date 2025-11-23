@@ -195,3 +195,28 @@ class RolePermission(models.Model):
 	def __str__(self) -> str:
 		return f"{self.role} - {self.permission.codename}"
 
+
+class SystemSettings(models.Model):
+	"""System-wide configuration settings."""
+
+	category = models.CharField(max_length=50, unique=True, db_index=True)
+	settings_data = models.JSONField(default=dict)
+
+	created_at = models.DateTimeField(auto_now_add=True)
+	updated_at = models.DateTimeField(auto_now=True)
+	updated_by = models.ForeignKey(
+		User,
+		on_delete=models.SET_NULL,
+		null=True,
+		blank=True,
+		related_name="updated_settings",
+	)
+
+	class Meta:
+		verbose_name = "System Settings"
+		verbose_name_plural = "System Settings"
+		ordering = ["category"]
+
+	def __str__(self) -> str:
+		return f"Settings: {self.category}"
+
