@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import AssignmentModal from "./AssignmentModal";
 
 // ================== DỮ LIỆU GIẢ LẬP ==================
-const mockTasks = [
+const initialTasks = [
   { id: "ASG001", name: "Mùa hè rực rỡ", status: "Chờ phân công", tags: ["Thu âm", "Cao"], deadline: "25/10/2025", reqCode: "REQ001" },
   { id: "ASG002", name: "Đêm noel bình yên", status: "Chờ phân công", tags: ["Phối khí", "Khẩn cấp"], deadline: "24/10/2025", reqCode: "REQ002" },
   { id: "ASG003", name: "Tết đoàn viên", status: "Đang thực hiện", tags: ["Mixing", "Trung bình"], deadline: "26/10/2025", reqCode: "REQ003" },
@@ -10,10 +10,17 @@ const mockTasks = [
 ];
 
 const tabs = [
-  { key: "pending", label: "Chờ phân công (3)", status: "Chờ phân công" },
-  { key: "assigned", label: "Đã phân công (1)", status: "Đã phân công" },
-  { key: "in_progress", label: "Đang thực hiện (1)", status: "Đang thực hiện" },
-  { key: "all", label: "Tất cả (5)", status: "Tất cả" },
+  { key: "pending", label: "Chờ phân công", status: "Chờ phân công" },
+  { key: "assigned", label: "Đã phân công", status: "Đã phân công" },
+  { key: "in_progress", label: "Đang thực hiện", status: "Đang thực hiện" },
+  { key: "all", label: "Tất cả", status: "Tất cả" },
+];
+
+// ================== DANH SÁCH CHUYÊN GIA ==================
+const experts = [
+  { id: "1", name: "Nguyễn Văn A" },
+  { id: "2", name: "Trần Thị B" },
+  { id: "3", name: "Lê Thị C" },
 ];
 
 // ================== STYLE TAG ==================
@@ -72,17 +79,20 @@ const TaskCard = ({ task, onAssign }) => (
         Hạn chót: <strong>{task.deadline}</strong>
       </p>
     </div>
-    <button
-      onClick={onAssign}
-      className="flex items-center space-x-1 px-5 py-2 text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors"
-    >
-      <span>Phân công</span>
-    </button>
+    {task.status === "Chờ phân công" && (
+      <button
+        onClick={onAssign}
+        className="flex items-center space-x-1 px-5 py-2 text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors"
+      >
+        <span>Phân công</span>
+      </button>
+    )}
   </div>
 );
 
 // ================== MAIN PAGE ==================
 const AssignmentPage = () => {
+  const [tasks, setTasks] = useState(initialTasks);
   const [activeTab, setActiveTab] = useState("pending");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -97,7 +107,18 @@ const AssignmentPage = () => {
     setSelectedTask(null);
   };
 
-  const filteredTasks = mockTasks.filter((task) => {
+  const handleAssign = ({ taskId, expertId, note }) => {
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === taskId ? { ...t, status: "Đã phân công" } : t
+      )
+    );
+    alert("Phân công thành công!");
+    handleModalClose();
+    console.log("Dữ liệu phân công:", { taskId, expertId, note });
+  };
+
+  const filteredTasks = tasks.filter((task) => {
     if (activeTab === "all") return true;
     const currentTabStatus = tabs.find((t) => t.key === activeTab).status;
     return task.status === currentTabStatus;
@@ -131,14 +152,23 @@ const AssignmentPage = () => {
         {/* Task List */}
         <div className="space-y-5">
           {filteredTasks.map((task) => (
-            <TaskCard key={task.id} task={task} onAssign={() => handleAssignClick(task)} />
+            <TaskCard
+              key={task.id}
+              task={task}
+              onAssign={() => handleAssignClick(task)}
+            />
           ))}
         </div>
       </div>
 
       {/* Modal */}
       {isModalOpen && selectedTask && (
-        <AssignmentModal task={selectedTask} onClose={handleModalClose} />
+        <AssignmentModal
+          task={selectedTask}
+          experts={experts}
+          onClose={handleModalClose}
+          onAssign={handleAssign}
+        />
       )}
     </div>
   );

@@ -7,6 +7,7 @@ const RecordingOrderForm = () => {
     time: "",
     songName: "",
     description: "",
+    file: null,
   });
 
   const [loading, setLoading] = useState(false);
@@ -17,18 +18,28 @@ const RecordingOrderForm = () => {
     setForm({ ...form, [name]: value });
   };
 
+  const handleFileChange = (e) => {
+    setForm({ ...form, file: e.target.files[0] });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
 
     try {
-      const response = await fetch("http://localhost:4001/orders/schedule", {
+      const formData = new FormData();
+      formData.append("customerName", form.songName);
+      formData.append("email", ""); // nếu cần có email
+      formData.append("phone", ""); // nếu cần có phone
+      formData.append("tags", form.description);
+      if (form.file) {
+        formData.append("file", form.file);
+      }
+
+      const response = await fetch("http://localhost:4001/orders/upload", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
+        body: formData, // browser tự set Content-Type
       });
 
       if (!response.ok) {
@@ -40,7 +51,14 @@ const RecordingOrderForm = () => {
       console.log("Created order:", data);
 
       setMessage("🎉 Đặt lịch thu âm thành công!");
-      setForm({ serviceType: "Thu âm", date: "", time: "", songName: "", description: "" });
+      setForm({
+        serviceType: "Thu âm",
+        date: "",
+        time: "",
+        songName: "",
+        description: "",
+        file: null,
+      });
 
     } catch (err) {
       console.error(err);
@@ -109,6 +127,16 @@ const RecordingOrderForm = () => {
             value={form.description}
             onChange={handleChange}
             className="w-full border border-gray-300 rounded-lg p-2 bg-gray-50"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">File đính kèm</label>
+          <input
+            type="file"
+            name="file"
+            onChange={handleFileChange}
+            className="w-full"
           />
         </div>
 
